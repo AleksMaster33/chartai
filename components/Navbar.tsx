@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { TrendingUp, LogOut, CreditCard, Crown, User, ChevronDown } from 'lucide-react'
+import { TrendingUp, LogOut, CreditCard, Crown, User, ChevronDown, ScanLine, Zap } from 'lucide-react'
 
 interface NavbarProps { plan: string; remaining: number | null }
 
@@ -14,6 +15,7 @@ export function Navbar({ plan, remaining }: NavbarProps) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const router = useRouter()
+  const pathname = usePathname()
   const supabase = createClient()
 
   useEffect(() => {
@@ -36,18 +38,42 @@ export function Navbar({ plan, remaining }: NavbarProps) {
       style={{ background:'rgba(9,9,9,0.88)', backdropFilter:'blur(20px)' }}>
       <nav className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
 
-        {/* logo */}
-        <Link href="/dashboard" className="flex items-center gap-2.5 group">
-          <div className="w-7 h-7 rounded-lg flex items-center justify-center relative"
-            style={{ background:LIME }}>
-            <TrendingUp className="w-3.5 h-3.5 text-black" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-[#090909]"
-              style={{ background:LIME, animation:'blink 1.8s ease-in-out infinite' }} />
+        {/* logo + nav links */}
+        <div className="flex items-center gap-5">
+          <Link href="/dashboard" className="flex items-center gap-2.5 group">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center relative"
+              style={{ background:LIME }}>
+              <TrendingUp className="w-3.5 h-3.5 text-black" />
+              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-[#090909]"
+                style={{ background:LIME, animation:'blink 1.8s ease-in-out infinite' }} />
+            </div>
+            <span className="font-display font-extrabold text-[14px] tracking-tight group-hover:text-[#84cc16] transition-colors">
+              ChartAI
+            </span>
+          </Link>
+
+          {/* nav links */}
+          <div className="hidden sm:flex items-center gap-1">
+            <Link href="/dashboard"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-display font-semibold transition-all ${
+                pathname === '/dashboard'
+                  ? 'text-[#84cc16] bg-[rgba(132,204,22,0.06)]'
+                  : 'text-white/30 hover:text-white/55 hover:bg-white/[0.03]'
+              }`}>
+              <Zap style={{ width:12, height:12 }} />
+              Analyze
+            </Link>
+            <Link href="/dashboard/discover"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-display font-semibold transition-all ${
+                pathname?.startsWith('/dashboard/discover') || pathname?.startsWith('/dashboard/analyze')
+                  ? 'text-[#84cc16] bg-[rgba(132,204,22,0.06)]'
+                  : 'text-white/30 hover:text-white/55 hover:bg-white/[0.03]'
+              }`}>
+              <ScanLine style={{ width:12, height:12 }} />
+              Discover
+            </Link>
           </div>
-          <span className="font-display font-extrabold text-[14px] tracking-tight group-hover:text-[#84cc16] transition-colors">
-            ChartAI
-          </span>
-        </Link>
+        </div>
 
         {/* right */}
         <div className="flex items-center gap-2">
