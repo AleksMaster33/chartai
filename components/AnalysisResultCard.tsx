@@ -1,195 +1,276 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { TrendingUp, TrendingDown, Minus, Target, ShieldAlert, ArrowUpRight, BarChart2, ChevronDown } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  TrendingUp, TrendingDown, Minus, Target, ShieldAlert,
+  ArrowUpRight, BarChart2, ChevronDown, CheckCircle2, AlertCircle
+} from 'lucide-react'
 import type { AnalysisResult } from '@/lib/ai/analyze'
 
+const LIME  = '#84cc16'
+const RED   = '#ef4444'
+const GREEN = '#22c55e'
+const AMBER = '#f59e0b'
+
+/* ── animated number ───────────────────────────────── */
 function AnimatedNumber({ value, decimals = 0 }: { value: number; decimals?: number }) {
   const [display, setDisplay] = useState(0)
-  const ref = useRef<NodeJS.Timeout | null>(null)
-
+  const raf = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     const start = Date.now()
-    const duration = 800
-    const from = 0
-    const animate = () => {
-      const elapsed = Date.now() - start
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3)
-      setDisplay(from + (value - from) * eased)
-      if (progress < 1) ref.current = setTimeout(animate, 16)
+    const dur = 900
+    const tick = () => {
+      const p = Math.min((Date.now() - start) / dur, 1)
+      const e = 1 - Math.pow(1 - p, 3)
+      setDisplay(e * value)
+      if (p < 1) raf.current = setTimeout(tick, 16)
     }
-    animate()
-    return () => { if (ref.current) clearTimeout(ref.current) }
+    tick()
+    return () => { if (raf.current) clearTimeout(raf.current) }
   }, [value])
-
   return <>{display.toLocaleString(undefined, { maximumFractionDigits: decimals, minimumFractionDigits: decimals })}</>
 }
 
+/* ── animated bar ──────────────────────────────────── */
 function AnimatedBar({ value, color }: { value: number; color: string }) {
-  const [width, setWidth] = useState(0)
-  useEffect(() => {
-    const t = setTimeout(() => setWidth(value), 100)
-    return () => clearTimeout(t)
-  }, [value])
+  const [w, setW] = useState(0)
+  useEffect(() => { const t = setTimeout(() => setW(value), 120); return () => clearTimeout(t) }, [value])
   return (
-    <div className="flex-1 h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
-      <div className="h-full rounded-full transition-all duration-1000 ease-out"
-        style={{ width: `${width}%`, background: color }} />
+    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background:'rgba(255,255,255,0.05)' }}>
+      <div className="h-full rounded-full transition-all duration-[1100ms] ease-out"
+        style={{ width:`${w}%`, background:`linear-gradient(90deg,${color}99,${color})` }} />
     </div>
   )
 }
 
-export function AnalysisResultCard({ result, remainingToday }: { result: AnalysisResult; remainingToday?: number }) {
+/* ── level row ─────────────────────────────────────── */
+function LevelRow({ label, val, color, bg, border, icon: Icon }: {
+  label: string; val: number; color: string; bg: string; border: string
+  icon: React.ElementType
+}) {
+  const decimals = val > 100 ? 2 : val > 1 ? 4 : 6
+  return (
+    <motion.div
+      initial={{ opacity:0, x:-10 }}
+      animate={{ opacity:1, x:0 }}
+      className="flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:brightness-110"
+      style={{ background:bg, border:`1px solid ${border}` }}>
+      <div className="flex items-center gap-2.5">
+        <Icon className="w-4 h-4" style={{ color }} />
+        <span className="text-sm font-display font-semibold" style={{ color }}>{label}</span>
+      </div>
+      <span className="font-mono font-bold tabular-nums text-sm" style={{ color }}>
+        <AnimatedNumber value={val} decimals={decimals} />
+      </span>
+    </motion.div>
+  )
+}
+
+/* ── main component ────────────────────────────────── */
+export function AnalysisResultCard({
+  result,
+  remainingToday,
+}: {
+  result: AnalysisResult
+  remainingToday?: number
+}) {
   const [showIndicators, setShowIndicators] = useState(false)
 
-  const signalConfig = {
-    LONG:    { color: '#84cc16', bg: 'rgba(132,204,22,0.08)', border: 'rgba(132,204,22,0.2)', icon: TrendingUp,   label: 'LONG' },
-    SHORT:   { color: '#ef4444', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.2)',  icon: TrendingDown, label: 'SHORT' },
-    NEUTRAL: { color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.2)', icon: Minus,        label: 'NEUTRAL' },
-  }[result.signal]
+  const sig = {
+    LONG:    { color:LIME,  bg:'rgba(132,204,22,0.08)',  border:'rgba(132,204,22,0.2)',  icon:TrendingUp,   label:'LONG'    },
+    SHORT:   { color:RED,   bg:'rgba(239,68,68,0.08)',   border:'rgba(239,68,68,0.2)',   icon:TrendingDown, label:'SHORT'   },
+    NEUTRAL: { color:AMBER, bg:'rgba(245,158,11,0.08)',  border:'rgba(245,158,11,0.2)',  icon:Minus,        label:'NEUTRAL' },
+  }[result.signal] ?? { color:LIME, bg:'rgba(132,204,22,0.08)', border:'rgba(132,204,22,0.2)', icon:TrendingUp, label:'LONG' }
 
-  const confColor = result.confidence >= 70 ? '#84cc16' : result.confidence >= 50 ? '#f59e0b' : '#ef4444'
-  const decimals = result.entry_price > 100 ? 2 : result.entry_price > 1 ? 4 : 6
+  const confColor = result.confidence >= 70 ? LIME : result.confidence >= 50 ? AMBER : RED
+  const decimals  = result.entry_price > 100 ? 2 : result.entry_price > 1 ? 4 : 6
+  const fmt = (v: number) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits:decimals }) : '—'
 
-  const fmt = (v: number) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits: decimals }) : '—'
+  const levels = [
+    { label:'Entry',    val:result.entry_price,    color:LIME,  bg:'rgba(132,204,22,0.06)',  border:'rgba(132,204,22,0.15)',  icon:ArrowUpRight },
+    { label:'Stop Loss',val:result.stop_loss,       color:RED,   bg:'rgba(239,68,68,0.06)',   border:'rgba(239,68,68,0.15)',   icon:ShieldAlert  },
+    { label:'TP 1',     val:result.take_profit_1,   color:GREEN, bg:'rgba(34,197,94,0.05)',   border:'rgba(34,197,94,0.12)',   icon:Target       },
+    ...(result.take_profit_2 > 0 ? [{ label:'TP 2', val:result.take_profit_2, color:GREEN, bg:'rgba(34,197,94,0.04)', border:'rgba(34,197,94,0.1)', icon:Target }] : []),
+    ...(result.take_profit_3 > 0 ? [{ label:'TP 3', val:result.take_profit_3, color:GREEN, bg:'rgba(34,197,94,0.03)', border:'rgba(34,197,94,0.08)', icon:Target }] : []),
+  ].filter(l => l.val > 0)
 
   return (
-    <div className="space-y-3 fade-up">
+    <motion.div
+      initial={{ opacity:0, y:16 }}
+      animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
+      className="space-y-3">
 
-      {/* Header card */}
-      <div className="glass border border-white/[0.07] rounded-2xl p-5">
-        <div className="flex items-start justify-between mb-5">
-          <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              <span className="font-display font-extrabold text-2xl">{result.ticker || 'CHART'}</span>
-              {result.timeframe && (
-                <span className="text-xs bg-white/[0.06] border border-white/[0.08] rounded-md px-2 py-0.5 font-display text-white/50">
-                  {result.timeframe}
-                </span>
-              )}
-              <span className="text-xs rounded-md px-2 py-0.5 font-display font-semibold"
-                style={{ background: signalConfig.bg, color: signalConfig.color, border: `1px solid ${signalConfig.border}` }}>
-                {result.trend}
-              </span>
-            </div>
-            {result.pattern && <p className="text-sm text-white/35 font-display">{result.pattern}</p>}
-          </div>
-          <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-display font-bold text-lg"
-            style={{ background: signalConfig.bg, border: `1px solid ${signalConfig.border}`, color: signalConfig.color }}>
-            <signalConfig.icon className="w-5 h-5" />
-            {signalConfig.label}
-          </div>
-        </div>
+      {/* ── header card ── */}
+      <div className="rounded-2xl overflow-hidden"
+        style={{ background:'rgba(255,255,255,0.025)', border:`1px solid ${sig.border}` }}>
 
-        <div className="space-y-1.5">
-          <div className="flex justify-between text-xs text-white/30 font-display mb-1">
-            <span>Osiris confidence</span>
-            <span style={{ color: confColor }} className="font-semibold">{result.confidence}%</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <AnimatedBar value={result.confidence} color={confColor} />
-          </div>
-        </div>
-      </div>
+        {/* top accent line */}
+        <div className="h-px w-full"
+          style={{ background:`linear-gradient(90deg,transparent,${sig.color}55,transparent)` }} />
 
-      {/* Price levels */}
-      <div className="glass border border-white/[0.07] rounded-2xl p-5">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-xs text-white/35 font-display font-semibold uppercase tracking-wider">Signal Levels</span>
-          {result.risk_reward > 0 && (
-            <div className="flex items-center gap-1.5 text-xs font-display">
-              <BarChart2 className="w-3.5 h-3.5 text-white/30" />
-              <span className="text-white/30">R:R</span>
-              <span className="text-white/70 font-semibold">1 : {result.risk_reward.toFixed(1)}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          {[
-            { label: 'Entry', val: result.entry_price, color: '#84cc16', bg: 'rgba(132,204,22,0.06)', border: 'rgba(132,204,22,0.15)', icon: ArrowUpRight },
-            { label: 'Stop Loss', val: result.stop_loss, color: '#ef4444', bg: 'rgba(239,68,68,0.06)', border: 'rgba(239,68,68,0.15)', icon: ShieldAlert },
-            { label: 'TP 1', val: result.take_profit_1, color: '#22c55e', bg: 'rgba(34,197,94,0.04)', border: 'rgba(34,197,94,0.12)', icon: Target },
-            ...(result.take_profit_2 > 0 ? [{ label: 'TP 2', val: result.take_profit_2, color: '#22c55e', bg: 'rgba(34,197,94,0.04)', border: 'rgba(34,197,94,0.12)', icon: Target }] : []),
-            ...(result.take_profit_3 > 0 ? [{ label: 'TP 3', val: result.take_profit_3, color: '#22c55e', bg: 'rgba(34,197,94,0.04)', border: 'rgba(34,197,94,0.12)', icon: Target }] : []),
-          ].filter(l => l.val > 0).map(({ label, val, color, bg, border, icon: Icon }) => (
-            <div key={label} className="flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:opacity-90"
-              style={{ background: bg, border: `1px solid ${border}` }}>
-              <div className="flex items-center gap-2.5">
-                <Icon className="w-4 h-4" style={{ color }} />
-                <span className="text-sm font-display font-medium" style={{ color }}>{label}</span>
+        <div className="p-5">
+          {/* ticker + signal */}
+          <div className="flex items-start justify-between mb-5">
+            <div>
+              <div className="flex items-center gap-2.5 mb-1">
+                <span className="font-display font-extrabold text-2xl">{result.ticker || 'CHART'}</span>
+                {result.timeframe && (
+                  <span className="text-xs rounded-md px-2 py-0.5 font-display text-white/45"
+                    style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)' }}>
+                    {result.timeframe}
+                  </span>
+                )}
+                {result.trend && (
+                  <span className="text-xs rounded-md px-2 py-0.5 font-display font-semibold"
+                    style={{ background:sig.bg, color:sig.color, border:`1px solid ${sig.border}` }}>
+                    {result.trend}
+                  </span>
+                )}
               </div>
-              <span className="font-display font-bold tabular-nums" style={{ color }}>
-                {fmt(val)}
-              </span>
+              {result.pattern && (
+                <p className="text-sm text-white/35 font-display">{result.pattern}</p>
+              )}
             </div>
-          ))}
+
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-display font-bold text-base shrink-0"
+              style={{ background:sig.bg, border:`1px solid ${sig.border}`, color:sig.color }}>
+              <sig.icon className="w-4 h-4" />
+              {sig.label}
+            </div>
+          </div>
+
+          {/* confidence */}
+          <div>
+            <div className="flex justify-between text-xs text-white/30 font-display mb-2">
+              <span>Osiris Confidence</span>
+              <span className="font-semibold" style={{ color:confColor }}>{result.confidence}%</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <AnimatedBar value={result.confidence} color={confColor} />
+              {result.risk_reward > 0 && (
+                <div className="flex items-center gap-1.5 text-xs font-display shrink-0">
+                  <BarChart2 className="w-3 h-3 text-white/25" />
+                  <span className="text-white/25">R:R</span>
+                  <span className="text-white/60 font-semibold">1:{result.risk_reward.toFixed(1)}</span>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* S/R levels */}
+      {/* ── price levels ── */}
+      <div className="rounded-2xl p-5 space-y-2"
+        style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
+        <p className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest mb-3">
+          Signal Levels
+        </p>
+        {levels.map((l, i) => (
+          <motion.div key={l.label}
+            initial={{ opacity:0, x:-8 }}
+            animate={{ opacity:1, x:0 }}
+            transition={{ delay:i*0.06, duration:0.35, ease:[0.22,1,0.36,1] }}>
+            <LevelRow {...l} />
+          </motion.div>
+        ))}
+      </div>
+
+      {/* ── S/R levels ── */}
       {(result.support_level > 0 || result.resistance_level > 0) && (
         <div className="grid grid-cols-2 gap-3">
           {result.support_level > 0 && (
-            <div className="glass border border-white/[0.07] rounded-xl p-4">
-              <p className="text-xs text-white/30 font-display mb-1.5">Support</p>
-              <p className="font-display font-bold text-blue-400 tabular-nums">{fmt(result.support_level)}</p>
+            <div className="rounded-xl p-4"
+              style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.15)' }}>
+              <p className="text-[10px] text-white/30 font-display uppercase tracking-wider mb-1.5">Support</p>
+              <p className="font-mono font-bold text-blue-400 tabular-nums">{fmt(result.support_level)}</p>
             </div>
           )}
           {result.resistance_level > 0 && (
-            <div className="glass border border-white/[0.07] rounded-xl p-4">
-              <p className="text-xs text-white/30 font-display mb-1.5">Resistance</p>
-              <p className="font-display font-bold text-orange-400 tabular-nums">{fmt(result.resistance_level)}</p>
+            <div className="rounded-xl p-4"
+              style={{ background:'rgba(251,146,60,0.05)', border:'1px solid rgba(251,146,60,0.15)' }}>
+              <p className="text-[10px] text-white/30 font-display uppercase tracking-wider mb-1.5">Resistance</p>
+              <p className="font-mono font-bold text-orange-400 tabular-nums">{fmt(result.resistance_level)}</p>
             </div>
           )}
         </div>
       )}
 
-      {/* Rationale */}
-      <div className="glass border border-white/[0.07] rounded-2xl p-5">
-        <p className="text-xs text-white/30 font-display font-semibold uppercase tracking-wider mb-3">Analysis</p>
-        <p className="text-sm text-white/70 leading-relaxed">{result.rationale}</p>
+      {/* ── rationale ── */}
+      <div className="rounded-2xl p-5"
+        style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
+        <p className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest mb-3">
+          Osiris Analysis
+        </p>
+        <p className="text-sm text-white/60 leading-relaxed">{result.rationale}</p>
       </div>
 
-      {/* Indicators collapsible */}
+      {/* ── indicators (collapsible) ── */}
       {result.indicators?.length > 0 && (
-        <div className="glass border border-white/[0.07] rounded-2xl overflow-hidden">
-          <button onClick={() => setShowIndicators(!showIndicators)}
+        <div className="rounded-2xl overflow-hidden"
+          style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
+          <button onClick={() => setShowIndicators(v => !v)}
             className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors">
-            <span className="text-xs text-white/30 font-display font-semibold uppercase tracking-wider">Indicators</span>
-            <ChevronDown className={`w-4 h-4 text-white/25 transition-transform duration-200 ${showIndicators ? 'rotate-180' : ''}`} />
+            <span className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest">
+              Indicators
+            </span>
+            <ChevronDown className={`w-4 h-4 text-white/20 transition-transform duration-200 ${showIndicators ? 'rotate-180':''}`} />
           </button>
-          {showIndicators && (
-            <div className="px-5 pb-4 space-y-2.5 border-t border-white/[0.05]">
-              {result.indicators.map((ind, i) => (
-                <div key={i} className="flex items-center justify-between pt-2">
-                  <span className="text-sm text-white/50 font-display">{ind.name}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-white/70 font-display">{ind.value}</span>
-                    <span className="text-xs px-2 py-0.5 rounded-full font-display font-semibold"
-                      style={{
-                        background: ind.signal === 'bullish' ? 'rgba(132,204,22,0.1)' : ind.signal === 'bearish' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)',
-                        color: ind.signal === 'bullish' ? '#84cc16' : ind.signal === 'bearish' ? '#ef4444' : 'rgba(255,255,255,0.3)',
-                      }}>
-                      {ind.signal}
-                    </span>
-                  </div>
+
+          <AnimatePresence>
+            {showIndicators && (
+              <motion.div
+                initial={{ height:0, opacity:0 }}
+                animate={{ height:'auto', opacity:1 }}
+                exit={{ height:0, opacity:0 }}
+                transition={{ duration:0.25, ease:[0.22,1,0.36,1] }}
+                className="overflow-hidden">
+                <div className="px-5 pb-4 space-y-2.5 border-t border-white/[0.05]">
+                  {result.indicators.map((ind, i) => (
+                    <div key={i} className="flex items-center justify-between pt-2.5">
+                      <span className="text-sm text-white/45 font-display">{ind.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-white/65 font-mono">{ind.value}</span>
+                        <span className="text-[10px] px-2 py-0.5 rounded-full font-display font-semibold"
+                          style={{
+                            background: ind.signal==='bullish' ? 'rgba(132,204,22,0.1)' : ind.signal==='bearish' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)',
+                            color:      ind.signal==='bullish' ? LIME               : ind.signal==='bearish' ? RED               : 'rgba(255,255,255,0.3)',
+                          }}>
+                          {ind.signal}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
 
-      <p className="text-xs text-white/20 text-center font-display leading-relaxed">
+      {/* ── confidence badge ── */}
+      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl"
+        style={{
+          background: result.confidence >= 70 ? 'rgba(132,204,22,0.05)' : 'rgba(255,255,255,0.02)',
+          border:     result.confidence >= 70 ? '1px solid rgba(132,204,22,0.12)' : '1px solid rgba(255,255,255,0.05)',
+        }}>
+        {result.confidence >= 70
+          ? <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color:LIME }} />
+          : <AlertCircle  className="w-4 h-4 shrink-0 text-amber-400" />}
+        <p className="text-xs text-white/35 font-display leading-relaxed">
+          {result.confidence >= 70
+            ? 'High confidence — all Osiris filters aligned'
+            : 'Moderate confidence — use additional confirmation'}
+          {remainingToday !== undefined && (
+            <span className="ml-2 text-white/20">· {remainingToday} {remainingToday===1?'analysis':'analyses'} left today</span>
+          )}
+        </p>
+      </div>
+
+      <p className="text-[10px] text-white/15 text-center font-display">
         Educational purposes only · Not financial advice · Trade at your own risk
-        {remainingToday !== undefined && (
-          <span className="block mt-1 text-white/15">
-            {remainingToday} free {remainingToday === 1 ? 'analysis' : 'analyses'} remaining today
-          </span>
-        )}
       </p>
-    </div>
+    </motion.div>
   )
 }
