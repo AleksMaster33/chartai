@@ -427,311 +427,317 @@ export default function HomePage() {
       </section>
 
       {/* ── OSIRIS 7 FILTERS ─────────────────────────────── */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <div className="rounded-3xl overflow-hidden relative"
-          style={{
-            background:'linear-gradient(135deg, rgba(0,255,136,0.03) 0%, rgba(8,11,16,0.98) 60%)',
-            border:'1px solid rgba(0,255,136,0.10)',
-          }}>
-          {/* top glow line */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-[65%]"
-            style={{ background:`linear-gradient(90deg,transparent,${G}44,transparent)` }} />
-
-          <div className="p-10">
-            <motion.div
-              initial={{ opacity:0, y:16 }} whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true }} transition={{ duration:0.5 }}
-              className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
-              <div>
-                <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
-                  style={{ color:'rgba(0,255,136,0.65)' }}>THE METHODOLOGY</p>
-                <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
-                  7 filters. Every signal. No exceptions.
-                </h2>
-              </div>
-              <p className="text-[13px] max-w-xs md:text-right" style={{ color:'rgba(232,237,245,0.30)' }}>
-                The Osiris methodology was built for high-probability crypto scalping. A trade only reaches you when all relevant filters align.
-              </p>
-            </motion.div>
-
-            {/* progress pipeline */}
-            <div className="relative mb-8 hidden md:flex items-center justify-between">
-              {OSIRIS_FILTERS.map((f, i) => (
-                <div key={f.n} className="flex items-center flex-1">
-                  <motion.div
-                    initial={{ opacity:0, scale:0.7 }} whileInView={{ opacity:1, scale:1 }}
-                    viewport={{ once:true }} transition={{ delay:i * 0.07, duration:0.4 }}
-                    className="w-2 h-2 rounded-full shrink-0"
-                    style={{ background:G, boxShadow:`0 0 8px ${G}` }}
-                  />
-                  {i < OSIRIS_FILTERS.length - 1 && (
-                    <motion.div
-                      initial={{ scaleX:0 }} whileInView={{ scaleX:1 }}
-                      viewport={{ once:true }} transition={{ delay:i * 0.07 + 0.1, duration:0.5 }}
-                      className="flex-1 h-px origin-left"
-                      style={{ background:`linear-gradient(90deg,${G}55,${G}22)` }}
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* filter cards grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-3">
-              {OSIRIS_FILTERS.map((f, i) => (
-                <motion.div key={f.n}
-                  initial={{ opacity:0, y:16 }} whileInView={{ opacity:1, y:0 }}
-                  viewport={{ once:true, margin:'-40px' }}
-                  transition={{ delay:i * 0.06, duration:0.4, ease:[0.22,1,0.36,1] }}
-                  whileHover={{ scale:1.04, borderColor:'rgba(0,255,136,0.25)' }}
-                  className="rounded-xl p-4 text-center cursor-default transition-all duration-200 group"
-                  style={{ background:'rgba(13,17,23,0.80)', border:'1px solid rgba(255,255,255,0.055)' }}
-                >
-                  {/* number */}
-                  <div className="font-mono font-bold text-[10px] mb-2.5 transition-opacity duration-200 opacity-40 group-hover:opacity-100"
-                    style={{ color:G }}>
-                    {f.n}
-                  </div>
-                  {/* icon */}
-                  <div className="flex justify-center mb-2">
-                    <f.icon style={{ width:16, height:16, color:`rgba(0,255,136,0.55)` }} className="group-hover:text-[#00FF88] transition-colors" />
-                  </div>
-                  <div className="font-display font-semibold text-[12px] mb-0.5" style={{ color:'rgba(232,237,245,0.80)' }}>
-                    {f.name}
-                  </div>
-                  <div className="text-[10px] leading-snug" style={{ color:'rgba(232,237,245,0.22)' }}>
-                    {f.desc}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-            {/* confluence banner */}
-            <motion.div
-              initial={{ opacity:0, y:10 }} whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true }} transition={{ delay:0.4, duration:0.4 }}
-              className="mt-6 flex items-center gap-3 p-4 rounded-xl"
-              style={{ background:'rgba(0,255,136,0.05)', border:'1px solid rgba(0,255,136,0.14)' }}>
-              <CheckCircle2 className="w-5 h-5 shrink-0" style={{ color:G }} />
-              <span className="text-[13px] font-display" style={{ color:'rgba(232,237,245,0.60)' }}>
-                When all 7 filters pass →{' '}
-                <span className="font-bold" style={{ color:G }}>High-confidence signal</span>
-                {' '}with entry zone, stop-loss, TP1, TP2, leverage suggestion, and full filter reasoning
-              </span>
-            </motion.div>
+      <section style={{ maxWidth:'72rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
+        {/* section header */}
+        <div style={{ marginBottom:48 }}>
+          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:12 }}>
+            THE METHODOLOGY
+          </p>
+          <div style={{ display:'flex', flexWrap:'wrap', alignItems:'flex-end', justifyContent:'space-between', gap:24 }}>
+            <h2 style={{ fontSize:'clamp(1.75rem,3vw,2.5rem)', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5', margin:0 }}>
+              7 filters. Every signal.<br />No exceptions.
+            </h2>
+            <p style={{ fontSize:14, maxWidth:320, color:'rgba(232,237,245,0.38)', lineHeight:1.65, margin:0 }}>
+              The Osiris methodology was built for high-probability crypto scalping. A trade only reaches you when all relevant filters align.
+            </p>
           </div>
+        </div>
+
+        {/* filter list */}
+        <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
+          {OSIRIS_FILTERS.map((f, i) => (
+            <div key={f.n} style={{
+              display:'grid',
+              gridTemplateColumns:'64px 48px 1fr 2fr',
+              alignItems:'center',
+              gap:24,
+              padding:'20px 24px',
+              borderRadius:12,
+              background: i % 2 === 0 ? 'rgba(255,255,255,0.02)' : 'transparent',
+              border:'1px solid transparent',
+              borderBottom: i < OSIRIS_FILTERS.length - 1 ? '1px solid rgba(255,255,255,0.04)' : '1px solid transparent',
+            }}>
+              {/* number */}
+              <span style={{
+                fontFamily:'JetBrains Mono,monospace', fontSize:22, fontWeight:800,
+                color:'rgba(0,255,136,0.18)', letterSpacing:'-0.04em', lineHeight:1,
+              }}>
+                {f.n}
+              </span>
+              {/* icon */}
+              <div style={{
+                width:40, height:40, borderRadius:10,
+                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.12)',
+                display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+              }}>
+                <f.icon style={{ width:18, height:18, color:`rgba(0,255,136,0.75)` }} />
+              </div>
+              {/* name */}
+              <span style={{ fontSize:15, fontWeight:700, color:'#E8EDF5' }}>{f.name}</span>
+              {/* description */}
+              <span style={{ fontSize:13, color:'rgba(232,237,245,0.38)', lineHeight:1.5 }}>{f.desc}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* confluence banner */}
+        <div style={{
+          marginTop:24, display:'flex', alignItems:'center', gap:14,
+          padding:'16px 22px', borderRadius:14,
+          background:'rgba(0,255,136,0.05)', border:'1px solid rgba(0,255,136,0.15)',
+        }}>
+          <CheckCircle2 style={{ width:18, height:18, flexShrink:0, color:G }} />
+          <span style={{ fontSize:13, color:'rgba(232,237,245,0.60)', lineHeight:1.5 }}>
+            When all 7 filters pass →{' '}
+            <span style={{ fontWeight:700, color:G }}>High-confidence signal</span>
+            {' '}generated with entry zone, stop-loss, TP1, TP2, leverage suggestion, and full filter reasoning
+          </span>
         </div>
       </section>
 
       {/* ── STATS COUNTERS ────────────────────────────────── */}
-      <section className="relative z-10 border-t" style={{ borderColor:'rgba(255,255,255,0.04)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-20">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <section style={{ borderTop:'1px solid rgba(255,255,255,0.04)', background:'rgba(0,255,136,0.015)' }}>
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'4rem 1.5rem' }}>
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:'repeat(4, 1fr)',
+            gap:0,
+          }}>
             {[
-              { val:10,  suffix:'s',  label:'Avg analysis time',  sub:'Gemini + Claude pipeline' },
-              { val:7,   suffix:'',   label:'Osiris filters',     sub:'Applied simultaneously'   },
-              { val:3,   suffix:'',   label:'Free daily analyses',sub:'No credit card required'  },
-              { val:100, suffix:'%',  label:'Chart compatibility', sub:'Any platform, any asset'  },
+              { val:20,  suffix:'s',  label:'Avg signal speed',   sub:'Gemini + Claude in parallel' },
+              { val:7,   suffix:'',   label:'Osiris filters',     sub:'Applied to every signal'     },
+              { val:100, suffix:'+',  label:'Pairs scanned',      sub:'Real-time Binance data'       },
+              { val:100, suffix:'%',  label:'Chart compatibility', sub:'Any platform, any asset'     },
             ].map((s, i) => (
-              <motion.div key={s.label}
-                initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true, margin:'-60px' }}
-                transition={{ delay:i * 0.08, duration:0.5, ease:[0.22,1,0.36,1] }}
-                className="rounded-2xl p-6 group cursor-default data-card">
-                <div className="font-mono font-extrabold leading-none mb-2"
-                  style={{ fontSize:'2.75rem', color:G, letterSpacing:'-0.02em' }}>
+              <div key={s.label} style={{
+                padding:'32px 28px',
+                borderRight: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                textAlign:'center',
+              }}>
+                <div style={{
+                  fontFamily:'JetBrains Mono,monospace', fontWeight:800,
+                  fontSize:'3rem', lineHeight:1, letterSpacing:'-0.03em',
+                  color:G, marginBottom:12,
+                }}>
                   <Counter to={s.val} suffix={s.suffix} />
                 </div>
-                <div className="font-display font-semibold text-sm mb-1" style={{ color:'rgba(232,237,245,0.70)' }}>
+                <div style={{ fontSize:14, fontWeight:600, color:'rgba(232,237,245,0.75)', marginBottom:4 }}>
                   {s.label}
                 </div>
-                <div className="text-[12px] font-display" style={{ color:'rgba(232,237,245,0.28)' }}>
+                <div style={{ fontSize:12, color:'rgba(232,237,245,0.30)' }}>
                   {s.sub}
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── PRICING PREVIEW ───────────────────────────────── */}
-      <section className="relative z-10 border-t" style={{ borderColor:'rgba(255,255,255,0.04)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <motion.div
-            initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }} transition={{ duration:0.5 }}
-            className="text-center mb-14">
-            <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
-              style={{ color:'rgba(0,255,136,0.65)' }}>Pricing</p>
-            <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
+      <section style={{ borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
+          <div style={{ textAlign:'center', marginBottom:56 }}>
+            <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:12 }}>
+              PRICING
+            </p>
+            <h2 style={{ fontSize:'clamp(1.75rem,3vw,2.25rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:12 }}>
               Start free. Scale when you&apos;re ready.
             </h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
-            {[
-              {
-                name:'Basic', price:'$19.99', period:'/month',
-                features:['3 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (30 days)'],
-                cta:'Get Started', href:'/auth/login', accent:false, purple:false,
-              },
-              {
-                name:'Pro', price:'$44.90', period:'/month',
-                features:['10 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed'],
-                cta:'Get Started', href:null, accent:true, purple:false, badge:'Most Popular',
-              },
-              {
-                name:'Unlimited', price:'$125', period:'/month',
-                features:['50 analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed','Swing analysis (4H / Daily)'],
-                cta:'Get Started', href:null, accent:false, purple:true,
-              },
-            ].map((p, i) => (
-              <motion.div key={p.name}
-                initial={{ opacity:0, y:22 }} whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true, margin:'-60px' }}
-                transition={{ delay:i * 0.10, duration:0.5, ease:[0.22,1,0.36,1] }}
-                className="relative rounded-2xl p-6 flex flex-col overflow-hidden"
-                style={{
-                  background: p.accent
-                    ? 'rgba(0,255,136,0.04)'
-                    : p.purple ? 'rgba(139,92,246,0.03)' : 'rgba(13,17,23,0.70)',
-                  border: p.accent
-                    ? '1px solid rgba(0,255,136,0.20)'
-                    : p.purple ? '1px solid rgba(139,92,246,0.16)' : '1px solid rgba(255,255,255,0.065)',
-                }}>
-                {/* top accent line */}
-                {p.accent && (
-                  <div className="absolute top-0 left-0 right-0 h-px"
-                    style={{ background:`linear-gradient(90deg,transparent,${G}55,transparent)` }} />
-                )}
-
-                {'badge' in p && p.badge && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <span className="text-black text-[10px] font-display font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                      style={{ background:G }}>
-                      {p.badge}
-                    </span>
-                  </div>
-                )}
-
-                <div className="mb-5">
-                  <div className="font-display font-semibold text-[11px] tracking-widest uppercase mb-3"
-                    style={{ color:'rgba(232,237,245,0.38)' }}>
-                    {p.name}
-                  </div>
-                  <div className="flex items-baseline gap-1">
-                    <span className="font-display font-extrabold text-[2.25rem]" style={{ color:'#E8EDF5' }}>{p.price}</span>
-                    <span className="text-[13px] font-display" style={{ color:'rgba(232,237,245,0.28)' }}>{p.period}</span>
-                  </div>
-                </div>
-
-                <ul className="space-y-2.5 mb-6 flex-1">
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-center gap-2 text-[13px]">
-                      <CheckCircle2 style={{ width:14, height:14, flexShrink:0, color: p.accent ? G : p.purple ? '#a78bfa' : 'rgba(255,255,255,0.25)' }} />
-                      <span style={{ color:'rgba(232,237,245,0.50)' }}>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                {p.href ? (
-                  <Link href={p.href}
-                    className="w-full py-3 rounded-xl text-[13px] font-display font-bold text-center transition-all duration-200"
-                    style={{ border:'1px solid rgba(255,255,255,0.07)', color:'rgba(232,237,245,0.38)' }}
-                    onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.13)'; e.currentTarget.style.color='rgba(232,237,245,0.65)' }}
-                    onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.07)'; e.currentTarget.style.color='rgba(232,237,245,0.38)' }}>
-                    {p.cta}
-                  </Link>
-                ) : (
-                  <Link href="/pricing"
-                    className="w-full py-3 rounded-xl text-[13px] font-display font-bold text-center transition-all duration-200 hover:-translate-y-px"
-                    style={p.accent
-                      ? { background:G, color:'#020D06', boxShadow:`0 4px 16px ${GLOW}` }
-                      : { border:'1px solid rgba(139,92,246,0.20)', color:'#a78bfa' }
-                    }>
-                    {p.cta}
-                  </Link>
-                )}
-              </motion.div>
-            ))}
+            <p style={{ fontSize:14, color:'rgba(232,237,245,0.35)', margin:0 }}>
+              No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.
+            </p>
           </div>
 
-          <motion.div
-            initial={{ opacity:0 }} whileInView={{ opacity:1 }}
-            viewport={{ once:true }} transition={{ delay:0.3 }}
-            className="text-center mt-6">
-            <Link href="/pricing"
-              className="text-[13px] font-display inline-flex items-center gap-1.5 transition-colors hover:opacity-80"
-              style={{ color:'rgba(0,255,136,0.60)' }}>
-              See full pricing details <ChevronRight className="w-3.5 h-3.5" />
+          {/* 3-col grid */}
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:'1fr 1fr 1fr',
+            gap:20,
+            maxWidth:940,
+            margin:'0 auto',
+          }}>
+            {/* Basic */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16,
+              background:'rgba(13,17,23,0.70)',
+              border:'1px solid rgba(255,255,255,0.07)',
+            }}>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(232,237,245,0.35)', marginBottom:10, marginTop:0 }}>Basic</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$19.99</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.30)' }}>/mo</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['3 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (30 days)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:10, fontSize:13 }}>
+                    <CheckCircle2 style={{ width:14, height:14, flexShrink:0, color:'rgba(255,255,255,0.25)' }} />
+                    <span style={{ color:'rgba(232,237,245,0.55)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/auth/login" style={{
+                display:'block', textAlign:'center', padding:'13px 0',
+                borderRadius:10, fontSize:13, fontWeight:700, textDecoration:'none',
+                border:'1px solid rgba(255,255,255,0.10)', color:'rgba(232,237,245,0.50)',
+              }}>Get Started</Link>
+            </div>
+
+            {/* Pro — highlighted */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16, position:'relative',
+              background:'rgba(0,255,136,0.04)',
+              border:'1px solid rgba(0,255,136,0.25)',
+              boxShadow:'0 0 0 1px rgba(0,255,136,0.10), 0 16px 48px rgba(0,255,136,0.06)',
+            }}>
+              {/* top glow line */}
+              <div style={{ position:'absolute', top:0, left:'15%', right:'15%', height:1, background:`linear-gradient(90deg,transparent,${G}66,transparent)` }} />
+              {/* badge */}
+              <div style={{
+                position:'absolute', top:-13, left:'50%', transform:'translateX(-50%)',
+                background:G, color:'#000', fontSize:10, fontWeight:800,
+                padding:'4px 14px', borderRadius:999, letterSpacing:'0.08em', textTransform:'uppercase',
+                whiteSpace:'nowrap',
+              }}>
+                Most Popular
+              </div>
+
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:`rgba(0,255,136,0.65)`, marginBottom:10, marginTop:12 }}>Pro</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$44.90</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.30)' }}>/mo</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['10 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:10, fontSize:13 }}>
+                    <CheckCircle2 style={{ width:14, height:14, flexShrink:0, color:G }} />
+                    <span style={{ color:'rgba(232,237,245,0.65)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/pricing" style={{
+                display:'block', textAlign:'center', padding:'13px 0',
+                borderRadius:10, fontSize:13, fontWeight:700, textDecoration:'none',
+                background:G, color:'#000',
+                boxShadow:`0 4px 20px ${GLOW}`,
+              }}>Get Started</Link>
+            </div>
+
+            {/* Unlimited */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16,
+              background:'rgba(139,92,246,0.03)',
+              border:'1px solid rgba(139,92,246,0.18)',
+            }}>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(167,139,250,0.60)', marginBottom:10, marginTop:0 }}>Unlimited</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$125</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.30)' }}>/mo</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['50 analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed','Swing analysis (4H / Daily)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:10, fontSize:13 }}>
+                    <CheckCircle2 style={{ width:14, height:14, flexShrink:0, color:'#a78bfa' }} />
+                    <span style={{ color:'rgba(232,237,245,0.55)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <Link href="/pricing" style={{
+                display:'block', textAlign:'center', padding:'13px 0',
+                borderRadius:10, fontSize:13, fontWeight:700, textDecoration:'none',
+                border:'1px solid rgba(139,92,246,0.25)', color:'#a78bfa',
+              }}>Get Started</Link>
+            </div>
+          </div>
+
+          <div style={{ textAlign:'center', marginTop:28 }}>
+            <Link href="/pricing" style={{
+              display:'inline-flex', alignItems:'center', gap:6,
+              fontSize:13, color:'rgba(0,255,136,0.55)', textDecoration:'none',
+            }}>
+              See full pricing details <ChevronRight style={{ width:14, height:14 }} />
             </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ── CTA BANNER ────────────────────────────────────── */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pb-24">
-        <motion.div
-          initial={{ opacity:0, y:20 }} whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true }} transition={{ duration:0.55 }}
-          className="rounded-3xl p-12 text-center relative overflow-hidden"
-          style={{
-            background:'linear-gradient(135deg, rgba(0,255,136,0.06) 0%, rgba(8,11,16,1) 60%)',
-            border:'1px solid rgba(0,255,136,0.12)',
-          }}>
-          {/* radial glow */}
-          <div className="absolute inset-0 pointer-events-none"
-            style={{ background:'radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.08) 0%, transparent 55%)' }} />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px w-[50%]"
-            style={{ background:`linear-gradient(90deg,transparent,${G}44,transparent)` }} />
+      <section style={{ maxWidth:'72rem', margin:'0 auto', padding:'0 1.5rem 6rem' }}>
+        <div style={{
+          borderRadius:24, padding:'4rem 2rem', textAlign:'center',
+          position:'relative', overflow:'hidden',
+          background:'linear-gradient(135deg, rgba(0,255,136,0.06) 0%, rgba(8,11,16,1) 60%)',
+          border:'1px solid rgba(0,255,136,0.12)',
+        }}>
+          <div style={{
+            position:'absolute', inset:0, pointerEvents:'none',
+            background:'radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.08) 0%, transparent 55%)',
+          }} />
+          <div style={{
+            position:'absolute', top:0, left:'25%', right:'25%', height:1,
+            background:`linear-gradient(90deg,transparent,${G}44,transparent)`,
+          }} />
 
-          <div className="relative z-10">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6"
-              style={{ background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)' }}>
+          <div style={{ position:'relative', zIndex:1 }}>
+            <div style={{
+              display:'inline-flex', alignItems:'center', gap:8, marginBottom:24,
+              padding:'6px 16px', borderRadius:999,
+              background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
+            }}>
               <span className="live-dot" style={{ width:6, height:6 }} />
-              <span className="text-[11px] font-display font-bold tracking-wide" style={{ color:'rgba(0,255,136,0.9)' }}>
+              <span style={{ fontSize:11, fontWeight:700, color:'rgba(0,255,136,0.9)' }}>
                 3 free analyses — no credit card required
               </span>
             </div>
 
-            <h2 className="font-display font-extrabold tracking-tight text-[2.5rem] mb-4" style={{ color:'#E8EDF5' }}>
-              Ready to trade with <span className="hero-gradient">a system</span>?
+            <h2 style={{
+              fontSize:'clamp(1.75rem,4vw,2.5rem)', fontWeight:800,
+              letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:16,
+            }}>
+              Ready to trade with{' '}
+              <span className="hero-gradient">a system</span>?
             </h2>
-            <p className="text-[15px] mb-4 max-w-md mx-auto" style={{ color:'rgba(232,237,245,0.40)' }}>
+            <p style={{ fontSize:15, color:'rgba(232,237,245,0.40)', maxWidth:420, margin:'0 auto 32px' }}>
               Scan the market. Identify the setup. Understand the signal. Enter with confidence.
             </p>
 
-            <Link href="/auth/login"
-              className="inline-flex items-center gap-2.5 font-display font-bold text-[15px] text-black px-8 py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5"
-              style={{ background:G, boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}` }}>
+            <Link href="/auth/login" style={{
+              display:'inline-flex', alignItems:'center', gap:10,
+              padding:'16px 32px', borderRadius:12,
+              background:G, color:'#000', fontWeight:700, fontSize:15,
+              textDecoration:'none',
+              boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}`,
+            }}>
               Start Your Free Analysis
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight style={{ width:16, height:16 }} />
             </Link>
-            <p className="mt-4 text-[12px] font-display" style={{ color:'rgba(232,237,245,0.25)' }}>
+            <p style={{ marginTop:16, fontSize:12, color:'rgba(232,237,245,0.25)' }}>
               3 free analyses included. No credit card required.
             </p>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ── FOOTER ────────────────────────────────────────── */}
-      <footer className="relative z-10 border-t" style={{ borderColor:'rgba(255,255,255,0.04)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 rounded-md flex items-center justify-center" style={{ background:G }}>
+      <footer style={{ borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{
+          maxWidth:'72rem', margin:'0 auto', padding:'2rem 1.5rem',
+          display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16,
+        }}>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <div style={{ width:24, height:24, borderRadius:6, background:G, display:'flex', alignItems:'center', justifyContent:'center' }}>
               <TrendingUp style={{ width:12, height:12, color:'black' }} />
             </div>
-            <span className="font-display font-bold text-[13px]" style={{ color:'rgba(232,237,245,0.50)' }}>ChartAI</span>
+            <span style={{ fontWeight:700, fontSize:13, color:'rgba(232,237,245,0.50)' }}>ChartAI</span>
           </div>
-          <div className="flex items-center gap-6">
-            <Link href="/pricing" className="text-[12px] font-display transition-colors hover:opacity-70"
-              style={{ color:'rgba(232,237,245,0.28)' }}>Pricing</Link>
-            <Link href="/auth/login" className="text-[12px] font-display transition-colors hover:opacity-70"
-              style={{ color:'rgba(232,237,245,0.28)' }}>Sign in</Link>
-            <Link href="/dashboard" className="text-[12px] font-display transition-colors hover:opacity-70"
-              style={{ color:'rgba(232,237,245,0.28)' }}>Dashboard</Link>
+          <div style={{ display:'flex', alignItems:'center', gap:24 }}>
+            <Link href="/pricing" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Pricing</Link>
+            <Link href="/auth/login" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Sign in</Link>
+            <Link href="/dashboard" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Dashboard</Link>
           </div>
-          <p className="text-[11px] font-display" style={{ color:'rgba(232,237,245,0.18)' }}>
+          <p style={{ fontSize:11, color:'rgba(232,237,245,0.18)', margin:0 }}>
             © 2026 ChartAI. Not financial advice. Trade responsibly.
           </p>
         </div>
