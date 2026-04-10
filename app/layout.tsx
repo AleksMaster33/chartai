@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body
-        className="bg-[#07070a] text-[#edeae5]"
+        className="bg-[#080B10] text-[#E8EDF5]"
         style={{ fontFamily: "'DM Sans', system-ui, sans-serif" }}
       >
         {children}
