@@ -176,213 +176,182 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div className="min-h-screen overflow-x-hidden" style={{ background:'#080B10' }}>
+    <div style={{ minHeight:'100vh', overflowX:'hidden', background:'#080B10' }}>
 
-      {/* cursor orb */}
-      {mounted && (
-        <div className="pointer-events-none fixed z-50" style={{
-          left:mouse.x - 380, top:mouse.y - 380,
-          width:760, height:760, borderRadius:'50%',
-          background:'radial-gradient(circle, rgba(0,255,136,0.028) 0%, transparent 65%)',
-          transition:'left 0.6s cubic-bezier(0.4,0,0.2,1), top 0.6s cubic-bezier(0.4,0,0.2,1)',
-        }} />
-      )}
+      {/* ── NAV — fixed, z-50 ───────────────────────────── */}
+      <nav style={{
+        position:'fixed', top:0, left:0, right:0, height:64,
+        zIndex:50, background:'#080B10',
+        borderBottom:'1px solid rgba(255,255,255,0.08)',
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'0 24px',
+      }}>
+        {/* logo */}
+        <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+          <div style={{
+            width:32, height:32, borderRadius:8, background:G,
+            display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0,
+          }}>
+            <TrendingUp style={{ width:16, height:16, color:'#000' }} />
+          </div>
+          <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.02em', color:'#E8EDF5' }}>ChartAI</span>
+        </div>
+        {/* nav links */}
+        <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+          <Link href="/pricing" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
+            Pricing
+          </Link>
+          <Link href="/auth/login" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
+            Sign in
+          </Link>
+          <Link href="/auth/login" style={{
+            marginLeft:8, display:'flex', alignItems:'center', gap:6,
+            padding:'10px 20px', borderRadius:10, background:G,
+            fontSize:13, fontWeight:700, color:'#000', textDecoration:'none',
+          }}>
+            Get Started
+            <ArrowRight style={{ width:14, height:14 }} />
+          </Link>
+        </div>
+      </nav>
 
-      {/* bg layer */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex:0 }}>
-        <div className="line-grid absolute inset-0 opacity-70" />
-        <div className="absolute -top-80 left-1/2 -translate-x-1/2 w-[900px] h-[900px] rounded-full"
-          style={{ background:'radial-gradient(circle, rgba(0,255,136,0.045) 0%, transparent 55%)' }} />
-        <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full"
-          style={{ background:'radial-gradient(circle, rgba(0,212,255,0.025) 0%, transparent 55%)' }} />
+      {/* ── STATS BAR — fixed below nav, z-40 ──────────── */}
+      <div style={{
+        position:'fixed', top:64, left:0, right:0, height:36,
+        zIndex:40, background:'#0a0f0a',
+        borderBottom:'1px solid rgba(0,255,136,0.10)',
+        display:'flex', alignItems:'center', gap:24, padding:'0 24px',
+        overflow:'hidden',
+      }}>
+        {/* LIVE badge */}
+        <div style={{
+          display:'flex', alignItems:'center', gap:6, flexShrink:0,
+          padding:'2px 10px', borderRadius:999,
+          background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
+        }}>
+          <span className="live-dot" style={{ width:6, height:6 }} />
+          <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', color:G }}>LIVE</span>
+        </div>
+        <div style={{ width:1, height:16, background:'rgba(255,255,255,0.08)', flexShrink:0 }} />
+        {LIVE_STATS.map((s, i) => (
+          <div key={i} style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
+            <s.icon style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+            <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>{s.val}</span>
+            <span style={{ fontSize:11, color:'rgba(232,237,245,0.30)' }}>{s.label}</span>
+            {i < LIVE_STATS.length - 1 && (
+              <div style={{ width:1, height:12, background:'rgba(255,255,255,0.06)', marginLeft:8, flexShrink:0 }} />
+            )}
+          </div>
+        ))}
       </div>
 
-      {/* ── NAV ─────────────────────────────────────────── */}
-      <header className="relative z-30 border-b" style={{ background:'rgba(8,11,16,0.88)', backdropFilter:'blur(20px)', borderColor:'rgba(255,255,255,0.048)' }}>
-        <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      {/* ── MAIN — padded below both fixed bars ─────────── */}
+      <main style={{ paddingTop:100 }}>
 
-          <motion.div initial={{ opacity:0, x:-12 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.4 }}
-            className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center relative" style={{ background:G }}>
-              <TrendingUp className="w-4 h-4 text-black" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full border-2 live-dot" style={{ borderColor:'#080B10' }} />
-            </div>
-            <span className="font-display font-extrabold text-[15px] tracking-tight text-[#E8EDF5]">ChartAI</span>
-          </motion.div>
-
-          <motion.div initial={{ opacity:0, x:12 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.4 }}
-            className="flex items-center gap-1">
-            <Link href="/pricing"
-              className="px-4 py-2 text-[13px] font-display font-medium transition-colors rounded-xl hover:bg-white/[0.03]"
-              style={{ color:'rgba(232,237,245,0.40)' }}
-              onMouseEnter={e => (e.currentTarget.style.color='rgba(232,237,245,0.75)')}
-              onMouseLeave={e => (e.currentTarget.style.color='rgba(232,237,245,0.40)')}>
-              Pricing
-            </Link>
-            <Link href="/auth/login"
-              className="px-4 py-2 text-[13px] font-display font-medium transition-colors rounded-xl hover:bg-white/[0.03]"
-              style={{ color:'rgba(232,237,245,0.40)' }}
-              onMouseEnter={e => (e.currentTarget.style.color='rgba(232,237,245,0.75)')}
-              onMouseLeave={e => (e.currentTarget.style.color='rgba(232,237,245,0.40)')}>
-              Sign in
-            </Link>
-            <Link href="/auth/login"
-              className="ml-2 flex items-center gap-2 font-display font-bold text-[13px] text-black px-5 py-2.5 rounded-xl transition-all duration-200 hover:-translate-y-px"
-              style={{ background:G, boxShadow:`0 0 0 1px rgba(0,255,136,0.3), 0 4px 16px ${GLOW}` }}>
-              Get Started
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </motion.div>
-        </nav>
-      </header>
-
-      {/* ── LIVE STATS BAR ──────────────────────────────── */}
-      <div className="relative z-10 border-b" style={{ background:'rgba(13,17,23,0.60)', borderColor:'rgba(0,255,136,0.08)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-3 flex items-center gap-6 overflow-x-auto scrollbar-hide">
-          {/* LIVE badge */}
-          <div className="flex items-center gap-2 shrink-0 px-3 py-1.5 rounded-full"
-            style={{ background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)' }}>
-            <span className="live-dot" />
-            <span className="text-[11px] font-display font-bold tracking-wider uppercase" style={{ color:G }}>LIVE</span>
-          </div>
-          <div className="w-px h-5 shrink-0" style={{ background:'rgba(255,255,255,0.07)' }} />
-          {LIVE_STATS.map((s, i) => (
-            <div key={i} className="flex items-center gap-2 shrink-0">
-              <s.icon style={{ width:12, height:12, color:'rgba(0,255,136,0.6)' }} />
-              <span className="font-mono font-bold text-[13px]" style={{ color:G }}>{s.val}</span>
-              <span className="text-[11px] font-display" style={{ color:'rgba(232,237,245,0.30)' }}>{s.label}</span>
-              {i < LIVE_STATS.length - 1 && (
-                <span className="ml-3 w-px h-3 shrink-0" style={{ background:'rgba(255,255,255,0.06)' }} />
-              )}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* ── HERO ────────────────────────────────────────── */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 pt-20 pb-24">
-        <div className="grid lg:grid-cols-[1fr_420px] gap-16 items-center">
-
-          {/* ── left copy ── */}
-          <div>
-            {/* animated badge */}
-            <motion.div
-              initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
-              transition={{ duration:0.4 }}
-              className="inline-flex items-center gap-2 mb-7 px-3.5 py-1.5 rounded-full"
-              style={{ background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)' }}>
-              <span className="live-dot" style={{ width:6, height:6 }} />
-              <span className="text-[11px] font-display font-bold tracking-wide" style={{ color:'rgba(0,255,136,0.9)' }}>
-                LIVE · Osiris AI Engine Active
-              </span>
-            </motion.div>
-
-            {/* headline */}
-            <motion.h1
-              initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
-              transition={{ delay:0.07, duration:0.6, ease:[0.22,1,0.36,1] }}
-              className="font-display font-extrabold tracking-tight leading-[1.0] mb-6"
-              style={{ fontSize:'clamp(3rem,7vw,5.2rem)' }}>
-              <span className="block" style={{ color:'#E8EDF5' }}>Find Your Next</span>
-              <span className="block hero-gradient">Trade.</span>
-              <span className="block" style={{ color:'rgba(232,237,245,0.75)' }}>Understand Why.</span>
-            </motion.h1>
-
-            {/* subtitle */}
-            <motion.p
-              initial={{ opacity:0, y:12 }} animate={{ opacity:1, y:0 }}
-              transition={{ delay:0.17, duration:0.5 }}
-              className="text-[15px] leading-relaxed mb-8 max-w-lg"
-              style={{ color:'rgba(232,237,245,0.42)' }}>
-              ChartAI scans 100+ crypto pairs with the Osiris 7-filter methodology,
-              identifies the highest-probability setups, and explains every decision —
-              so you trade with conviction, not guesswork.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }}
-              transition={{ delay:0.26, duration:0.4 }}
-              className="flex flex-wrap gap-3 mb-8">
-              <Link href="/auth/login"
-                className="flex items-center gap-2.5 font-display font-bold text-[15px] text-black px-7 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background:G, boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 6px 24px ${GLOW}` }}>
-                Scan the Market Now
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/pricing"
-                className="flex items-center gap-2 font-display font-semibold text-[15px] px-7 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-px"
-                style={{ color:'rgba(232,237,245,0.48)', border:'1px solid rgba(255,255,255,0.08)' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(0,255,136,0.18)'; e.currentTarget.style.color='rgba(232,237,245,0.75)' }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.color='rgba(232,237,245,0.48)' }}>
-                See How It Works →
-
-              </Link>
-            </motion.div>
-
-            {/* stats row */}
-            <motion.div
-              initial={{ opacity:0 }} animate={{ opacity:1 }}
-              transition={{ delay:0.36, duration:0.45 }}
-              className="flex flex-wrap gap-x-6 gap-y-2 mb-6">
-              {[
-                '100+ Pairs Scanned',
-                '7 Osiris Filters',
-                'Signal in <20s',
-                'Entry · SL · TP Included',
-              ].map((s, i) => (
-                <div key={i} className="flex items-center gap-2">
-                  {i > 0 && <span className="hidden sm:block w-px h-3" style={{ background:'rgba(255,255,255,0.10)' }} />}
-                  <span className="text-[12px] font-display" style={{ color:'rgba(232,237,245,0.38)' }}>{s}</span>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* tech tags */}
-            <motion.div
-              initial={{ opacity:0 }} animate={{ opacity:1 }}
-              transition={{ delay:0.44, duration:0.4 }}
-              className="flex flex-wrap gap-2 items-center">
-              {['Gemini 2.0 Flash', 'Claude Sonnet', 'Osiris 7-Filter', 'Any Platform'].map(t => (
-                <span key={t} className="tag-white">{t}</span>
-              ))}
-              <span className="text-[11px] font-display ml-1 flex items-center gap-1.5" style={{ color:'rgba(232,237,245,0.22)' }}>
-                <Lock style={{ width:11, height:11 }} /> No credit card
-              </span>
-            </motion.div>
+        {/* ── HERO ──────────────────────────────────────── */}
+        <section style={{
+          minHeight:'calc(100vh - 100px)',
+          display:'flex', flexDirection:'column', justifyContent:'center',
+          maxWidth:'72rem', margin:'0 auto', padding:'6rem 1.5rem',
+          gap:0,
+        }}>
+          {/* live badge */}
+          <div style={{
+            display:'inline-flex', alignItems:'center', gap:8, marginBottom:28,
+            padding:'6px 14px', borderRadius:999, alignSelf:'flex-start',
+            background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)',
+          }}>
+            <span className="live-dot" style={{ width:6, height:6 }} />
+            <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.06em', color:'rgba(0,255,136,0.9)' }}>
+              LIVE · Osiris AI Engine Active
+            </span>
           </div>
 
-          {/* ── right: live card ── */}
-          <div className="hidden lg:block">
-            <AnalysisCard />
+          {/* headline */}
+          <h1 style={{
+            fontSize:'clamp(3rem,7vw,5.2rem)', fontWeight:800,
+            lineHeight:1.0, letterSpacing:'-0.03em', marginBottom:24,
+          }}>
+            <span style={{ display:'block', color:'#E8EDF5' }}>Find Your Next</span>
+            <span className="hero-gradient" style={{ display:'block' }}>Trade.</span>
+            <span style={{ display:'block', color:'rgba(232,237,245,0.65)' }}>Understand Why.</span>
+          </h1>
+
+          {/* subheadline */}
+          <p style={{
+            maxWidth:560, fontSize:16, lineHeight:1.65,
+            color:'rgba(232,237,245,0.45)', marginBottom:32,
+          }}>
+            ChartAI scans 100+ crypto pairs with the Osiris 7-filter methodology,
+            identifies the highest-probability setups, and explains every decision —
+            so you trade with conviction, not guesswork.
+          </p>
+
+          {/* CTAs */}
+          <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:40 }}>
+            <Link href="/auth/login" style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              padding:'14px 28px', borderRadius:12,
+              background:G, color:'#000', fontWeight:700, fontSize:15,
+              textDecoration:'none',
+              boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 6px 24px ${GLOW}`,
+            }}>
+              Scan the Market Now
+              <ArrowRight style={{ width:16, height:16 }} />
+            </Link>
+            <Link href="/pricing" style={{
+              display:'inline-flex', alignItems:'center', gap:8,
+              padding:'14px 28px', borderRadius:12,
+              border:'1px solid rgba(0,255,136,0.25)', color:'rgba(232,237,245,0.65)',
+              fontWeight:600, fontSize:15, textDecoration:'none',
+            }}>
+              See How It Works →
+            </Link>
+          </div>
+
+          {/* stats row */}
+          <div style={{ display:'flex', gap:32, flexWrap:'wrap' }}>
+            {[
+              { icon:Globe,   label:'100+ Pairs Scanned'    },
+              { icon:Shield,  label:'7 Osiris Filters'      },
+              { icon:Zap,     label:'Signal in <20s'        },
+              { icon:Target,  label:'Entry · SL · TP Included' },
+            ].map(({ icon:Icon, label }) => (
+              <div key={label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <Icon style={{ width:14, height:14, color:'rgba(0,255,136,0.5)' }} />
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.38)' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── TICKER TAPE — below hero, not fixed ─────────── */}
+        <div style={{
+          width:'100%', overflow:'hidden',
+          borderTop:'1px solid rgba(255,255,255,0.06)',
+          borderBottom:'1px solid rgba(255,255,255,0.06)',
+          padding:'10px 0', background:'#080B10', position:'relative',
+        }}>
+          <div style={{ position:'absolute', left:0, top:0, bottom:0, width:80, zIndex:2, pointerEvents:'none',
+            background:'linear-gradient(90deg,#080B10,transparent)' }} />
+          <div style={{ position:'absolute', right:0, top:0, bottom:0, width:80, zIndex:2, pointerEvents:'none',
+            background:'linear-gradient(-90deg,#080B10,transparent)' }} />
+          <div className="ticker-track" style={{ display:'flex', gap:32, alignItems:'center', whiteSpace:'nowrap' }}>
+            {tickers.map((t, i) => (
+              <div key={i} style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0, userSelect:'none' }}>
+                <span style={{ fontSize:11, fontWeight:600, color:'rgba(232,237,245,0.28)' }}>{t.pair}</span>
+                {t.dir > 0  && <TrendingUp   style={{ width:12, height:12, color:G   }} />}
+                {t.dir < 0  && <TrendingDown style={{ width:12, height:12, color:RED }} />}
+                {t.dir === 0 && <Minus       style={{ width:12, height:12, color:AMB }} />}
+                <span style={{ fontSize:11, fontWeight:700, color: t.dir > 0 ? G : t.dir < 0 ? RED : AMB }}>
+                  {t.signal}
+                </span>
+                <span style={{ fontFamily:'JetBrains Mono,monospace', fontSize:10, color:'rgba(232,237,245,0.18)' }}>{t.conf}</span>
+                <div style={{ width:1, height:12, background:'rgba(255,255,255,0.07)', marginLeft:4 }} />
+              </div>
+            ))}
           </div>
         </div>
-      </section>
-
-      {/* ── TICKER TAPE ─────────────────────────────────── */}
-      <div className="relative z-10 border-y overflow-hidden py-2.5"
-        style={{ background:'rgba(13,17,23,0.40)', borderColor:'rgba(255,255,255,0.04)' }}>
-        <div className="absolute left-0 inset-y-0 w-24 z-10 pointer-events-none"
-          style={{ background:'linear-gradient(90deg,#080B10,transparent)' }} />
-        <div className="absolute right-0 inset-y-0 w-24 z-10 pointer-events-none"
-          style={{ background:'linear-gradient(-90deg,#080B10,transparent)' }} />
-        <div className="ticker-track gap-8 items-center">
-          {tickers.map((t, i) => (
-            <div key={i} className="flex items-center gap-1.5 shrink-0 select-none">
-              <span className="text-[11px] font-display font-semibold" style={{ color:'rgba(232,237,245,0.28)' }}>{t.pair}</span>
-              {t.dir > 0  && <TrendingUp   className="w-3 h-3" style={{ color:G    }} />}
-              {t.dir < 0  && <TrendingDown className="w-3 h-3" style={{ color:RED  }} />}
-              {t.dir === 0 && <Minus       className="w-3 h-3" style={{ color:AMB  }} />}
-              <span className="text-[11px] font-display font-bold"
-                style={{ color: t.dir > 0 ? G : t.dir < 0 ? RED : AMB }}>
-                {t.signal}
-              </span>
-              <span className="font-mono text-[10px]" style={{ color:'rgba(232,237,245,0.18)' }}>{t.conf}</span>
-              <span className="w-px h-3 mx-3" style={{ background:'rgba(255,255,255,0.07)' }} />
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* ── HOW IT WORKS ──────────────────────────────────── */}
       <section style={{ maxWidth:'64rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
@@ -767,6 +736,8 @@ export default function HomePage() {
           </p>
         </div>
       </footer>
+
+      </main>
 
       <style jsx global>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
