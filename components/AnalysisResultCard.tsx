@@ -8,10 +8,10 @@ import {
 } from 'lucide-react'
 import type { AnalysisResult } from '@/lib/ai/analyze'
 
-const LIME  = '#84cc16'
-const RED   = '#ef4444'
-const GREEN = '#22c55e'
-const AMBER = '#f59e0b'
+const G     = '#00FF88'
+const RED   = '#FF3B5C'
+const GREEN = '#00FF88'
+const AMBER = '#FFB800'
 
 /* ── animated number ───────────────────────────────── */
 function AnimatedNumber({ value, decimals = 0 }: { value: number; decimals?: number }) {
@@ -37,9 +37,13 @@ function AnimatedBar({ value, color }: { value: number; color: string }) {
   const [w, setW] = useState(0)
   useEffect(() => { const t = setTimeout(() => setW(value), 120); return () => clearTimeout(t) }, [value])
   return (
-    <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background:'rgba(255,255,255,0.05)' }}>
-      <div className="h-full rounded-full transition-all duration-[1100ms] ease-out"
-        style={{ width:`${w}%`, background:`linear-gradient(90deg,${color}99,${color})` }} />
+    <div style={{ flex:1, height:6, borderRadius:999, overflow:'hidden', background:'rgba(255,255,255,0.05)' }}>
+      <div style={{
+        height:'100%', borderRadius:999,
+        width:`${w}%`,
+        background:`linear-gradient(90deg,${color}99,${color})`,
+        transition:'width 1100ms cubic-bezier(0,0,0.2,1)',
+      }} />
     </div>
   )
 }
@@ -54,13 +58,16 @@ function LevelRow({ label, val, color, bg, border, icon: Icon }: {
     <motion.div
       initial={{ opacity:0, x:-10 }}
       animate={{ opacity:1, x:0 }}
-      className="flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 hover:brightness-110"
-      style={{ background:bg, border:`1px solid ${border}` }}>
-      <div className="flex items-center gap-2.5">
-        <Icon className="w-4 h-4" style={{ color }} />
-        <span className="text-sm font-display font-semibold" style={{ color }}>{label}</span>
+      style={{
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'12px 16px', borderRadius:12,
+        background:bg, border:`1px solid ${border}`,
+      }}>
+      <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+        <Icon style={{ width:16, height:16, color }} />
+        <span style={{ fontSize:14, fontWeight:600, color }}>{label}</span>
       </div>
-      <span className="font-mono font-bold tabular-nums text-sm" style={{ color }}>
+      <span style={{ fontFamily:'monospace', fontWeight:700, fontSize:14, color }}>
         <AnimatedNumber value={val} decimals={decimals} />
       </span>
     </motion.div>
@@ -78,21 +85,21 @@ export function AnalysisResultCard({
   const [showIndicators, setShowIndicators] = useState(false)
 
   const sig = {
-    LONG:    { color:LIME,  bg:'rgba(132,204,22,0.08)',  border:'rgba(132,204,22,0.2)',  icon:TrendingUp,   label:'LONG'    },
-    SHORT:   { color:RED,   bg:'rgba(239,68,68,0.08)',   border:'rgba(239,68,68,0.2)',   icon:TrendingDown, label:'SHORT'   },
-    NEUTRAL: { color:AMBER, bg:'rgba(245,158,11,0.08)',  border:'rgba(245,158,11,0.2)',  icon:Minus,        label:'NEUTRAL' },
-  }[result.signal] ?? { color:LIME, bg:'rgba(132,204,22,0.08)', border:'rgba(132,204,22,0.2)', icon:TrendingUp, label:'LONG' }
+    LONG:    { color:G,     bg:`rgba(0,255,136,0.08)`,   border:`rgba(0,255,136,0.20)`,   icon:TrendingUp,   label:'LONG'    },
+    SHORT:   { color:RED,   bg:'rgba(255,59,92,0.08)',    border:'rgba(255,59,92,0.20)',    icon:TrendingDown, label:'SHORT'   },
+    NEUTRAL: { color:AMBER, bg:'rgba(255,184,0,0.08)',    border:'rgba(255,184,0,0.20)',    icon:Minus,        label:'NEUTRAL' },
+  }[result.signal] ?? { color:G, bg:'rgba(0,255,136,0.08)', border:'rgba(0,255,136,0.20)', icon:TrendingUp, label:'LONG' }
 
-  const confColor = result.confidence >= 70 ? LIME : result.confidence >= 50 ? AMBER : RED
+  const confColor = result.confidence >= 70 ? G : result.confidence >= 50 ? AMBER : RED
   const decimals  = result.entry_price > 100 ? 2 : result.entry_price > 1 ? 4 : 6
   const fmt = (v: number) => v > 0 ? v.toLocaleString(undefined, { maximumFractionDigits:decimals }) : '—'
 
   const levels = [
-    { label:'Entry',    val:result.entry_price,    color:LIME,  bg:'rgba(132,204,22,0.06)',  border:'rgba(132,204,22,0.15)',  icon:ArrowUpRight },
-    { label:'Stop Loss',val:result.stop_loss,       color:RED,   bg:'rgba(239,68,68,0.06)',   border:'rgba(239,68,68,0.15)',   icon:ShieldAlert  },
-    { label:'TP 1',     val:result.take_profit_1,   color:GREEN, bg:'rgba(34,197,94,0.05)',   border:'rgba(34,197,94,0.12)',   icon:Target       },
-    ...(result.take_profit_2 > 0 ? [{ label:'TP 2', val:result.take_profit_2, color:GREEN, bg:'rgba(34,197,94,0.04)', border:'rgba(34,197,94,0.1)', icon:Target }] : []),
-    ...(result.take_profit_3 > 0 ? [{ label:'TP 3', val:result.take_profit_3, color:GREEN, bg:'rgba(34,197,94,0.03)', border:'rgba(34,197,94,0.08)', icon:Target }] : []),
+    { label:'Entry',     val:result.entry_price,   color:G,     bg:`rgba(0,255,136,0.06)`,  border:`rgba(0,255,136,0.15)`,  icon:ArrowUpRight },
+    { label:'Stop Loss', val:result.stop_loss,      color:RED,   bg:'rgba(255,59,92,0.06)',   border:'rgba(255,59,92,0.15)',   icon:ShieldAlert  },
+    { label:'TP 1',      val:result.take_profit_1,  color:GREEN, bg:'rgba(0,255,136,0.05)',   border:'rgba(0,255,136,0.12)',   icon:Target       },
+    ...(result.take_profit_2 > 0 ? [{ label:'TP 2', val:result.take_profit_2, color:GREEN, bg:'rgba(0,255,136,0.04)', border:'rgba(0,255,136,0.10)', icon:Target }] : []),
+    ...(result.take_profit_3 > 0 ? [{ label:'TP 3', val:result.take_profit_3, color:GREEN, bg:'rgba(0,255,136,0.03)', border:'rgba(0,255,136,0.08)', icon:Target }] : []),
   ].filter(l => l.val > 0)
 
   return (
@@ -100,60 +107,70 @@ export function AnalysisResultCard({
       initial={{ opacity:0, y:16 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
-      className="space-y-3">
+      style={{ display:'flex', flexDirection:'column', gap:12 }}>
 
       {/* ── header card ── */}
-      <div className="rounded-2xl overflow-hidden"
-        style={{ background:'rgba(255,255,255,0.025)', border:`1px solid ${sig.border}` }}>
-
+      <div style={{
+        borderRadius:16, overflow:'hidden',
+        background:'rgba(255,255,255,0.025)', border:`1px solid ${sig.border}`,
+      }}>
         {/* top accent line */}
-        <div className="h-px w-full"
-          style={{ background:`linear-gradient(90deg,transparent,${sig.color}55,transparent)` }} />
+        <div style={{
+          height:1, width:'100%',
+          background:`linear-gradient(90deg,transparent,${sig.color}55,transparent)`,
+        }} />
 
-        <div className="p-5">
+        <div style={{ padding:20 }}>
           {/* ticker + signal */}
-          <div className="flex items-start justify-between mb-5">
+          <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:20 }}>
             <div>
-              <div className="flex items-center gap-2.5 mb-1">
-                <span className="font-display font-extrabold text-2xl">{result.ticker || 'CHART'}</span>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+                <span style={{ fontWeight:800, fontSize:'1.5rem', color:'#E8EDF5' }}>{result.ticker || 'CHART'}</span>
                 {result.timeframe && (
-                  <span className="text-xs rounded-md px-2 py-0.5 font-display text-white/45"
-                    style={{ background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)' }}>
+                  <span style={{
+                    fontSize:11, borderRadius:6, padding:'2px 8px', color:'rgba(255,255,255,0.45)',
+                    background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)',
+                  }}>
                     {result.timeframe}
                   </span>
                 )}
                 {result.trend && (
-                  <span className="text-xs rounded-md px-2 py-0.5 font-display font-semibold"
-                    style={{ background:sig.bg, color:sig.color, border:`1px solid ${sig.border}` }}>
+                  <span style={{
+                    fontSize:11, borderRadius:6, padding:'2px 8px', fontWeight:600,
+                    background:sig.bg, color:sig.color, border:`1px solid ${sig.border}`,
+                  }}>
                     {result.trend}
                   </span>
                 )}
               </div>
               {result.pattern && (
-                <p className="text-sm text-white/35 font-display">{result.pattern}</p>
+                <p style={{ fontSize:13, color:'rgba(255,255,255,0.35)' }}>{result.pattern}</p>
               )}
             </div>
 
-            <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-display font-bold text-base shrink-0"
-              style={{ background:sig.bg, border:`1px solid ${sig.border}`, color:sig.color }}>
-              <sig.icon className="w-4 h-4" />
+            <div style={{
+              display:'flex', alignItems:'center', gap:8, padding:'8px 16px', borderRadius:12,
+              fontWeight:700, fontSize:14, flexShrink:0,
+              background:sig.bg, border:`1px solid ${sig.border}`, color:sig.color,
+            }}>
+              <sig.icon style={{ width:16, height:16 }} />
               {sig.label}
             </div>
           </div>
 
           {/* confidence */}
           <div>
-            <div className="flex justify-between text-xs text-white/30 font-display mb-2">
+            <div style={{ display:'flex', justifyContent:'space-between', fontSize:12, color:'rgba(255,255,255,0.30)', marginBottom:8 }}>
               <span>Osiris Confidence</span>
-              <span className="font-semibold" style={{ color:confColor }}>{result.confidence}%</span>
+              <span style={{ fontWeight:600, color:confColor }}>{result.confidence}%</span>
             </div>
-            <div className="flex items-center gap-3">
+            <div style={{ display:'flex', alignItems:'center', gap:12 }}>
               <AnimatedBar value={result.confidence} color={confColor} />
               {result.risk_reward > 0 && (
-                <div className="flex items-center gap-1.5 text-xs font-display shrink-0">
-                  <BarChart2 className="w-3 h-3 text-white/25" />
-                  <span className="text-white/25">R:R</span>
-                  <span className="text-white/60 font-semibold">1:{result.risk_reward.toFixed(1)}</span>
+                <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:12, flexShrink:0 }}>
+                  <BarChart2 style={{ width:12, height:12, color:'rgba(255,255,255,0.25)' }} />
+                  <span style={{ color:'rgba(255,255,255,0.25)' }}>R:R</span>
+                  <span style={{ color:'rgba(255,255,255,0.60)', fontWeight:600 }}>1:{result.risk_reward.toFixed(1)}</span>
                 </div>
               )}
             </div>
@@ -162,9 +179,12 @@ export function AnalysisResultCard({
       </div>
 
       {/* ── price levels ── */}
-      <div className="rounded-2xl p-5 space-y-2"
-        style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
-        <p className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest mb-3">
+      <div style={{
+        borderRadius:16, padding:20,
+        background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)',
+        display:'flex', flexDirection:'column', gap:8,
+      }}>
+        <p style={{ fontSize:11, color:'rgba(255,255,255,0.30)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>
           Signal Levels
         </p>
         {levels.map((l, i) => (
@@ -179,43 +199,58 @@ export function AnalysisResultCard({
 
       {/* ── S/R levels ── */}
       {(result.support_level > 0 || result.resistance_level > 0) && (
-        <div className="grid grid-cols-2 gap-3">
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
           {result.support_level > 0 && (
-            <div className="rounded-xl p-4"
-              style={{ background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.15)' }}>
-              <p className="text-[10px] text-white/30 font-display uppercase tracking-wider mb-1.5">Support</p>
-              <p className="font-mono font-bold text-blue-400 tabular-nums">{fmt(result.support_level)}</p>
+            <div style={{
+              borderRadius:12, padding:16,
+              background:'rgba(59,130,246,0.05)', border:'1px solid rgba(59,130,246,0.15)',
+            }}>
+              <p style={{ fontSize:10, color:'rgba(255,255,255,0.30)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:6 }}>Support</p>
+              <p style={{ fontFamily:'monospace', fontWeight:700, color:'#60a5fa' }}>{fmt(result.support_level)}</p>
             </div>
           )}
           {result.resistance_level > 0 && (
-            <div className="rounded-xl p-4"
-              style={{ background:'rgba(251,146,60,0.05)', border:'1px solid rgba(251,146,60,0.15)' }}>
-              <p className="text-[10px] text-white/30 font-display uppercase tracking-wider mb-1.5">Resistance</p>
-              <p className="font-mono font-bold text-orange-400 tabular-nums">{fmt(result.resistance_level)}</p>
+            <div style={{
+              borderRadius:12, padding:16,
+              background:'rgba(251,146,60,0.05)', border:'1px solid rgba(251,146,60,0.15)',
+            }}>
+              <p style={{ fontSize:10, color:'rgba(255,255,255,0.30)', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:6 }}>Resistance</p>
+              <p style={{ fontFamily:'monospace', fontWeight:700, color:'#fb923c' }}>{fmt(result.resistance_level)}</p>
             </div>
           )}
         </div>
       )}
 
       {/* ── rationale ── */}
-      <div className="rounded-2xl p-5"
-        style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
-        <p className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest mb-3">
+      <div style={{
+        borderRadius:16, padding:20,
+        background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)',
+      }}>
+        <p style={{ fontSize:11, color:'rgba(255,255,255,0.30)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12 }}>
           Osiris Analysis
         </p>
-        <p className="text-sm text-white/60 leading-relaxed">{result.rationale}</p>
+        <p style={{ fontSize:13, color:'rgba(255,255,255,0.60)', lineHeight:1.65 }}>{result.rationale}</p>
       </div>
 
       {/* ── indicators (collapsible) ── */}
       {result.indicators?.length > 0 && (
-        <div className="rounded-2xl overflow-hidden"
-          style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{
+          borderRadius:16, overflow:'hidden',
+          background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.06)',
+        }}>
           <button onClick={() => setShowIndicators(v => !v)}
-            className="w-full flex items-center justify-between px-5 py-4 hover:bg-white/[0.02] transition-colors">
-            <span className="text-[11px] text-white/30 font-display font-semibold uppercase tracking-widest">
+            style={{
+              width:'100%', display:'flex', alignItems:'center', justifyContent:'space-between',
+              padding:'16px 20px', background:'none', border:'none', cursor:'pointer',
+            }}>
+            <span style={{ fontSize:11, color:'rgba(255,255,255,0.30)', fontWeight:600, textTransform:'uppercase', letterSpacing:'0.1em' }}>
               Indicators
             </span>
-            <ChevronDown className={`w-4 h-4 text-white/20 transition-transform duration-200 ${showIndicators ? 'rotate-180':''}`} />
+            <ChevronDown style={{
+              width:16, height:16, color:'rgba(255,255,255,0.20)',
+              transform: showIndicators ? 'rotate(180deg)' : 'none',
+              transition:'transform 0.2s',
+            }} />
           </button>
 
           <AnimatePresence>
@@ -225,18 +260,22 @@ export function AnalysisResultCard({
                 animate={{ height:'auto', opacity:1 }}
                 exit={{ height:0, opacity:0 }}
                 transition={{ duration:0.25, ease:[0.22,1,0.36,1] }}
-                className="overflow-hidden">
-                <div className="px-5 pb-4 space-y-2.5 border-t border-white/[0.05]">
+                style={{ overflow:'hidden' }}>
+                <div style={{
+                  padding:'0 20px 16px',
+                  borderTop:'1px solid rgba(255,255,255,0.05)',
+                  display:'flex', flexDirection:'column', gap:10,
+                }}>
                   {result.indicators.map((ind, i) => (
-                    <div key={i} className="flex items-center justify-between pt-2.5">
-                      <span className="text-sm text-white/45 font-display">{ind.name}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-white/65 font-mono">{ind.value}</span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-display font-semibold"
-                          style={{
-                            background: ind.signal==='bullish' ? 'rgba(132,204,22,0.1)' : ind.signal==='bearish' ? 'rgba(239,68,68,0.1)' : 'rgba(255,255,255,0.05)',
-                            color:      ind.signal==='bullish' ? LIME               : ind.signal==='bearish' ? RED               : 'rgba(255,255,255,0.3)',
-                          }}>
+                    <div key={i} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:10 }}>
+                      <span style={{ fontSize:13, color:'rgba(255,255,255,0.45)' }}>{ind.name}</span>
+                      <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                        <span style={{ fontSize:13, color:'rgba(255,255,255,0.65)', fontFamily:'monospace' }}>{ind.value}</span>
+                        <span style={{
+                          fontSize:10, padding:'2px 8px', borderRadius:999, fontWeight:600,
+                          background: ind.signal==='bullish' ? 'rgba(0,255,136,0.10)' : ind.signal==='bearish' ? 'rgba(255,59,92,0.10)' : 'rgba(255,255,255,0.05)',
+                          color:      ind.signal==='bullish' ? G                      : ind.signal==='bearish' ? RED                    : 'rgba(255,255,255,0.30)',
+                        }}>
                           {ind.signal}
                         </span>
                       </div>
@@ -250,25 +289,27 @@ export function AnalysisResultCard({
       )}
 
       {/* ── confidence badge ── */}
-      <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl"
-        style={{
-          background: result.confidence >= 70 ? 'rgba(132,204,22,0.05)' : 'rgba(255,255,255,0.02)',
-          border:     result.confidence >= 70 ? '1px solid rgba(132,204,22,0.12)' : '1px solid rgba(255,255,255,0.05)',
-        }}>
+      <div style={{
+        display:'flex', alignItems:'center', gap:10, padding:'12px 16px', borderRadius:12,
+        background: result.confidence >= 70 ? 'rgba(0,255,136,0.05)' : 'rgba(255,255,255,0.02)',
+        border:     result.confidence >= 70 ? '1px solid rgba(0,255,136,0.12)' : '1px solid rgba(255,255,255,0.05)',
+      }}>
         {result.confidence >= 70
-          ? <CheckCircle2 className="w-4 h-4 shrink-0" style={{ color:LIME }} />
-          : <AlertCircle  className="w-4 h-4 shrink-0 text-amber-400" />}
-        <p className="text-xs text-white/35 font-display leading-relaxed">
+          ? <CheckCircle2 style={{ width:16, height:16, flexShrink:0, color:G }} />
+          : <AlertCircle  style={{ width:16, height:16, flexShrink:0, color:AMBER }} />}
+        <p style={{ fontSize:12, color:'rgba(255,255,255,0.35)', lineHeight:1.55 }}>
           {result.confidence >= 70
             ? 'High confidence — all Osiris filters aligned'
             : 'Moderate confidence — use additional confirmation'}
           {remainingToday !== undefined && (
-            <span className="ml-2 text-white/20">· {remainingToday} {remainingToday===1?'analysis':'analyses'} left today</span>
+            <span style={{ marginLeft:8, color:'rgba(255,255,255,0.20)' }}>
+              · {remainingToday} {remainingToday===1?'analysis':'analyses'} left today
+            </span>
           )}
         </p>
       </div>
 
-      <p className="text-[10px] text-white/15 text-center font-display">
+      <p style={{ fontSize:10, color:'rgba(255,255,255,0.15)', textAlign:'center' }}>
         Educational purposes only · Not financial advice · Trade at your own risk
       </p>
     </motion.div>
