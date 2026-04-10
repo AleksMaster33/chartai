@@ -9,7 +9,7 @@ import { TrendingUp, LogOut, CreditCard, Crown, User, ChevronDown, ScanLine, Zap
 
 interface NavbarProps { plan: string; remaining: number | null }
 
-const LIME = '#84cc16'
+const G = '#00FF88'
 
 export function Navbar({ plan, remaining }: NavbarProps) {
   const [open, setOpen] = useState(false)
@@ -27,109 +27,149 @@ export function Navbar({ plan, remaining }: NavbarProps) {
   }, [])
 
   const planConfig = {
-    free:   { label:'Free',   color:'rgba(255,255,255,0.4)',  bg:'rgba(255,255,255,0.04)',  border:'rgba(255,255,255,0.08)' },
-    pro:    { label:'Pro',    color:LIME,                     bg:'rgba(132,204,22,0.08)',   border:'rgba(132,204,22,0.2)'   },
-    trader: { label:'Trader', color:'#a78bfa',                bg:'rgba(139,92,246,0.08)',   border:'rgba(139,92,246,0.2)'   },
-  }[plan] ?? { label:'Free', color:'rgba(255,255,255,0.4)', bg:'rgba(255,255,255,0.04)', border:'rgba(255,255,255,0.08)' }
+    free:   { label:'Free',     color:'rgba(232,237,245,0.40)', bg:'rgba(255,255,255,0.04)', border:'rgba(255,255,255,0.08)' },
+    pro:    { label:'Pro',      color:G,                        bg:'rgba(0,255,136,0.08)',   border:'rgba(0,255,136,0.20)'   },
+    trader: { label:'Unlimited',color:'#a78bfa',                bg:'rgba(139,92,246,0.08)',  border:'rgba(139,92,246,0.20)'  },
+  }[plan] ?? { label:'Free', color:'rgba(232,237,245,0.40)', bg:'rgba(255,255,255,0.04)', border:'rgba(255,255,255,0.08)' }
+
+  const isAnalyze   = pathname === '/dashboard'
+  const isDiscover  = pathname?.startsWith('/dashboard/discover') || pathname?.startsWith('/dashboard/analyze')
 
   return (
-    <header
-      className="border-b border-white/[0.05] sticky top-0 z-30"
-      style={{ background:'rgba(9,9,9,0.88)', backdropFilter:'blur(20px)' }}>
-      <nav className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
+    <>
+      <header style={{
+        position:'sticky', top:0, zIndex:30,
+        background:'rgba(8,11,16,0.92)', backdropFilter:'blur(20px)',
+        borderBottom:'1px solid rgba(255,255,255,0.06)',
+      }}>
+        <nav style={{
+          maxWidth:'80rem', margin:'0 auto', padding:'0 24px',
+          height:56, display:'flex', alignItems:'center', justifyContent:'space-between',
+        }}>
 
-        {/* logo + nav links */}
-        <div className="flex items-center gap-5">
-          <Link href="/dashboard" className="flex items-center gap-2.5 group">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center relative"
-              style={{ background:LIME }}>
-              <TrendingUp className="w-3.5 h-3.5 text-black" />
-              <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full border-2 border-[#090909]"
-                style={{ background:LIME, animation:'blink 1.8s ease-in-out infinite' }} />
-            </div>
-            <span className="font-display font-extrabold text-[14px] tracking-tight group-hover:text-[#84cc16] transition-colors">
-              ChartAI
-            </span>
-          </Link>
-
-          {/* nav links */}
-          <div className="hidden sm:flex items-center gap-1">
-            <Link href="/dashboard"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-display font-semibold transition-all ${
-                pathname === '/dashboard'
-                  ? 'text-[#84cc16] bg-[rgba(132,204,22,0.06)]'
-                  : 'text-white/30 hover:text-white/55 hover:bg-white/[0.03]'
-              }`}>
-              <Zap style={{ width:12, height:12 }} />
-              Analyze
-            </Link>
-            <Link href="/dashboard/discover"
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[12px] font-display font-semibold transition-all ${
-                pathname?.startsWith('/dashboard/discover') || pathname?.startsWith('/dashboard/analyze')
-                  ? 'text-[#84cc16] bg-[rgba(132,204,22,0.06)]'
-                  : 'text-white/30 hover:text-white/55 hover:bg-white/[0.03]'
-              }`}>
-              <ScanLine style={{ width:12, height:12 }} />
-              Discover
-            </Link>
-          </div>
-        </div>
-
-        {/* right */}
-        <div className="flex items-center gap-2">
-
-          {/* plan badge */}
-          <span className="text-[11px] px-2.5 py-1 rounded-full font-display font-semibold"
-            style={{ color:planConfig.color, background:planConfig.bg, border:`1px solid ${planConfig.border}` }}>
-            {planConfig.label}
-          </span>
-
-          {/* remaining */}
-          {plan === 'free' && remaining !== null && (
-            <span className="hidden sm:block text-[11px] text-white/25 font-display">
-              <span className="text-white/50 font-semibold">{remaining}</span> left today
-            </span>
-          )}
-
-          {/* upgrade */}
-          {plan === 'free' && (
-            <Link href="/pricing"
-              className="hidden sm:flex items-center gap-1.5 text-[11px] font-display font-bold px-3 py-1.5 rounded-lg transition-all hover:brightness-110"
-              style={{ background:'rgba(132,204,22,0.1)', border:'1px solid rgba(132,204,22,0.2)', color:LIME }}>
-              <Crown style={{ width:12, height:12 }} /> Upgrade
-            </Link>
-          )}
-
-          {/* user menu */}
-          <div ref={menuRef} className="relative">
-            <button onClick={() => setOpen(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all border border-white/[0.07] bg-white/[0.03] hover:bg-white/[0.06]">
-              <User className="w-3.5 h-3.5 text-white/35" />
-              <ChevronDown className={`w-3 h-3 text-white/20 transition-transform duration-150 ${open ? 'rotate-180' : ''}`} />
-            </button>
-
-            {open && (
-              <div className="absolute right-0 top-full mt-1.5 w-44 rounded-xl overflow-hidden shadow-2xl z-50"
-                style={{ background:'#0e0e0e', border:'1px solid rgba(255,255,255,0.08)' }}>
-                <Link href="/pricing" onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-xs text-white/45 hover:text-white/75 hover:bg-white/[0.04] transition-all font-display">
-                  <CreditCard style={{ width:13, height:13 }} /> Billing & Plans
-                </Link>
-                <div className="h-px bg-white/[0.05]" />
-                <button
-                  onClick={async () => { await supabase.auth.signOut(); router.push('/') }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs text-white/45 hover:text-white/75 hover:bg-white/[0.04] transition-all font-display">
-                  <LogOut style={{ width:13, height:13 }} /> Sign out
-                </button>
+          {/* left: logo + nav links */}
+          <div style={{ display:'flex', alignItems:'center', gap:20 }}>
+            <Link href="/dashboard" style={{ display:'flex', alignItems:'center', gap:8, textDecoration:'none' }}>
+              <div style={{
+                width:30, height:30, borderRadius:8, background:G, flexShrink:0,
+                display:'flex', alignItems:'center', justifyContent:'center', position:'relative',
+              }}>
+                <TrendingUp style={{ width:15, height:15, color:'#000' }} />
+                <span style={{
+                  position:'absolute', top:-2, right:-2, width:8, height:8,
+                  borderRadius:'50%', background:G,
+                  border:'2px solid #080B10',
+                  animation:'blink 1.8s ease-in-out infinite',
+                }} />
               </div>
-            )}
+              <span style={{ fontWeight:800, fontSize:14, letterSpacing:'-0.02em', color:'#E8EDF5' }}>ChartAI</span>
+            </Link>
+
+            {/* nav links */}
+            <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+              <Link href="/dashboard" style={{
+                display:'flex', alignItems:'center', gap:6,
+                padding:'6px 12px', borderRadius:8,
+                fontSize:12, fontWeight:600, textDecoration:'none',
+                color: isAnalyze ? G : 'rgba(232,237,245,0.32)',
+                background: isAnalyze ? 'rgba(0,255,136,0.07)' : 'transparent',
+              }}>
+                <Zap style={{ width:12, height:12 }} />
+                Analyze
+              </Link>
+              <Link href="/dashboard/discover" style={{
+                display:'flex', alignItems:'center', gap:6,
+                padding:'6px 12px', borderRadius:8,
+                fontSize:12, fontWeight:600, textDecoration:'none',
+                color: isDiscover ? G : 'rgba(232,237,245,0.32)',
+                background: isDiscover ? 'rgba(0,255,136,0.07)' : 'transparent',
+              }}>
+                <ScanLine style={{ width:12, height:12 }} />
+                Discover
+              </Link>
+            </div>
           </div>
-        </div>
-      </nav>
+
+          {/* right */}
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            {/* plan badge */}
+            <span style={{
+              fontSize:11, padding:'3px 10px', borderRadius:999, fontWeight:600,
+              color:planConfig.color, background:planConfig.bg, border:`1px solid ${planConfig.border}`,
+            }}>
+              {planConfig.label}
+            </span>
+
+            {/* remaining */}
+            {plan === 'free' && remaining !== null && (
+              <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)', whiteSpace:'nowrap' }}>
+                <span style={{ fontWeight:600, color:'rgba(232,237,245,0.55)' }}>{remaining}</span> left today
+              </span>
+            )}
+
+            {/* upgrade */}
+            {plan === 'free' && (
+              <Link href="/pricing" style={{
+                display:'flex', alignItems:'center', gap:5,
+                fontSize:11, fontWeight:700, textDecoration:'none',
+                padding:'6px 12px', borderRadius:8,
+                color:G, background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
+              }}>
+                <Crown style={{ width:11, height:11 }} />
+                Upgrade
+              </Link>
+            )}
+
+            {/* user menu */}
+            <div ref={menuRef} style={{ position:'relative' }}>
+              <button onClick={() => setOpen(v => !v)} style={{
+                display:'flex', alignItems:'center', gap:6,
+                padding:'6px 12px', borderRadius:8, cursor:'pointer',
+                background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.07)',
+              }}>
+                <User style={{ width:14, height:14, color:'rgba(232,237,245,0.38)' }} />
+                <ChevronDown style={{
+                  width:12, height:12, color:'rgba(232,237,245,0.22)',
+                  transform: open ? 'rotate(180deg)' : 'none',
+                  transition:'transform 0.15s',
+                }} />
+              </button>
+
+              {open && (
+                <div style={{
+                  position:'absolute', right:0, top:'calc(100% + 6px)', width:176,
+                  borderRadius:12, overflow:'hidden', zIndex:50,
+                  background:'#0D1117', border:'1px solid rgba(255,255,255,0.08)',
+                  boxShadow:'0 16px 48px rgba(0,0,0,0.55)',
+                }}>
+                  <Link href="/pricing" onClick={() => setOpen(false)} style={{
+                    display:'flex', alignItems:'center', gap:10,
+                    padding:'10px 16px', fontSize:12, textDecoration:'none',
+                    color:'rgba(232,237,245,0.45)',
+                  }}>
+                    <CreditCard style={{ width:13, height:13 }} />
+                    Billing &amp; Plans
+                  </Link>
+                  <div style={{ height:1, background:'rgba(255,255,255,0.05)' }} />
+                  <button onClick={async () => { await supabase.auth.signOut(); router.push('/') }} style={{
+                    width:'100%', display:'flex', alignItems:'center', gap:10,
+                    padding:'10px 16px', fontSize:12, cursor:'pointer',
+                    background:'none', border:'none', color:'rgba(232,237,245,0.45)',
+                    textAlign:'left',
+                  }}>
+                    <LogOut style={{ width:13, height:13 }} />
+                    Sign out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </nav>
+      </header>
 
       <style jsx global>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
       `}</style>
-    </header>
+    </>
   )
 }
