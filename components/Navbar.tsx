@@ -66,7 +66,7 @@ export function Navbar({ plan, remaining }: NavbarProps) {
             </Link>
 
             {/* nav links */}
-            <div style={{ display:'flex', alignItems:'center', gap:4 }}>
+            <div className="nav-links" style={{ display:'flex', alignItems:'center', gap:4 }}>
               <Link href="/dashboard" style={{
                 display:'flex', alignItems:'center', gap:6,
                 padding:'6px 12px', borderRadius:8,
@@ -102,14 +102,14 @@ export function Navbar({ plan, remaining }: NavbarProps) {
 
             {/* remaining */}
             {plan === 'free' && remaining !== null && (
-              <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)', whiteSpace:'nowrap' }}>
+              <span className="nav-remaining" style={{ fontSize:11, color:'rgba(232,237,245,0.28)', whiteSpace:'nowrap' }}>
                 <span style={{ fontWeight:600, color:'rgba(232,237,245,0.55)' }}>{remaining}</span> left today
               </span>
             )}
 
             {/* upgrade */}
             {plan === 'free' && (
-              <Link href="/pricing" style={{
+              <Link href="/pricing" className="nav-upgrade" style={{
                 display:'flex', alignItems:'center', gap:5,
                 fontSize:11, fontWeight:700, textDecoration:'none',
                 padding:'6px 12px', borderRadius:8,
@@ -169,6 +169,11 @@ export function Navbar({ plan, remaining }: NavbarProps) {
 
       <style jsx global>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @media (max-width: 600px) {
+          .nav-links { display: none !important; }
+          .nav-remaining { display: none !important; }
+          .nav-upgrade { font-size: 10px !important; padding: 5px 8px !important; }
+        }
       `}</style>
     </>
   )

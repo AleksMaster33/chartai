@@ -197,11 +197,11 @@ export default function HomePage() {
           <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.02em', color:'#E8EDF5' }}>ChartAI</span>
         </div>
         {/* nav links */}
-        <div style={{ display:'flex', alignItems:'center', gap:4 }}>
-          <Link href="/pricing" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
+        <div className="lp-nav-links" style={{ display:'flex', alignItems:'center', gap:4 }}>
+          <Link href="/pricing" className="lp-nav-text" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
             Pricing
           </Link>
-          <Link href="/auth/login" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
+          <Link href="/auth/login" className="lp-nav-text" style={{ padding:'8px 16px', fontSize:13, color:'rgba(232,237,245,0.45)', fontWeight:500, borderRadius:10, textDecoration:'none' }}>
             Sign in
           </Link>
           <Link href="/auth/login" style={{
@@ -446,7 +446,7 @@ export default function HomePage() {
         {/* filter list */}
         <div style={{ display:'flex', flexDirection:'column', gap:0 }}>
           {OSIRIS_FILTERS.map((f, i) => (
-            <div key={f.n} style={{
+            <div key={f.n} className="osiris-row" style={{
               display:'grid',
               gridTemplateColumns:'64px 48px 1fr 2fr',
               alignItems:'center',
@@ -498,7 +498,7 @@ export default function HomePage() {
       {/* ── STATS COUNTERS ────────────────────────────────── */}
       <section style={{ borderTop:'1px solid rgba(255,255,255,0.04)', background:'rgba(0,255,136,0.015)' }}>
         <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'4rem 1.5rem' }}>
-          <div style={{
+          <div className="stats-grid" style={{
             display:'grid',
             gridTemplateColumns:'repeat(4, 1fr)',
             gap:0,
@@ -549,7 +549,7 @@ export default function HomePage() {
           </div>
 
           {/* 3-col grid */}
-          <div style={{
+          <div className="lp-pricing-grid" style={{
             display:'grid',
             gridTemplateColumns:'1fr 1fr 1fr',
             gap:20,
@@ -749,6 +749,14 @@ export default function HomePage() {
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
         .scrollbar-hide::-webkit-scrollbar { display:none; }
         .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
+
+        @media (max-width: 768px) {
+          .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .lp-pricing-grid { grid-template-columns: 1fr !important; }
+          .osiris-row { grid-template-columns: 40px 36px 1fr !important; gap: 12px !important; }
+          .osiris-row > *:last-child { display: none !important; }
+          .lp-nav-text { display: none !important; }
+        }
       `}</style>
     </div>
   )

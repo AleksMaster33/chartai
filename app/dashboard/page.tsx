@@ -135,7 +135,7 @@ export default function DashboardPage() {
               <motion.div key="analyze"
                 initial={{ opacity:0, y:10 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0, y:-8 }}
                 transition={{ duration:0.25 }}
-                style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24 }}
+                className="dash-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24 }}
               >
 
                 {/* ── LEFT: upload + controls ── */}
@@ -314,6 +314,9 @@ export default function DashboardPage() {
 
       <style jsx global>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+        @media (max-width: 768px) {
+          .dash-grid { grid-template-columns: 1fr !important; }
+        }
       `}</style>
     </div>
   )

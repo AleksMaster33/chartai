@@ -125,7 +125,7 @@ export default function PricingPage() {
 
         {/* ── PLAN CARDS ────────────────────────────────── */}
         <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'0 1.5rem 2rem' }}>
-          <div style={{
+          <div className="pricing-grid" style={{
             display:'grid',
             gridTemplateColumns:'1fr 1fr 1fr',
             gap:20,
@@ -309,7 +309,7 @@ export default function PricingPage() {
           }}>
             Frequently asked questions
           </h2>
-          <div style={{
+          <div className="faq-grid" style={{
             display:'grid',
             gridTemplateColumns:'1fr 1fr',
             gap:16,
@@ -398,6 +398,13 @@ export default function PricingPage() {
         </footer>
 
       </main>
+
+      <style jsx global>{`
+        @media (max-width: 768px) {
+          .pricing-grid { grid-template-columns: 1fr !important; }
+          .faq-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
     </div>
   )
 }

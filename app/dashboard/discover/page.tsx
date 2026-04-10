@@ -1,39 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
+import { createClient } from '@/lib/supabase/client'
 import { Navbar } from '@/components/Navbar'
 import {
   ScanLine, TrendingUp, TrendingDown, Minus, ExternalLink,
-  CheckCircle2, XCircle, ArrowRight, Clock, Zap, RefreshCw,
+  CheckCircle2, XCircle, Clock, Zap, RefreshCw,
   BarChart2, Activity, Shield, Target, AlertCircle, Crown,
 } from 'lucide-react'
 import type { DiscoveredCoin } from '@/lib/discovery/binance'
 
-const LIME  = '#84cc16'
-const RED   = '#ef4444'
-const AMBER = '#f59e0b'
-
-// ── helpers ──────────────────────────────────────────────────────────────────
+const G     = '#00FF88'
+const RED   = '#FF3B5C'
+const AMBER = '#FFB800'
 
 function signalColor(d: 'LONG' | 'SHORT' | 'NEUTRAL') {
-  return d === 'LONG' ? LIME : d === 'SHORT' ? RED : AMBER
+  return d === 'LONG' ? G : d === 'SHORT' ? RED : AMBER
 }
+
 function SignalIcon({ d }: { d: 'LONG' | 'SHORT' | 'NEUTRAL' }) {
-  if (d === 'LONG')  return <TrendingUp  className="w-4 h-4" style={{ color:LIME  }} />
-  if (d === 'SHORT') return <TrendingDown className="w-4 h-4" style={{ color:RED   }} />
-  return <Minus className="w-4 h-4" style={{ color:AMBER }} />
+  if (d === 'LONG')  return <TrendingUp  style={{ width:16, height:16, color:G }}     />
+  if (d === 'SHORT') return <TrendingDown style={{ width:16, height:16, color:RED }}   />
+  return                    <Minus        style={{ width:16, height:16, color:AMBER }} />
 }
 
 const FILTER_META = [
-  { key:'f1', label:'F1', name:'Volume & Spike',  icon:Zap      },
-  { key:'f2', label:'F2', name:'NATR Volatility', icon:Activity  },
-  { key:'f3', label:'F3', name:'EMA Trend',       icon:BarChart2 },
-  { key:'f4', label:'F4', name:'BTC Independence',icon:Shield    },
+  { key:'f1', label:'F1', name:'Volume & Spike',   icon:Zap      },
+  { key:'f2', label:'F2', name:'NATR Volatility',  icon:Activity  },
+  { key:'f3', label:'F3', name:'EMA Trend',         icon:BarChart2 },
+  { key:'f4', label:'F4', name:'BTC Independence', icon:Shield    },
 ] as const
-
-// ── CoinCard ─────────────────────────────────────────────────────────────────
 
 function CoinCard({ coin, index, onAnalyze }: {
   coin: DiscoveredCoin
@@ -49,97 +47,101 @@ function CoinCard({ coin, index, onAnalyze }: {
       initial={{ opacity:0, y:20 }}
       animate={{ opacity:1, y:0 }}
       transition={{ delay: index * 0.08, duration:0.45, ease:[0.22,1,0.36,1] }}
-      className="rounded-2xl overflow-hidden"
       style={{
+        borderRadius:16, overflow:'hidden',
         background:'rgba(255,255,255,0.025)',
-        border:`1px solid rgba(255,255,255,0.06)`,
+        border:'1px solid rgba(255,255,255,0.06)',
       }}
     >
-      {/* top accent line */}
-      <div className="h-px w-full"
-        style={{ background:`linear-gradient(90deg,transparent,${color}44,transparent)` }} />
+      {/* top accent */}
+      <div style={{ height:1, background:`linear-gradient(90deg,transparent,${color}44,transparent)` }} />
 
-      <div className="p-5">
+      <div style={{ padding:20 }}>
         {/* header row */}
-        <div className="flex items-start justify-between mb-4">
+        <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:16 }}>
           <div>
-            <div className="flex items-center gap-2.5 mb-1">
-              {/* rank */}
-              <span className="w-6 h-6 rounded-lg flex items-center justify-center text-[11px] font-display font-bold"
-                style={{ background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.3)' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:4 }}>
+              <span style={{
+                width:24, height:24, borderRadius:8, display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize:11, fontWeight:700, background:'rgba(255,255,255,0.04)', color:'rgba(255,255,255,0.30)',
+              }}>
                 {index + 1}
               </span>
-              <span className="font-display font-extrabold text-xl">{coin.baseAsset}</span>
-              <span className="text-xs text-white/30 font-display bg-white/[0.04] px-2 py-0.5 rounded">USDT</span>
+              <span style={{ fontWeight:800, fontSize:'1.25rem', color:'#E8EDF5' }}>{coin.baseAsset}</span>
+              <span style={{
+                fontSize:11, color:'rgba(255,255,255,0.30)',
+                background:'rgba(255,255,255,0.04)', padding:'2px 8px', borderRadius:4,
+              }}>USDT</span>
             </div>
-            <div className="flex items-center gap-3 ml-8">
-              <span className="font-mono text-sm text-white/60">
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginLeft:34 }}>
+              <span style={{ fontFamily:'monospace', fontSize:13, color:'rgba(255,255,255,0.60)' }}>
                 ${coin.lastPrice < 1
                   ? coin.lastPrice.toFixed(4)
                   : coin.lastPrice < 100
                   ? coin.lastPrice.toFixed(3)
                   : coin.lastPrice.toLocaleString(undefined, { maximumFractionDigits:2 })}
               </span>
-              <span className="text-xs font-display font-semibold"
-                style={{ color: coin.priceChange24h >= 0 ? LIME : RED }}>
+              <span style={{ fontSize:12, fontWeight:600, color: coin.priceChange24h >= 0 ? G : RED }}>
                 {coin.priceChange24h >= 0 ? '+' : ''}{coin.priceChange24h.toFixed(2)}%
               </span>
-              <span className="text-[11px] text-white/25 font-display">
+              <span style={{ fontSize:11, color:'rgba(255,255,255,0.25)' }}>
                 Vol ${(coin.volume24h / 1e6).toFixed(0)}M
               </span>
             </div>
           </div>
 
-          {/* direction badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-display font-bold text-sm shrink-0"
-            style={{ background:`${color}14`, border:`1px solid ${color}33`, color }}>
+          <div style={{
+            display:'flex', alignItems:'center', gap:6, padding:'6px 12px', borderRadius:12,
+            fontWeight:700, fontSize:13, flexShrink:0,
+            background:`${color}14`, border:`1px solid ${color}33`, color,
+          }}>
             <SignalIcon d={dir} />
             {dir}
           </div>
         </div>
 
         {/* Osiris filter progress */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] text-white/30 font-display uppercase tracking-wider">Osiris Filters</span>
-            <span className="font-mono text-sm font-bold" style={{ color }}>
+        <div style={{ marginBottom:16 }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
+            <span style={{ fontSize:11, color:'rgba(255,255,255,0.30)', textTransform:'uppercase', letterSpacing:'0.08em' }}>
+              Osiris Filters
+            </span>
+            <span style={{ fontFamily:'monospace', fontSize:13, fontWeight:700, color }}>
               {coin.filters.passedCount}/4
             </span>
           </div>
-          {/* progress bar */}
-          <div className="h-1.5 rounded-full overflow-hidden mb-3" style={{ background:'rgba(255,255,255,0.05)' }}>
+          <div style={{ height:6, borderRadius:999, overflow:'hidden', background:'rgba(255,255,255,0.05)', marginBottom:12 }}>
             <motion.div
               initial={{ width:0 }}
               animate={{ width:`${(coin.filters.passedCount / 4) * 100}%` }}
               transition={{ delay: index * 0.08 + 0.3, duration:0.8, ease:'easeOut' }}
-              className="h-full rounded-full"
-              style={{ background:`linear-gradient(90deg,${color}88,${color})` }}
+              style={{ height:'100%', borderRadius:999, background:`linear-gradient(90deg,${color}88,${color})` }}
             />
           </div>
 
           {/* F1–F4 grid */}
-          <div className="grid grid-cols-2 gap-2">
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
             {FILTER_META.map(({ key, label, name, icon: Icon }) => {
               const f = coin.filters[key as keyof typeof coin.filters] as { passed:boolean; reason:string }
               return (
                 <div key={key}
-                  className="flex items-start gap-2 px-3 py-2.5 rounded-xl"
                   style={{
+                    display:'flex', alignItems:'flex-start', gap:8, padding:'10px 12px', borderRadius:12,
                     background: f.passed ? `${color}08` : 'rgba(255,255,255,0.02)',
                     border: f.passed ? `1px solid ${color}22` : '1px solid rgba(255,255,255,0.04)',
                   }}>
-                  <div className="mt-0.5 shrink-0">
+                  <div style={{ marginTop:1, flexShrink:0 }}>
                     {f.passed
-                      ? <CheckCircle2 className="w-3.5 h-3.5" style={{ color }} />
-                      : <XCircle      className="w-3.5 h-3.5 text-white/18" />}
+                      ? <CheckCircle2 style={{ width:13, height:13, color }} />
+                      : <XCircle      style={{ width:13, height:13, color:'rgba(255,255,255,0.18)' }} />}
                   </div>
                   <div>
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <Icon className="w-3 h-3 text-white/30" style={{ width:11, height:11 }} />
-                      <span className="text-[10px] font-display font-bold text-white/50 uppercase tracking-wider">{label}</span>
-                      <span className="text-[10px] text-white/25 font-display">{name}</span>
+                    <div style={{ display:'flex', alignItems:'center', gap:6, marginBottom:2 }}>
+                      <Icon style={{ width:10, height:10, color:'rgba(255,255,255,0.30)' }} />
+                      <span style={{ fontSize:10, fontWeight:700, color:'rgba(255,255,255,0.50)', textTransform:'uppercase', letterSpacing:'0.06em' }}>{label}</span>
+                      <span style={{ fontSize:10, color:'rgba(255,255,255,0.25)' }}>{name}</span>
                     </div>
-                    <p className="text-[10px] text-white/35 leading-snug font-display">{f.reason}</p>
+                    <p style={{ fontSize:10, color:'rgba(255,255,255,0.35)', lineHeight:1.45 }}>{f.reason}</p>
                   </div>
                 </div>
               )
@@ -148,21 +150,37 @@ function CoinCard({ coin, index, onAnalyze }: {
         </div>
 
         {/* action buttons */}
-        <div className="flex gap-2">
+        <div style={{ display:'flex', gap:8 }}>
           <button
             onClick={() => onAnalyze(coin)}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-display font-bold text-sm text-black transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110"
-            style={{ background:LIME, boxShadow:`0 4px 16px ${LIME}22` }}>
-            <Target className="w-3.5 h-3.5" />
+            style={{
+              flex:1, display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              padding:'10px 0', borderRadius:12, fontWeight:700, fontSize:13, cursor:'pointer',
+              color:'#000', background:G, border:'none',
+              boxShadow:`0 4px 16px rgba(0,255,136,0.22)`,
+              transition:'transform 0.15s, filter 0.15s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.filter = 'brightness(1.1)'; e.currentTarget.style.transform = 'translateY(-1px)' }}
+            onMouseLeave={e => { e.currentTarget.style.filter = 'none'; e.currentTarget.style.transform = 'none' }}
+          >
+            <Target style={{ width:13, height:13 }} />
             Analyze →
           </button>
           <a
             href={tvUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-display font-semibold text-sm text-white/45 hover:text-white/70 transition-all duration-200"
-            style={{ background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)' }}>
-            <ExternalLink className="w-3.5 h-3.5" />
+            style={{
+              display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+              padding:'10px 16px', borderRadius:12, fontWeight:600, fontSize:13,
+              color:'rgba(255,255,255,0.45)', textDecoration:'none',
+              background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)',
+              transition:'color 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.70)')}
+            onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}
+          >
+            <ExternalLink style={{ width:13, height:13 }} />
             TradingView
           </a>
         </div>
@@ -171,16 +189,29 @@ function CoinCard({ coin, index, onAnalyze }: {
   )
 }
 
-// ── Page ──────────────────────────────────────────────────────────────────────
-
 export default function DiscoverPage() {
-  const [coins, setCoins]       = useState<DiscoveredCoin[] | null>(null)
-  const [loading, setLoading]   = useState(false)
-  const [error, setError]       = useState<string | null>(null)
-  const [scannedAt, setScanned] = useState<string | null>(null)
-  const [cached, setCached]     = useState(false)
+  const [coins, setCoins]         = useState<DiscoveredCoin[] | null>(null)
+  const [loading, setLoading]     = useState(false)
+  const [error, setError]         = useState<string | null>(null)
+  const [scannedAt, setScanned]   = useState<string | null>(null)
+  const [cached, setCached]       = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
+  const [plan, setPlan]           = useState('free')
   const router = useRouter()
+
+  useEffect(() => {
+    const sb = createClient()
+    sb.auth.getUser().then(({ data: { user } }) => {
+      if (!user) { router.push('/auth/login'); return }
+      sb.from('profiles').select('plan,daily_analyses_used').eq('id', user.id).single()
+        .then(({ data }) => {
+          if (data) {
+            setPlan(data.plan)
+            setRemaining(data.plan === 'free' ? Math.max(0, 3 - (data.daily_analyses_used || 0)) : null)
+          }
+        })
+    })
+  }, [router])
 
   const scan = async () => {
     setLoading(true); setError(null)
@@ -204,54 +235,61 @@ export default function DiscoverPage() {
   }
 
   const handleAnalyze = (coin: DiscoveredCoin) => {
-    router.push(
-      `/dashboard/analyze?coin=${coin.symbol}&direction=${coin.filters.direction}`,
-    )
+    router.push(`/dashboard/analyze?coin=${coin.symbol}&direction=${coin.filters.direction}`)
   }
 
   return (
-    <div className="min-h-screen bg-[#090909]">
-      {/* bg grid */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex:0 }}>
-        <div className="absolute inset-0" style={{
+    <div style={{ minHeight:'100vh', background:'#080B10', color:'#E8EDF5' }}>
+
+      {/* bg */}
+      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}>
+        <div style={{
+          position:'absolute', inset:0,
           backgroundImage:'linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)',
           backgroundSize:'64px 64px',
         }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px]"
-          style={{ background:'radial-gradient(ellipse at top,rgba(132,204,22,0.04) 0%,transparent 60%)' }} />
+        <div style={{
+          position:'absolute', top:0, left:'50%', transform:'translateX(-50%)',
+          width:700, height:400,
+          background:'radial-gradient(ellipse at top,rgba(0,255,136,0.04) 0%,transparent 60%)',
+        }} />
       </div>
 
-      <div className="relative z-10">
-        <Navbar plan="free" remaining={remaining} />
+      <div style={{ position:'relative', zIndex:1 }}>
+        <Navbar plan={plan} remaining={remaining} />
 
-        <div className="max-w-5xl mx-auto px-5 py-8">
+        <div className="discover-container" style={{ maxWidth:'64rem', margin:'0 auto', padding:'32px 24px' }}>
 
           {/* page header */}
           <motion.div
             initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
             transition={{ duration:0.45 }}
-            className="mb-8">
-            <div className="flex items-start justify-between gap-4">
+            style={{ marginBottom:32 }}>
+            <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', gap:16 }}>
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-                    style={{ background:'rgba(132,204,22,0.1)', border:'1px solid rgba(132,204,22,0.2)' }}>
-                    <ScanLine className="w-4 h-4" style={{ color:LIME }} />
+                <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                  <div style={{
+                    width:32, height:32, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center',
+                    background:'rgba(0,255,136,0.10)', border:'1px solid rgba(0,255,136,0.20)',
+                  }}>
+                    <ScanLine style={{ width:16, height:16, color:G }} />
                   </div>
-                  <h1 className="font-display font-extrabold text-xl">Market Discovery</h1>
+                  <h1 style={{ fontSize:'1.25rem', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5' }}>
+                    Market Discovery
+                  </h1>
                 </div>
-                <p className="text-sm text-white/35 max-w-xl">
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.35)', maxWidth:480 }}>
                   Scans Binance top 100 pairs and applies Osiris F1–F4 filters to surface the highest-potential setups. Results cached 15 min.
                 </p>
               </div>
 
               {scannedAt && (
-                <div className="text-right shrink-0">
-                  <div className="flex items-center gap-1.5 text-[11px] text-white/25 font-display justify-end">
-                    <Clock className="w-3 h-3" />
+                <div style={{ textAlign:'right', flexShrink:0 }}>
+                  <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:11, color:'rgba(255,255,255,0.25)', justifyContent:'flex-end' }}>
+                    <Clock style={{ width:11, height:11 }} />
                     {cached ? 'Cached' : 'Fresh scan'}
                   </div>
-                  <p className="text-[11px] text-white/20 font-display mt-0.5">
+                  <p style={{ fontSize:11, color:'rgba(255,255,255,0.20)', marginTop:2 }}>
                     {new Date(scannedAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}
                   </p>
                 </div>
@@ -259,34 +297,42 @@ export default function DiscoverPage() {
             </div>
           </motion.div>
 
-          {/* ── scan button ── */}
+          {/* ── scan button (empty state) ── */}
           {!coins && !loading && (
             <motion.div
               initial={{ opacity:0, scale:0.97 }}
               animate={{ opacity:1, scale:1 }}
               transition={{ duration:0.4 }}
-              className="flex flex-col items-center justify-center py-20 text-center">
+              style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 0', textAlign:'center' }}>
 
-              {/* animated rings */}
-              <div className="relative mb-8">
+              <div style={{ position:'relative', marginBottom:32 }}>
                 <motion.div
                   animate={{ scale:[1,1.15,1], opacity:[0.3,0.1,0.3] }}
                   transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
-                  className="absolute inset-0 -m-5 rounded-full"
-                  style={{ border:'1px solid rgba(132,204,22,0.2)' }} />
+                  style={{
+                    position:'absolute', inset:0, margin:-20, borderRadius:'50%',
+                    border:'1px solid rgba(0,255,136,0.20)',
+                  }} />
                 <motion.div
                   animate={{ scale:[1,1.25,1], opacity:[0.2,0.05,0.2] }}
                   transition={{ duration:3, delay:0.5, repeat:Infinity, ease:'easeInOut' }}
-                  className="absolute inset-0 -m-10 rounded-full"
-                  style={{ border:'1px solid rgba(132,204,22,0.12)' }} />
-                <div className="w-20 h-20 rounded-2xl flex items-center justify-center relative z-10"
-                  style={{ background:'rgba(132,204,22,0.08)', border:'1px solid rgba(132,204,22,0.2)' }}>
-                  <ScanLine className="w-8 h-8" style={{ color:LIME }} />
+                  style={{
+                    position:'absolute', inset:0, margin:-40, borderRadius:'50%',
+                    border:'1px solid rgba(0,255,136,0.12)',
+                  }} />
+                <div style={{
+                  width:80, height:80, borderRadius:20, position:'relative', zIndex:1,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
+                }}>
+                  <ScanLine style={{ width:32, height:32, color:G }} />
                 </div>
               </div>
 
-              <h2 className="font-display font-extrabold text-2xl mb-2">Scan the market</h2>
-              <p className="text-sm text-white/35 mb-8 max-w-sm">
+              <h2 style={{ fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:8, color:'#E8EDF5' }}>
+                Scan the market
+              </h2>
+              <p style={{ fontSize:13, color:'rgba(232,237,245,0.35)', marginBottom:32, maxWidth:320 }}>
                 Analyzes 100+ USDT pairs with Osiris F1–F4 filters. Takes ~10–20 seconds on first scan.
               </p>
 
@@ -294,13 +340,19 @@ export default function DiscoverPage() {
                 onClick={scan}
                 whileHover={{ y:-2 }}
                 whileTap={{ scale:0.97 }}
-                className="flex items-center gap-3 font-display font-bold text-black px-8 py-4 rounded-xl text-[15px]"
-                style={{ background:LIME, boxShadow:`0 0 0 1px rgba(132,204,22,0.3), 0 8px 32px rgba(132,204,22,0.2)` }}>
-                <ScanLine className="w-5 h-5" />
+                style={{
+                  display:'flex', alignItems:'center', gap:12, fontWeight:700, fontSize:15,
+                  color:'#000', padding:'16px 32px', borderRadius:12, cursor:'pointer',
+                  background:G, border:'none',
+                  boxShadow:`0 0 0 1px rgba(0,255,136,0.3), 0 8px 32px rgba(0,255,136,0.20)`,
+                }}>
+                <ScanLine style={{ width:20, height:20 }} />
                 Scan Market
               </motion.button>
 
-              <p className="text-[11px] text-white/20 font-display mt-4">Consumes 1 daily analysis · results cached 15 min</p>
+              <p style={{ fontSize:11, color:'rgba(255,255,255,0.20)', marginTop:16 }}>
+                Consumes 1 daily analysis · results cached 15 min
+              </p>
             </motion.div>
           )}
 
@@ -309,27 +361,29 @@ export default function DiscoverPage() {
             {loading && (
               <motion.div
                 initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-                className="flex flex-col items-center justify-center py-24 text-center">
+                style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'96px 0', textAlign:'center' }}>
 
-                {/* scanning animation */}
-                <div className="relative mb-8">
+                <div style={{ position:'relative', marginBottom:32 }}>
                   <motion.div
                     animate={{ rotate:360 }}
                     transition={{ duration:3, repeat:Infinity, ease:'linear' }}
-                    className="w-20 h-20 rounded-2xl"
-                    style={{ border:'2px solid rgba(132,204,22,0.1)', borderTopColor:LIME }} />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <ScanLine className="w-7 h-7" style={{ color:LIME }} />
+                    style={{
+                      width:80, height:80, borderRadius:20,
+                      border:'2px solid rgba(0,255,136,0.1)', borderTopColor:G,
+                    }} />
+                  <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                    <ScanLine style={{ width:28, height:28, color:G }} />
                   </div>
                 </div>
 
-                <h2 className="font-display font-bold text-lg mb-2">Scanning market…</h2>
-                <p className="text-sm text-white/35 max-w-xs">
+                <h2 style={{ fontSize:'1.125rem', fontWeight:700, marginBottom:8, color:'#E8EDF5' }}>
+                  Scanning market…
+                </h2>
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.35)', maxWidth:280 }}>
                   Analyzing 100+ pairs with Osiris F1–F4 filters. This takes ~15 seconds.
                 </p>
 
-                {/* step indicators */}
-                <div className="mt-8 space-y-2 text-left">
+                <div style={{ marginTop:32, display:'flex', flexDirection:'column', gap:8, textAlign:'left' }}>
                   {[
                     'Fetching top 100 USDT pairs from Binance…',
                     'Filtering volume > $30M…',
@@ -341,12 +395,11 @@ export default function DiscoverPage() {
                       initial={{ opacity:0, x:-12 }}
                       animate={{ opacity:1, x:0 }}
                       transition={{ delay: i * 0.4, duration:0.35 }}
-                      className="flex items-center gap-2 text-xs font-display text-white/30">
+                      style={{ display:'flex', alignItems:'center', gap:8, fontSize:12, color:'rgba(255,255,255,0.30)' }}>
                       <motion.div
                         animate={{ opacity:[0.3,1,0.3] }}
                         transition={{ duration:1.5, delay: i * 0.4, repeat:Infinity }}
-                        className="w-1.5 h-1.5 rounded-full"
-                        style={{ background:LIME }} />
+                        style={{ width:6, height:6, borderRadius:'50%', background:G, flexShrink:0 }} />
                       {step}
                     </motion.div>
                   ))}
@@ -360,15 +413,18 @@ export default function DiscoverPage() {
             {error && !loading && (
               <motion.div
                 initial={{ opacity:0, y:-8 }} animate={{ opacity:1, y:0 }} exit={{ opacity:0 }}
-                className="flex items-start gap-3 p-4 rounded-2xl mb-6"
-                style={{ background:'rgba(239,68,68,0.07)', border:'1px solid rgba(239,68,68,0.18)' }}>
-                <AlertCircle className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
+                style={{
+                  display:'flex', alignItems:'flex-start', gap:12, padding:16, borderRadius:16, marginBottom:24,
+                  background:'rgba(255,59,92,0.07)', border:'1px solid rgba(255,59,92,0.18)',
+                }}>
+                <AlertCircle style={{ width:18, height:18, color:'#f87171', marginTop:1, flexShrink:0 }} />
                 <div>
-                  <p className="text-sm text-red-400 font-display">{error}</p>
+                  <p style={{ fontSize:13, color:'#f87171' }}>{error}</p>
                   {error.includes('limit') && (
-                    <a href="/pricing"
-                      className="inline-flex items-center gap-1.5 mt-1.5 text-[11px] font-display font-bold"
-                      style={{ color:LIME }}>
+                    <a href="/pricing" style={{
+                      display:'inline-flex', alignItems:'center', gap:6, marginTop:6,
+                      fontSize:11, fontWeight:700, color:G, textDecoration:'none',
+                    }}>
                       <Crown style={{ width:11, height:11 }} /> Upgrade to Pro →
                     </a>
                   )}
@@ -380,50 +436,51 @@ export default function DiscoverPage() {
           {/* ── results ── */}
           <AnimatePresence>
             {coins && !loading && (
-              <motion.div
-                initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}>
+              <motion.div initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}>
 
                 {/* results header */}
-                <div className="flex items-center justify-between mb-5">
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20 }}>
                   <div>
-                    <h2 className="font-display font-bold text-base">
+                    <h2 style={{ fontSize:15, fontWeight:700, color:'#E8EDF5' }}>
                       Top {coins.length} setups found
                     </h2>
-                    <p className="text-xs text-white/30 font-display mt-0.5">
+                    <p style={{ fontSize:12, color:'rgba(232,237,245,0.30)', marginTop:2 }}>
                       Ranked by Osiris filter confluence
                     </p>
                   </div>
                   <button
                     onClick={scan}
                     disabled={loading}
-                    className="flex items-center gap-1.5 text-xs font-display font-semibold px-3 py-2 rounded-xl transition-all hover:brightness-110 disabled:opacity-40"
-                    style={{ background:'rgba(132,204,22,0.08)', border:'1px solid rgba(132,204,22,0.18)', color:LIME }}>
-                    <RefreshCw className="w-3 h-3" />
+                    style={{
+                      display:'flex', alignItems:'center', gap:6, fontSize:12, fontWeight:600,
+                      padding:'8px 12px', borderRadius:10, cursor:'pointer',
+                      background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)', color:G,
+                      transition:'filter 0.15s', opacity: loading ? 0.4 : 1,
+                    }}>
+                    <RefreshCw style={{ width:12, height:12 }} />
                     Rescan
                   </button>
                 </div>
 
-                {/* coin cards */}
                 {coins.length === 0 ? (
-                  <div className="text-center py-16 text-white/30 font-display">
+                  <div style={{ textAlign:'center', padding:'64px 0', color:'rgba(255,255,255,0.30)', fontSize:14 }}>
                     No coins passed enough filters right now. Try again later.
                   </div>
                 ) : (
-                  <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+                  <div className="coins-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
                     {coins.map((coin, i) => (
                       <CoinCard key={coin.symbol} coin={coin} index={i} onAnalyze={handleAnalyze} />
                     ))}
                   </div>
                 )}
 
-                {/* remaining counter */}
                 {remaining !== null && (
                   <motion.p
                     initial={{ opacity:0 }} animate={{ opacity:1 }}
-                    className="text-center text-[11px] text-white/20 font-display mt-6">
+                    style={{ textAlign:'center', fontSize:11, color:'rgba(255,255,255,0.20)', marginTop:24 }}>
                     {remaining} free {remaining === 1 ? 'analysis' : 'analyses'} remaining today
                     {' · '}
-                    <a href="/pricing" className="hover:text-white/40 transition-colors" style={{ color:`${LIME}66` }}>
+                    <a href="/pricing" style={{ color:`rgba(0,255,136,0.50)`, textDecoration:'none' }}>
                       Upgrade for unlimited
                     </a>
                   </motion.p>
@@ -434,6 +491,16 @@ export default function DiscoverPage() {
 
         </div>
       </div>
+
+      <style jsx global>{`
+        @media (max-width: 900px) {
+          .coins-grid { grid-template-columns: repeat(2,1fr) !important; }
+        }
+        @media (max-width: 600px) {
+          .coins-grid { grid-template-columns: 1fr !important; }
+          .discover-container { padding: 20px 16px !important; }
+        }
+      `}</style>
     </div>
   )
 }
