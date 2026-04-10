@@ -3,12 +3,12 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { TrendingUp, Mail, Globe, Loader2, ArrowLeft, Shield, Zap, Target } from 'lucide-react'
+import { TrendingUp, Mail, Globe, Loader2, ArrowLeft, Shield, Zap, Target, CheckCircle2 } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
-const LIME = '#84cc16'
+const G    = '#00FF88'
+const GLOW = 'rgba(0,255,136,0.20)'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -37,118 +37,161 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090909] flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div style={{
+      minHeight:'100vh', background:'#080B10', color:'#E8EDF5',
+      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+      padding:'24px 16px', position:'relative', overflowX:'hidden',
+    }}>
 
       {/* bg */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute inset-0" style={{
-          backgroundImage:'linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px)',
+      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}>
+        <div style={{
+          position:'absolute', inset:0,
+          backgroundImage:'linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)',
           backgroundSize:'64px 64px',
         }} />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full"
-          style={{ background:'radial-gradient(circle,rgba(132,204,22,0.04) 0%,transparent 60%)' }} />
+        <div style={{
+          position:'absolute', top:'50%', left:'50%',
+          transform:'translate(-50%,-50%)',
+          width:800, height:800, borderRadius:'50%',
+          background:'radial-gradient(circle, rgba(0,255,136,0.05) 0%, transparent 60%)',
+        }} />
+        <div style={{
+          position:'absolute', bottom:0, right:0,
+          width:400, height:400,
+          background:'radial-gradient(circle, rgba(0,212,255,0.03) 0%, transparent 60%)',
+        }} />
       </div>
 
-      {/* back */}
-      <Link href="/"
-        className="absolute top-5 left-5 flex items-center gap-1.5 text-xs text-white/30 hover:text-white/60 transition-colors font-display z-10">
-        <ArrowLeft className="w-3.5 h-3.5" /> Back
+      {/* back link */}
+      <Link href="/" style={{
+        position:'absolute', top:20, left:20, zIndex:10,
+        display:'flex', alignItems:'center', gap:6,
+        fontSize:12, color:'rgba(232,237,245,0.35)', textDecoration:'none', fontWeight:500,
+      }}>
+        <ArrowLeft style={{ width:13, height:13 }} />
+        Back
       </Link>
 
       {/* logo */}
-      <motion.div
-        initial={{ opacity:0, y:-12 }} animate={{ opacity:1, y:0 }}
-        transition={{ duration:0.4 }}
-        className="relative z-10 mb-8">
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background:LIME }}>
-            <TrendingUp className="w-4.5 h-4.5 text-black" style={{ width:18, height:18 }} />
+      <div style={{ position:'relative', zIndex:1, marginBottom:32 }}>
+        <Link href="/" style={{ display:'flex', alignItems:'center', gap:10, textDecoration:'none' }}>
+          <div style={{
+            width:36, height:36, borderRadius:9, background:G,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>
+            <TrendingUp style={{ width:18, height:18, color:'#000' }} />
           </div>
-          <span className="font-display font-extrabold text-lg tracking-tight">ChartAI</span>
+          <span style={{ fontWeight:800, fontSize:16, letterSpacing:'-0.02em', color:'#E8EDF5' }}>ChartAI</span>
         </Link>
-      </motion.div>
+      </div>
 
       {/* card */}
-      <motion.div
-        initial={{ opacity:0, y:18, scale:0.98 }}
-        animate={{ opacity:1, y:0, scale:1 }}
-        transition={{ delay:0.08, duration:0.5, ease:[0.22,1,0.36,1] }}
-        className="relative z-10 w-full max-w-sm">
-        <div className="rounded-2xl overflow-hidden"
-          style={{
-            background:'rgba(255,255,255,0.03)',
-            border:'1px solid rgba(255,255,255,0.08)',
-            boxShadow:'0 0 0 1px rgba(132,204,22,0.05), 0 32px 80px rgba(0,0,0,0.5)',
-          }}>
+      <div style={{ position:'relative', zIndex:1, width:'100%', maxWidth:400 }}>
+        <div style={{
+          borderRadius:20, overflow:'hidden',
+          background:'rgba(13,17,23,0.90)',
+          border:'1px solid rgba(255,255,255,0.08)',
+          boxShadow:`0 0 0 1px rgba(0,255,136,0.06), 0 32px 80px rgba(0,0,0,0.55)`,
+        }}>
+          {/* top accent line */}
+          <div style={{
+            height:1, width:'100%',
+            background:`linear-gradient(90deg,transparent,${G}44,transparent)`,
+          }} />
 
-          {/* top bar */}
-          <div className="h-px w-full"
-            style={{ background:'linear-gradient(90deg,transparent,rgba(132,204,22,0.35),transparent)' }} />
-
-          <div className="p-7">
+          <div style={{ padding:32 }}>
             {sent ? (
-              <div className="text-center py-4">
-                <motion.div
-                  initial={{ scale:0, rotate:-180 }} animate={{ scale:1, rotate:0 }}
-                  transition={{ duration:0.5, ease:[0.22,1,0.36,1] }}
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5"
-                  style={{ background:'rgba(132,204,22,0.1)', border:'1px solid rgba(132,204,22,0.2)' }}>
-                  <Mail className="w-6 h-6" style={{ color:LIME }} />
-                </motion.div>
-                <h2 className="font-display font-bold text-xl mb-2">Check your inbox</h2>
-                <p className="text-white/35 text-sm leading-relaxed">
+              /* ── SUCCESS STATE ── */
+              <div style={{ textAlign:'center', padding:'16px 0' }}>
+                <div style={{
+                  width:56, height:56, borderRadius:16, margin:'0 auto 20px',
+                  background:'rgba(0,255,136,0.08)', border:`1px solid rgba(0,255,136,0.18)`,
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                }}>
+                  <Mail style={{ width:24, height:24, color:G }} />
+                </div>
+                <h2 style={{ fontSize:'1.25rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:8, color:'#E8EDF5' }}>
+                  Check your inbox
+                </h2>
+                <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, marginBottom:20 }}>
                   Magic link sent to<br />
-                  <span className="font-display font-semibold" style={{ color:'rgba(255,255,255,0.65)' }}>{email}</span>
+                  <span style={{ fontWeight:600, color:'rgba(232,237,245,0.70)' }}>{email}</span>
                 </p>
-                <button onClick={() => setSent(false)}
-                  className="mt-5 text-xs text-white/25 hover:text-white/50 transition-colors font-display">
+                <button onClick={() => setSent(false)} style={{
+                  background:'none', border:'none', cursor:'pointer',
+                  fontSize:12, color:'rgba(232,237,245,0.28)',
+                }}>
                   Use a different email →
                 </button>
               </div>
             ) : (
+              /* ── SIGN IN FORM ── */
               <>
-                <h1 className="font-display font-extrabold text-2xl mb-1">Welcome back</h1>
-                <p className="text-white/35 text-sm mb-7">Sign in to analyze charts with Osiris AI</p>
+                <h1 style={{ fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:6, color:'#E8EDF5' }}>
+                  Welcome back
+                </h1>
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.38)', marginBottom:28 }}>
+                  Sign in to analyze charts with Osiris AI
+                </p>
 
-                {/* Google */}
-                <button onClick={signInGoogle} disabled={!!loading}
-                  className="w-full flex items-center justify-center gap-2.5 bg-white text-black font-semibold py-3 rounded-xl hover:bg-white/90 transition-all disabled:opacity-60 mb-4 text-sm font-display">
+                {/* Google button */}
+                <button
+                  onClick={signInGoogle}
+                  disabled={!!loading}
+                  style={{
+                    width:'100%', display:'flex', alignItems:'center', justifyContent:'center', gap:10,
+                    padding:'13px 0', borderRadius:12, marginBottom:16,
+                    background:'#ffffff', color:'#111', fontSize:14, fontWeight:600,
+                    border:'none', cursor:'pointer', opacity: loading ? 0.6 : 1,
+                    transition:'opacity 0.15s',
+                  }}
+                >
                   {loading === 'google'
-                    ? <Loader2 className="w-4 h-4 animate-spin" />
-                    : <Globe className="w-4 h-4" />}
+                    ? <Loader2 style={{ width:16, height:16, color:'#111' }} />
+                    : <Globe style={{ width:16, height:16, color:'#111' }} />
+                  }
                   Continue with Google
                 </button>
 
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex-1 h-px bg-white/[0.05]" />
-                  <span className="text-[11px] text-white/20 font-display">or</span>
-                  <div className="flex-1 h-px bg-white/[0.05]" />
+                {/* divider */}
+                <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
+                  <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.05)' }} />
+                  <span style={{ fontSize:11, color:'rgba(232,237,245,0.22)' }}>or</span>
+                  <div style={{ flex:1, height:1, background:'rgba(255,255,255,0.05)' }} />
                 </div>
 
-                <form onSubmit={signInEmail} className="space-y-2.5">
+                {/* email form */}
+                <form onSubmit={signInEmail} style={{ display:'flex', flexDirection:'column', gap:10 }}>
                   <input
                     type="email"
                     placeholder="your@email.com"
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     required
-                    className="w-full px-4 py-3 rounded-xl text-sm font-display placeholder-white/20 focus:outline-none transition-all"
                     style={{
+                      width:'100%', padding:'13px 16px', borderRadius:12,
                       background:'rgba(255,255,255,0.04)',
-                      border:'1px solid rgba(255,255,255,0.07)',
-                      color:'rgba(255,255,255,0.85)',
+                      border:'1px solid rgba(255,255,255,0.08)',
+                      color:'rgba(232,237,245,0.85)',
+                      fontSize:14, outline:'none', boxSizing:'border-box',
                     }}
-                    onFocus={e => (e.target.style.borderColor = 'rgba(132,204,22,0.35)')}
-                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.07)')}
+                    onFocus={e => (e.target.style.borderColor = 'rgba(0,255,136,0.35)')}
+                    onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
                   />
-                  <button type="submit" disabled={!!loading || !email}
-                    className="w-full py-3 rounded-xl text-sm font-display font-semibold flex items-center justify-center gap-2 transition-all disabled:opacity-45"
+                  <button
+                    type="submit"
+                    disabled={!!loading || !email}
                     style={{
-                      background:'rgba(132,204,22,0.1)',
-                      border:'1px solid rgba(132,204,22,0.22)',
-                      color:LIME,
-                    }}>
-                    {loading === 'email' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                      width:'100%', padding:'13px 0', borderRadius:12,
+                      background:'rgba(0,255,136,0.08)', border:`1px solid rgba(0,255,136,0.22)`,
+                      color:G, fontSize:14, fontWeight:600, cursor:'pointer',
+                      display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                      opacity: (loading || !email) ? 0.45 : 1,
+                      transition:'opacity 0.15s, background 0.15s',
+                    }}
+                  >
+                    {loading === 'email' && <Loader2 style={{ width:14, height:14 }} />}
                     Send magic link
                   </button>
                 </form>
@@ -157,29 +200,38 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* trust */}
-        <motion.div
-          initial={{ opacity:0 }} animate={{ opacity:1 }}
-          transition={{ delay:0.35, duration:0.4 }}
-          className="mt-5 grid grid-cols-3 gap-3">
+        {/* trust badges */}
+        <div style={{
+          marginTop:16, display:'grid',
+          gridTemplateColumns:'1fr 1fr 1fr', gap:10,
+        }}>
           {[
-            { icon:Zap,    text:'3 free/day' },
-            { icon:Shield, text:'Osiris AI' },
-            { icon:Target, text:'Any chart' },
-          ].map(({ icon:Icon, text }) => (
-            <div key={text}
-              className="flex flex-col items-center gap-1.5 p-3 rounded-xl text-center"
-              style={{ background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)' }}>
-              <Icon className="w-3.5 h-3.5 opacity-40" style={{ color:LIME }} />
-              <span className="text-[10px] text-white/25 font-display">{text}</span>
+            { icon:Zap,    label:'3 free/day',   sub:'No card needed'     },
+            { icon:Shield, label:'Osiris AI',     sub:'7-filter system'    },
+            { icon:Target, label:'Any chart',     sub:'Any platform'       },
+          ].map(({ icon:Icon, label, sub }) => (
+            <div key={label} style={{
+              display:'flex', flexDirection:'column', alignItems:'center',
+              gap:6, padding:'14px 10px', borderRadius:12, textAlign:'center',
+              background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)',
+            }}>
+              <Icon style={{ width:15, height:15, color:'rgba(0,255,136,0.55)' }} />
+              <span style={{ fontSize:12, fontWeight:600, color:'rgba(232,237,245,0.55)' }}>{label}</span>
+              <span style={{ fontSize:10, color:'rgba(232,237,245,0.25)' }}>{sub}</span>
             </div>
           ))}
-        </motion.div>
+        </div>
 
-        <p className="text-[11px] text-white/18 text-center mt-5 font-display">
-          No credit card required · Educational purposes only
-        </p>
-      </motion.div>
+        {/* footer note */}
+        <div style={{
+          marginTop:16, display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+        }}>
+          <CheckCircle2 style={{ width:12, height:12, color:'rgba(0,255,136,0.40)' }} />
+          <p style={{ fontSize:11, color:'rgba(232,237,245,0.22)', margin:0 }}>
+            No credit card required · Educational purposes only
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
