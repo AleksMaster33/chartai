@@ -387,102 +387,73 @@ export default function HomePage() {
       </div>
 
       {/* ── HOW IT WORKS ──────────────────────────────────── */}
-      <section className="relative z-10 max-w-6xl mx-auto px-6 py-24">
-        <motion.div
-          initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }}
-          viewport={{ once:true, margin:'-80px' }} transition={{ duration:0.5 }}
-          className="mb-14">
-          <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
-            style={{ color:'rgba(0,255,136,0.65)' }}>
-            How it works
-          </p>
-          <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
-            From chart to signal in 3 steps
-          </h2>
-        </motion.div>
+      <section style={{ maxWidth:'64rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
+        <p style={{ fontSize:'11px', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:'0.75rem' }}>
+          How it works
+        </p>
+        <h2 style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:'3.5rem' }}>
+          From chart to signal in 3 steps
+        </h2>
 
-        <div className="grid md:grid-cols-3 gap-5 relative">
-          {/* connector lines */}
-          <div className="hidden md:block absolute top-10 left-[calc(33.33%+10px)] right-[calc(33.33%+10px)] h-px"
-            style={{ background:`linear-gradient(90deg,${G}33,${G}18)` }} />
-          <div className="hidden md:block absolute top-10 left-[calc(66.66%+10px)] right-[10px] h-px"
-            style={{ background:`linear-gradient(90deg,${G}18,${G}08)` }} />
-
+        <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:'2rem' }}>
           {STEPS.map((s, i) => (
-            <motion.div key={s.n}
-              initial={{ opacity:0, y:26 }} whileInView={{ opacity:1, y:0 }}
-              viewport={{ once:true, margin:'-60px' }}
-              transition={{ delay:i * 0.12, duration:0.55, ease:[0.22,1,0.36,1] }}
-              className="relative rounded-2xl p-7 group overflow-hidden transition-all duration-300 data-card card-accent-green"
-            >
-              {/* hover left bar */}
-              <div className="absolute left-0 top-[15%] bottom-[15%] w-[2px] rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                style={{ background:`linear-gradient(180deg,${G}88,${G}22)` }} />
-
-              {/* large step number */}
-              <div className="font-mono font-extrabold mb-5 leading-none select-none"
-                style={{ fontSize:'3rem', color:`rgba(0,255,136,0.10)`, letterSpacing:'-0.04em' }}>
+            <div key={s.n} style={{
+              padding:'2rem',
+              borderRadius:'1rem',
+              border:'1px solid rgba(255,255,255,0.10)',
+              background:'rgba(255,255,255,0.05)',
+              display:'flex',
+              flexDirection:'column',
+              gap:'1rem',
+            }}>
+              <span style={{ fontSize:'3.75rem', fontWeight:700, lineHeight:1, color:'rgba(0,255,136,0.20)', fontFamily:'JetBrains Mono, monospace' }}>
                 {s.n}
+              </span>
+              <div style={{
+                width:'3rem', height:'3rem',
+                background:'rgba(0,255,136,0.10)',
+                borderRadius:'0.75rem',
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <s.icon style={{ width:20, height:20, color:G }} />
               </div>
-
-              {/* icon */}
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
-                style={{ background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.15)' }}>
-                <s.icon style={{ width:18, height:18, color:G }} />
-              </div>
-
-              <h3 className="font-display font-bold text-[1.05rem] mb-2.5" style={{ color:'rgba(232,237,245,0.90)' }}>
-                {s.title}
-              </h3>
-              <p className="text-[13px] leading-relaxed" style={{ color:'rgba(232,237,245,0.35)' }}>
-                {s.desc}
-              </p>
-            </motion.div>
+              <h3 style={{ fontSize:'1.125rem', fontWeight:600, color:'#ffffff', margin:0 }}>{s.title}</h3>
+              <p style={{ fontSize:'0.875rem', lineHeight:1.6, color:'rgba(255,255,255,0.50)', margin:0 }}>{s.desc}</p>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ── FEATURES GRID ─────────────────────────────────── */}
-      <section className="relative z-10 border-t" style={{ borderColor:'rgba(255,255,255,0.04)' }}>
-        <div className="max-w-6xl mx-auto px-6 py-24">
-          <motion.div
-            initial={{ opacity:0, y:18 }} whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }} transition={{ duration:0.5 }}
-            className="mb-14">
-            <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
-              style={{ color:'rgba(0,255,136,0.65)' }}>
-              Features
-            </p>
-            <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
-              Everything you need to trade smarter
-            </h2>
-          </motion.div>
+      <section style={{ borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+        <div style={{ maxWidth:'64rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
+          <p style={{ fontSize:'11px', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:'0.75rem' }}>
+            Features
+          </p>
+          <h2 style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:'3.5rem' }}>
+            Everything you need to trade smarter
+          </h2>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {FEATURES.map((f, i) => (
-              <motion.div key={f.title}
-                initial={{ opacity:0, y:22 }} whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true, margin:'-50px' }}
-                transition={{ delay:i * 0.07, duration:0.45, ease:[0.22,1,0.36,1] }}
-                className="relative rounded-2xl p-6 group overflow-hidden transition-all duration-300 data-card">
-
-                {/* hover left bar */}
-                <div className="absolute left-0 top-[15%] bottom-[15%] w-[2px] rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                  style={{ background:`linear-gradient(180deg,${G}66,${G}11)` }} />
-
-                {/* icon */}
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
-                  style={{ background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.13)' }}>
-                  <f.icon style={{ width:17, height:17, color:G }} />
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'1.5rem' }}>
+            {FEATURES.map((f) => (
+              <div key={f.title} style={{
+                padding:'1.5rem',
+                borderRadius:'0.75rem',
+                border:'1px solid rgba(255,255,255,0.10)',
+                background:'rgba(255,255,255,0.05)',
+              }}>
+                <div style={{
+                  width:'2.5rem', height:'2.5rem',
+                  background:'rgba(0,255,136,0.10)',
+                  borderRadius:'0.5rem',
+                  display:'flex', alignItems:'center', justifyContent:'center',
+                  marginBottom:'1rem',
+                }}>
+                  <f.icon style={{ width:18, height:18, color:G }} />
                 </div>
-
-                <h3 className="font-display font-bold text-[0.95rem] mb-2" style={{ color:'rgba(232,237,245,0.85)' }}>
-                  {f.title}
-                </h3>
-                <p className="text-[13px] leading-relaxed" style={{ color:'rgba(232,237,245,0.32)' }}>
-                  {f.desc}
-                </p>
-              </motion.div>
+                <h3 style={{ fontSize:'0.9375rem', fontWeight:600, color:'#ffffff', margin:'0 0 0.5rem 0' }}>{f.title}</h3>
+                <p style={{ fontSize:'0.875rem', lineHeight:1.6, color:'rgba(255,255,255,0.50)', margin:0 }}>{f.desc}</p>
+              </div>
             ))}
           </div>
         </div>
