@@ -2,35 +2,35 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { motion } from 'framer-motion'
-import { TrendingUp, Check, X, ArrowLeft, Loader2, Zap, Crown, Rocket, ChevronRight, Shield } from 'lucide-react'
+import { TrendingUp, Check, X, Loader2, ArrowLeft, Shield, Zap, Crown, Rocket, CheckCircle2 } from 'lucide-react'
 
-const LIME = '#84cc16'
+const G    = '#00FF88'
+const GLOW = 'rgba(0,255,136,0.22)'
 
 const PLANS = [
   {
-    id: 'free', name: 'Basic', price: 19.99, period: '/month', icon: Zap,
-    badge: null,
+    id: 'basic', name: 'Basic', price: '$19.99', period: '/month', icon: Zap,
+    badge: null as string | null,
     features: ['3 full analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (30 days)'],
     missing: ['Signal history (unlimited)', 'Priority analysis speed', 'Swing analysis (4H / Daily)'],
-    cta: 'Get Started', ctaHref: '/auth/login',
-    accentColor: 'rgba(255,255,255,0.3)',
+    cta: 'Get Started', ctaHref: '/auth/login' as string | null,
+    accent: false, purple: false,
   },
   {
-    id: 'pro', name: 'Pro', price: 44.90, period: '/month', icon: Crown,
-    badge: 'Most Popular',
+    id: 'pro', name: 'Pro', price: '$44.90', period: '/month', icon: Crown,
+    badge: 'Most Popular' as string | null,
     features: ['10 full analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (unlimited)', 'Priority analysis speed'],
     missing: ['Swing analysis (4H / Daily)'],
-    cta: 'Get Started', ctaHref: null,
-    accentColor: LIME,
+    cta: 'Get Started', ctaHref: null as string | null,
+    accent: true, purple: false,
   },
   {
-    id: 'trader', name: 'Unlimited', price: 125, period: '/month', icon: Rocket,
-    badge: null,
+    id: 'trader', name: 'Unlimited', price: '$125', period: '/month', icon: Rocket,
+    badge: null as string | null,
     features: ['50 analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (unlimited)', 'Priority analysis speed', 'Swing analysis (4H / Daily)'],
     missing: [],
-    cta: 'Get Started', ctaHref: null,
-    accentColor: '#8b5cf6',
+    cta: 'Get Started', ctaHref: null as string | null,
+    accent: false, purple: true,
   },
 ]
 
@@ -60,183 +60,344 @@ export default function PricingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#090909] overflow-x-hidden">
+    <div style={{ minHeight:'100vh', background:'#080B10', overflowX:'hidden', color:'#E8EDF5' }}>
 
-      {/* bg grid */}
-      <div className="fixed inset-0 pointer-events-none" style={{ zIndex:0 }}>
-        <div className="absolute inset-0" style={{
-          backgroundImage:'linear-gradient(rgba(255,255,255,0.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.015) 1px,transparent 1px)',
+      {/* bg ambient */}
+      <div style={{ position:'fixed', inset:0, pointerEvents:'none', zIndex:0 }}>
+        <div style={{
+          position:'absolute', inset:0,
+          backgroundImage:'linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px)',
           backgroundSize:'64px 64px',
         }} />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px]"
-          style={{ background:'radial-gradient(ellipse at center top,rgba(132,204,22,0.05) 0%,transparent 60%)' }} />
+        <div style={{
+          position:'absolute', top:0, left:'50%', transform:'translateX(-50%)',
+          width:900, height:600,
+          background:'radial-gradient(ellipse at center top, rgba(0,255,136,0.05) 0%, transparent 60%)',
+        }} />
       </div>
 
-      {/* nav */}
-      <header className="relative z-20 border-b border-white/[0.05]"
-        style={{ background:'rgba(9,9,9,0.85)', backdropFilter:'blur(20px)' }}>
-        <nav className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background:LIME }}>
-              <TrendingUp className="w-4 h-4 text-black" />
-            </div>
-            <span className="font-display font-extrabold text-[15px] tracking-tight group-hover:text-[#84cc16] transition-colors">ChartAI</span>
-          </Link>
-          <Link href="/dashboard"
-            className="flex items-center gap-1.5 text-sm text-white/35 hover:text-white/65 transition-colors font-display">
-            <ArrowLeft className="w-3.5 h-3.5" /> Dashboard
-          </Link>
-        </nav>
-      </header>
+      {/* ── NAV ─────────────────────────────────────────── */}
+      <nav style={{
+        position:'fixed', top:0, left:0, right:0, height:64, zIndex:50,
+        background:'rgba(8,11,16,0.92)', backdropFilter:'blur(20px)',
+        borderBottom:'1px solid rgba(255,255,255,0.07)',
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'0 24px',
+      }}>
+        <Link href="/" style={{
+          display:'flex', alignItems:'center', gap:10, textDecoration:'none',
+        }}>
+          <div style={{
+            width:32, height:32, borderRadius:8, background:G, flexShrink:0,
+            display:'flex', alignItems:'center', justifyContent:'center',
+          }}>
+            <TrendingUp style={{ width:16, height:16, color:'#000' }} />
+          </div>
+          <span style={{ fontWeight:800, fontSize:15, letterSpacing:'-0.02em', color:'#E8EDF5' }}>ChartAI</span>
+        </Link>
+        <Link href="/dashboard" style={{
+          display:'flex', alignItems:'center', gap:6,
+          fontSize:13, color:'rgba(232,237,245,0.40)', textDecoration:'none', fontWeight:500,
+        }}>
+          <ArrowLeft style={{ width:14, height:14 }} />
+          Dashboard
+        </Link>
+      </nav>
 
-      {/* header */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 pt-20 pb-12 text-center">
-        <motion.div
-          initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
-          transition={{ duration:0.45 }}>
-          <p className="text-[11px] font-display font-bold tracking-[0.2em] uppercase mb-4"
-            style={{ color:`${LIME}99` }}>Pricing</p>
-          <h1 className="font-display font-extrabold text-[3rem] tracking-tight mb-3">
+      {/* ── MAIN ────────────────────────────────────────── */}
+      <main style={{ paddingTop:64, position:'relative', zIndex:1 }}>
+
+        {/* ── HERO ──────────────────────────────────────── */}
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'5rem 1.5rem 3rem', textAlign:'center' }}>
+          <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:12 }}>
+            PRICING
+          </p>
+          <h1 style={{
+            fontSize:'clamp(2rem,5vw,3.25rem)', fontWeight:800,
+            letterSpacing:'-0.03em', color:'#E8EDF5', marginBottom:12,
+          }}>
             Start free. Scale when you&apos;re ready.
           </h1>
-          <p className="text-white/35 text-base">No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.</p>
-        </motion.div>
-      </div>
+          <p style={{ fontSize:15, color:'rgba(232,237,245,0.38)', maxWidth:480, margin:'0 auto' }}>
+            No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.
+          </p>
+        </div>
 
-      {/* cards */}
-      <div className="relative z-10 max-w-5xl mx-auto px-6 pb-16">
-        <div className="grid md:grid-cols-3 gap-5">
-          {PLANS.map((plan, i) => (
-            <motion.div key={plan.id}
-              initial={{ opacity:0, y:24 }}
-              animate={{ opacity:1, y:0 }}
-              transition={{ delay:i*0.1, duration:0.5, ease:[0.22,1,0.36,1] }}
-              className="relative rounded-2xl p-6 flex flex-col overflow-hidden group"
-              style={{
-                background: plan.id==='pro' ? 'rgba(132,204,22,0.03)' : plan.id==='trader' ? 'rgba(139,92,246,0.025)' : 'rgba(255,255,255,0.025)',
-                border: plan.id==='pro' ? '1px solid rgba(132,204,22,0.25)' : plan.id==='trader' ? '1px solid rgba(139,92,246,0.2)' : '1px solid rgba(255,255,255,0.06)',
+        {/* ── PLAN CARDS ────────────────────────────────── */}
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'0 1.5rem 2rem' }}>
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:'1fr 1fr 1fr',
+            gap:20,
+            maxWidth:960,
+            margin:'0 auto',
+          }}>
+
+            {/* Basic */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16,
+              background:'rgba(13,17,23,0.80)',
+              border:'1px solid rgba(255,255,255,0.07)',
+            }}>
+              <div style={{
+                width:36, height:36, borderRadius:9,
+                background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.08)',
+                display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16,
               }}>
-
-              {/* top glow line */}
-              {plan.id === 'pro' && (
-                <div className="absolute top-0 left-4 right-4 h-px"
-                  style={{ background:'linear-gradient(90deg,transparent,rgba(132,204,22,0.5),transparent)' }} />
-              )}
-
-              {plan.badge && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="text-black text-[10px] font-display font-bold px-3 py-1 rounded-full uppercase tracking-wider"
-                    style={{ background:LIME }}>
-                    {plan.badge}
-                  </span>
-                </div>
-              )}
-
-              {/* icon + name */}
-              <div className="mb-5">
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-4 ${
-                  plan.id==='pro' ? '' : plan.id==='trader' ? '' : ''
-                }`}
-                  style={{
-                    background: plan.id==='pro' ? LIME : plan.id==='trader' ? 'rgba(139,92,246,0.15)' : 'rgba(255,255,255,0.06)',
-                    border: plan.id==='pro' ? 'none' : plan.id==='trader' ? '1px solid rgba(139,92,246,0.25)' : '1px solid rgba(255,255,255,0.08)',
-                  }}>
-                  <plan.icon
-                    className="w-4.5 h-4.5"
-                    style={{ width:18, height:18, color: plan.id==='pro' ? '#000' : plan.id==='trader' ? '#a78bfa' : 'rgba(255,255,255,0.4)' }}
-                  />
-                </div>
-                <div className="font-display font-bold text-sm text-white/60 mb-2 uppercase tracking-widest text-[11px]">{plan.name}</div>
-                <div className="flex items-baseline gap-1">
-                  <span className="font-display font-extrabold text-[2.5rem]">
-                    ${plan.price}
-                  </span>
-                  <span className="text-white/25 text-sm font-display">{plan.period}</span>
-                </div>
+                <Zap style={{ width:17, height:17, color:'rgba(232,237,245,0.45)' }} />
               </div>
-
-              {/* features */}
-              <ul className="space-y-2 mb-6 flex-1">
-                {plan.features.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <Check className="w-3.5 h-3.5 mt-0.5 shrink-0"
-                      style={{ color: plan.id==='pro' ? LIME : plan.id==='trader' ? '#a78bfa' : 'rgba(255,255,255,0.3)' }} />
-                    <span className="text-white/60">{f}</span>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(232,237,245,0.35)', marginBottom:8 }}>Basic</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.5rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$19.99</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.28)' }}>/month</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['3 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (30 days)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:9, fontSize:13 }}>
+                    <Check style={{ width:14, height:14, flexShrink:0, color:'rgba(255,255,255,0.28)' }} />
+                    <span style={{ color:'rgba(232,237,245,0.58)' }}>{f}</span>
                   </li>
                 ))}
-                {plan.missing.map(f => (
-                  <li key={f} className="flex items-start gap-2 text-sm">
-                    <X className="w-3.5 h-3.5 mt-0.5 shrink-0 text-white/12" />
-                    <span className="text-white/18">{f}</span>
+                {['Signal history (unlimited)','Priority analysis speed','Swing analysis (4H / Daily)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:9, fontSize:13 }}>
+                    <X style={{ width:14, height:14, flexShrink:0, color:'rgba(232,237,245,0.12)' }} />
+                    <span style={{ color:'rgba(232,237,245,0.18)' }}>{f}</span>
                   </li>
                 ))}
               </ul>
+              <Link href="/auth/login" style={{
+                display:'block', textAlign:'center', padding:'13px 0',
+                borderRadius:10, fontSize:13, fontWeight:700, textDecoration:'none',
+                border:'1px solid rgba(255,255,255,0.09)', color:'rgba(232,237,245,0.48)',
+              }}>
+                Get Started
+              </Link>
+            </div>
 
-              {/* CTA */}
-              {plan.ctaHref ? (
-                <Link href={plan.ctaHref}
-                  className="w-full py-3 rounded-xl text-sm font-display font-bold text-center transition-all duration-200 border border-white/[0.07] text-white/40 hover:border-white/14 hover:text-white/60 flex items-center justify-center gap-1.5">
-                  {plan.cta} <ChevronRight className="w-3.5 h-3.5" />
-                </Link>
-              ) : (
-                <button onClick={() => checkout(plan.id)} disabled={!!loading}
-                  className={`w-full py-3 rounded-xl text-sm font-display font-bold transition-all duration-200 disabled:opacity-50 flex items-center justify-center gap-2 ${
-                    plan.id==='pro'
-                      ? 'text-black hover:brightness-110'
-                      : 'border border-purple-500/20 text-purple-300 hover:bg-purple-500/10'
-                  }`}
-                  style={plan.id==='pro' ? { background:LIME, boxShadow:`0 4px 16px rgba(132,204,22,0.22)` } : {}}>
-                  {loading === plan.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  {plan.cta}
-                </button>
-              )}
-            </motion.div>
-          ))}
+            {/* Pro — highlighted */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16, position:'relative',
+              background:'rgba(0,255,136,0.04)',
+              border:'1px solid rgba(0,255,136,0.25)',
+              boxShadow:'0 0 0 1px rgba(0,255,136,0.08), 0 20px 60px rgba(0,255,136,0.07)',
+              marginTop:-12, marginBottom:-12,
+            }}>
+              {/* top glow line */}
+              <div style={{
+                position:'absolute', top:0, left:'15%', right:'15%', height:1,
+                background:`linear-gradient(90deg,transparent,${G}66,transparent)`,
+              }} />
+              {/* badge */}
+              <div style={{
+                position:'absolute', top:-14, left:'50%', transform:'translateX(-50%)',
+                background:G, color:'#000', fontSize:10, fontWeight:800,
+                padding:'4px 14px', borderRadius:999,
+                letterSpacing:'0.08em', textTransform:'uppercase', whiteSpace:'nowrap',
+              }}>
+                Most Popular
+              </div>
+
+              <div style={{
+                width:36, height:36, borderRadius:9,
+                background:G, display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16, marginTop:8,
+              }}>
+                <Crown style={{ width:17, height:17, color:'#000' }} />
+              </div>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:8 }}>Pro</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.5rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$44.90</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.28)' }}>/month</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['10 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:9, fontSize:13 }}>
+                    <Check style={{ width:14, height:14, flexShrink:0, color:G }} />
+                    <span style={{ color:'rgba(232,237,245,0.70)' }}>{f}</span>
+                  </li>
+                ))}
+                {['Swing analysis (4H / Daily)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:9, fontSize:13 }}>
+                    <X style={{ width:14, height:14, flexShrink:0, color:'rgba(232,237,245,0.12)' }} />
+                    <span style={{ color:'rgba(232,237,245,0.18)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => checkout('pro')}
+                disabled={!!loading}
+                style={{
+                  width:'100%', padding:'13px 0', borderRadius:10,
+                  fontSize:13, fontWeight:700, cursor:'pointer',
+                  background:G, color:'#000', border:'none',
+                  boxShadow:`0 4px 20px ${GLOW}`,
+                  opacity: loading ? 0.6 : 1,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                }}
+              >
+                {loading === 'pro' && <Loader2 style={{ width:14, height:14 }} />}
+                Get Started
+              </button>
+            </div>
+
+            {/* Unlimited */}
+            <div style={{
+              display:'flex', flexDirection:'column',
+              padding:'28px 24px', borderRadius:16,
+              background:'rgba(139,92,246,0.03)',
+              border:'1px solid rgba(139,92,246,0.18)',
+            }}>
+              <div style={{
+                width:36, height:36, borderRadius:9,
+                background:'rgba(139,92,246,0.12)', border:'1px solid rgba(139,92,246,0.22)',
+                display:'flex', alignItems:'center', justifyContent:'center', marginBottom:16,
+              }}>
+                <Rocket style={{ width:17, height:17, color:'#a78bfa' }} />
+              </div>
+              <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:'rgba(167,139,250,0.55)', marginBottom:8 }}>Unlimited</p>
+              <div style={{ display:'flex', alignItems:'baseline', gap:4, marginBottom:24 }}>
+                <span style={{ fontSize:'2.5rem', fontWeight:800, letterSpacing:'-0.03em', color:'#E8EDF5' }}>$125</span>
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.28)' }}>/month</span>
+              </div>
+              <ul style={{ listStyle:'none', padding:0, margin:'0 0 28px', flex:1, display:'flex', flexDirection:'column', gap:10 }}>
+                {['50 analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed','Swing analysis (4H / Daily)'].map(f => (
+                  <li key={f} style={{ display:'flex', alignItems:'center', gap:9, fontSize:13 }}>
+                    <Check style={{ width:14, height:14, flexShrink:0, color:'#a78bfa' }} />
+                    <span style={{ color:'rgba(232,237,245,0.58)' }}>{f}</span>
+                  </li>
+                ))}
+              </ul>
+              <button
+                onClick={() => checkout('trader')}
+                disabled={!!loading}
+                style={{
+                  width:'100%', padding:'13px 0', borderRadius:10,
+                  fontSize:13, fontWeight:700, cursor:'pointer',
+                  background:'transparent', color:'#a78bfa',
+                  border:'1px solid rgba(139,92,246,0.25)',
+                  opacity: loading ? 0.6 : 1,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                }}
+              >
+                {loading === 'trader' && <Loader2 style={{ width:14, height:14 }} />}
+                Get Started
+              </button>
+            </div>
+          </div>
+
+          {/* trust note */}
+          <div style={{
+            maxWidth:960, margin:'24px auto 0',
+            display:'flex', alignItems:'center', justifyContent:'center', gap:10,
+            padding:'14px 20px', borderRadius:12,
+            background:'rgba(0,255,136,0.04)', border:'1px solid rgba(0,255,136,0.10)',
+          }}>
+            <Shield style={{ width:15, height:15, flexShrink:0, color:'rgba(0,255,136,0.55)' }} />
+            <span style={{ fontSize:13, color:'rgba(232,237,245,0.40)' }}>
+              All plans include a 3-analysis free trial · No credit card required to start · Cancel anytime
+            </span>
+          </div>
         </div>
 
-        {/* comparison note */}
-        <motion.div
-          initial={{ opacity:0, y:12 }}
-          animate={{ opacity:1, y:0 }}
-          transition={{ delay:0.4, duration:0.4 }}
-          className="mt-8 flex items-center justify-center gap-3 p-4 rounded-2xl"
-          style={{ background:'rgba(132,204,22,0.04)', border:'1px solid rgba(132,204,22,0.1)' }}>
-          <Shield className="w-4 h-4 shrink-0" style={{ color:`${LIME}88` }} />
-          <span className="text-sm text-white/40 font-display">
-            All plans include a 3-analysis free trial · No credit card required to start · Cancel anytime
-          </span>
-        </motion.div>
-
-        {/* FAQ */}
-        <div className="mt-16">
-          <motion.h2
-            initial={{ opacity:0, y:12 }}
-            whileInView={{ opacity:1, y:0 }}
-            viewport={{ once:true }}
-            transition={{ duration:0.4 }}
-            className="font-display font-extrabold text-xl mb-6 text-center">
+        {/* ── FAQ ───────────────────────────────────────── */}
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'4rem 1.5rem' }}>
+          <h2 style={{
+            fontSize:'clamp(1.25rem,2.5vw,1.75rem)', fontWeight:800,
+            letterSpacing:'-0.02em', color:'#E8EDF5',
+            textAlign:'center', marginBottom:32,
+          }}>
             Frequently asked questions
-          </motion.h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {FAQS.map(({ q, a }, i) => (
-              <motion.div key={q}
-                initial={{ opacity:0, y:14 }}
-                whileInView={{ opacity:1, y:0 }}
-                viewport={{ once:true, margin:'-40px' }}
-                transition={{ delay:i*0.08, duration:0.4 }}
-                className="rounded-xl p-5"
-                style={{ background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.055)' }}>
-                <div className="font-display font-semibold text-sm mb-2 text-white/80">{q}</div>
-                <p className="text-sm text-white/35 leading-relaxed">{a}</p>
-              </motion.div>
+          </h2>
+          <div style={{
+            display:'grid',
+            gridTemplateColumns:'1fr 1fr',
+            gap:16,
+          }}>
+            {FAQS.map(({ q, a }) => (
+              <div key={q} style={{
+                padding:'20px 22px', borderRadius:12,
+                background:'rgba(255,255,255,0.025)',
+                border:'1px solid rgba(255,255,255,0.055)',
+              }}>
+                <p style={{ fontSize:14, fontWeight:600, color:'rgba(232,237,245,0.82)', marginBottom:8 }}>{q}</p>
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.38)', lineHeight:1.65, margin:0 }}>{a}</p>
+              </div>
             ))}
           </div>
         </div>
 
-        <p className="text-center text-[11px] text-white/18 font-display mt-10">
-          Educational only · Not financial advice · Trade at your own risk
-        </p>
-      </div>
+        {/* ── CTA BANNER ────────────────────────────────── */}
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'0 1.5rem 5rem' }}>
+          <div style={{
+            borderRadius:20, padding:'3.5rem 2rem', textAlign:'center',
+            position:'relative', overflow:'hidden',
+            background:'linear-gradient(135deg, rgba(0,255,136,0.05) 0%, rgba(8,11,16,1) 60%)',
+            border:'1px solid rgba(0,255,136,0.12)',
+          }}>
+            <div style={{
+              position:'absolute', inset:0, pointerEvents:'none',
+              background:'radial-gradient(ellipse at 50% 0%, rgba(0,255,136,0.07) 0%, transparent 55%)',
+            }} />
+            <div style={{ position:'absolute', top:0, left:'25%', right:'25%', height:1, background:`linear-gradient(90deg,transparent,${G}44,transparent)` }} />
+
+            <div style={{ position:'relative', zIndex:1 }}>
+              <div style={{
+                display:'inline-flex', alignItems:'center', gap:8, marginBottom:20,
+                padding:'6px 14px', borderRadius:999,
+                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
+              }}>
+                <CheckCircle2 style={{ width:12, height:12, color:G }} />
+                <span style={{ fontSize:11, fontWeight:700, color:'rgba(0,255,136,0.9)' }}>
+                  3 free analyses — no credit card required
+                </span>
+              </div>
+              <h2 style={{
+                fontSize:'clamp(1.5rem,3vw,2.25rem)', fontWeight:800,
+                letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:12,
+              }}>
+                Ready to trade with a system?
+              </h2>
+              <p style={{ fontSize:15, color:'rgba(232,237,245,0.40)', maxWidth:400, margin:'0 auto 28px' }}>
+                Scan the market. Identify the setup. Understand the signal. Enter with confidence.
+              </p>
+              <Link href="/auth/login" style={{
+                display:'inline-flex', alignItems:'center', gap:8,
+                padding:'14px 28px', borderRadius:12,
+                background:G, color:'#000', fontWeight:700, fontSize:15,
+                textDecoration:'none',
+                boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}`,
+              }}>
+                Start Your Free Analysis →
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* ── FOOTER ────────────────────────────────────── */}
+        <footer style={{ borderTop:'1px solid rgba(255,255,255,0.04)' }}>
+          <div style={{
+            maxWidth:'72rem', margin:'0 auto', padding:'1.75rem 1.5rem',
+            display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:16,
+          }}>
+            <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+              <div style={{ width:24, height:24, borderRadius:6, background:G, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                <TrendingUp style={{ width:12, height:12, color:'black' }} />
+              </div>
+              <span style={{ fontWeight:700, fontSize:13, color:'rgba(232,237,245,0.50)' }}>ChartAI</span>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', gap:24 }}>
+              <Link href="/" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Home</Link>
+              <Link href="/auth/login" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Sign in</Link>
+              <Link href="/dashboard" style={{ fontSize:12, color:'rgba(232,237,245,0.28)', textDecoration:'none' }}>Dashboard</Link>
+            </div>
+            <p style={{ fontSize:11, color:'rgba(232,237,245,0.18)', margin:0 }}>
+              © 2026 ChartAI. Not financial advice. Trade responsibly.
+            </p>
+          </div>
+        </footer>
+
+      </main>
     </div>
   )
 }
