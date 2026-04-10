@@ -19,49 +19,47 @@ const AMB  = '#FFB800'
 
 /* ─── data ─────────────────────────────────────────────── */
 const TICKERS = [
-  { pair:'BTC/USDT',   signal:'LONG',    conf:'84%', dir: 1  },
-  { pair:'ETH/USDT',   signal:'LONG',    conf:'71%', dir: 1  },
-  { pair:'SOL/USDT',   signal:'SHORT',   conf:'68%', dir:-1  },
-  { pair:'BNB/USDT',   signal:'NEUTRAL', conf:'52%', dir: 0  },
-  { pair:'XRP/USDT',   signal:'LONG',    conf:'77%', dir: 1  },
-  { pair:'AVAX/USDT',  signal:'SHORT',   conf:'63%', dir:-1  },
-  { pair:'ADA/USDT',   signal:'LONG',    conf:'79%', dir: 1  },
-  { pair:'DOGE/USDT',  signal:'NEUTRAL', conf:'58%', dir: 0  },
-  { pair:'MATIC/USDT', signal:'LONG',    conf:'72%', dir: 1  },
-  { pair:'LINK/USDT',  signal:'SHORT',   conf:'65%', dir:-1  },
+  { pair:'AVAX/USDT',  signal:'LONG',    conf:'77%', dir: 1  },
+  { pair:'ADA/USDT',   signal:'SHORT',   conf:'63%', dir:-1  },
+  { pair:'DOGE/USDT',  signal:'LONG',    conf:'79%', dir: 1  },
+  { pair:'MATIC/USDT', signal:'NEUTRAL', conf:'58%', dir: 0  },
+  { pair:'LINK/USDT',  signal:'LONG',    conf:'72%', dir: 1  },
+  { pair:'BTC/USDT',   signal:'SHORT',   conf:'65%', dir:-1  },
+  { pair:'ETH/USDT',   signal:'LONG',    conf:'84%', dir: 1  },
+  { pair:'SOL/USDT',   signal:'LONG',    conf:'71%', dir: 1  },
 ]
 
 const OSIRIS_FILTERS = [
-  { n:'01', name:'Fuel',        desc:'Momentum & volume surge',    icon:Flame      },
-  { n:'02', name:'Tension',     desc:'Price compression setup',    icon:Layers     },
-  { n:'03', name:'Trend Sync',  desc:'Higher-TF alignment check',  icon:GitMerge   },
-  { n:'04', name:'BTC Shield',  desc:'Low correlation guard',      icon:Shield     },
-  { n:'05', name:'Structure',   desc:'S/R & order block zones',    icon:BarChart2  },
-  { n:'06', name:'Entry Zone',  desc:'Optimal entry risk ratio',   icon:Crosshair  },
-  { n:'07', name:'Trigger',     desc:'Confirmation signal fired',  icon:Zap        },
+  { n:'01', name:'Fuel',        desc:'Volume and momentum confirm energy to sustain the move',              icon:Flame      },
+  { n:'02', name:'Tension',     desc:'Price compression signals a release is imminent',                    icon:Layers     },
+  { n:'03', name:'Trend Sync',  desc:'Setup aligns with global and local trend — no counter-trend trades', icon:GitMerge   },
+  { n:'04', name:'BTC Shield',  desc:'Altcoin BTC correlation checked — low correlation means independence', icon:Shield    },
+  { n:'05', name:'Structure',   desc:'Higher highs/lows, order blocks, and FVG zones confirm direction',   icon:BarChart2  },
+  { n:'06', name:'Entry Zone',  desc:'Price at Fibonacci 0.618, FVG, or S/R flip — not overextended',     icon:Crosshair  },
+  { n:'07', name:'Trigger',     desc:'Confirmation candle exists — Pin Bar, Engulfing, or equivalent',     icon:Zap        },
 ]
 
 const STEPS = [
-  { n:'01', icon:BarChart2, title:'Upload your chart',  desc:'Screenshot from TradingView, Binance, Bybit, OKX — any platform, any timeframe, any pair.' },
-  { n:'02', icon:Brain,     title:'Dual AI pipeline',   desc:'Gemini 2.0 Flash Vision reads your chart. Claude Sonnet applies all 7 Osiris filters in parallel.' },
-  { n:'03', icon:Target,    title:'Receive your signal',desc:'Entry, stop-loss, 3 take-profits, R:R ratio, confidence score and full Osiris rationale — in under 10s.' },
+  { n:'01', icon:BarChart2, title:'Scan the Market',    desc:'Hit "Scan Now" and ChartAI instantly analyzes 100+ USDT pairs using real-time Binance data. The Osiris engine applies 4 quantitative filters — volume, volatility, trend sync, and BTC correlation — and surfaces only the pairs worth your attention.' },
+  { n:'02', icon:Brain,     title:'Upload Your Charts', desc:'Pick a coin from the results. Open it on TradingView or Bybit, take screenshots of the 15m, 1h, and 4h timeframes, and drop them into ChartAI. Three screenshots. Thirty seconds.' },
+  { n:'03', icon:Target,    title:'Get Your Signal',    desc:'Gemini Vision reads the charts. Claude applies the full 7-filter Osiris methodology. You receive a complete signal: entry zone, stop-loss, TP1, TP2, leverage suggestion, confidence score — and the reasoning behind every filter.' },
 ]
 
 const FEATURES = [
-  { icon:Zap,       title:'Under 10 seconds',    desc:'Gemini Flash Vision + Claude Sonnet run in parallel — full actionable signal in < 10 s.' },
-  { icon:Shield,    title:'7-Filter Osiris',      desc:'Every signal passes Fuel, Tension, Trend Sync, BTC Shield, Structure, Entry Zone & Trigger.' },
-  { icon:BarChart2, title:'Any chart, any asset', desc:'TradingView, Binance, Bybit, OKX or any platform. Crypto, forex, equities — all supported.' },
-  { icon:Brain,     title:'Dual AI pipeline',     desc:'Gemini reads the image; Claude Sonnet reasons over it using the full Osiris methodology.' },
-  { icon:Target,    title:'Full risk levels',     desc:'Entry, stop-loss and 3 take-profit levels with exact R:R ratio on every single signal.' },
-  { icon:Activity,  title:'Confidence scoring',   desc:'7-of-7 filter confluence score tells you exactly how strong each setup is before you trade.' },
+  { icon:Zap,       title:'Real-Time Market Scanner', desc:'Analyzes 100+ USDT pairs from Binance every 15 minutes. Volume spikes, volatility windows, trend alignment — filtered and ranked automatically.' },
+  { icon:Shield,    title:'Osiris 7-Filter Engine',   desc:'Every signal passes through all 7 filters: Fuel, Tension, Trend Sync, BTC Shield, Market Structure, Entry Zone, and Trigger. No filter shortcuts.' },
+  { icon:Brain,     title:'AI Chart Analysis',        desc:'Upload screenshots from any platform — TradingView, Binance, Bybit, OKX. Gemini 2.0 Flash reads the chart. Claude Sonnet applies the methodology.' },
+  { icon:Target,    title:'Full Signal Breakdown',    desc:'Not just "buy here." Every signal includes entry zone, stop-loss, two take-profit targets, suggested leverage, risk-reward ratio, and a filter-by-filter explanation.' },
+  { icon:Activity,  title:'Transparent Reasoning',    desc:'See exactly why each filter passed or failed. Understand the setup before you enter. Trade with conviction, not blind trust.' },
+  { icon:BarChart2, title:'Signal History',            desc:'Every signal you generate is saved with timestamp and outcome tracking. Build a personal track record. See what setups work best for your style.' },
 ]
 
 const LIVE_STATS = [
-  { label:'Signals Today',     val:'2,400+', icon:Radio   },
-  { label:'Avg Confidence',    val:'87%',    icon:Gauge   },
-  { label:'Analysis Speed',    val:'<10s',   icon:Zap     },
+  { label:'Pairs Scanned',     val:'100+',   icon:Globe   },
   { label:'Osiris Filters',    val:'7',      icon:Shield  },
-  { label:'Supported Pairs',   val:'500+',   icon:Globe   },
+  { label:'Signal Speed',      val:'<20s',   icon:Zap     },
+  { label:'Entry · SL · TP',   val:'✓',      icon:Target  },
+  { label:'Avg Confidence',    val:'87%',    icon:Gauge   },
   { label:'Platforms',         val:'Any',    icon:Cpu     },
 ]
 
@@ -275,7 +273,7 @@ export default function HomePage() {
               style={{ background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)' }}>
               <span className="live-dot" style={{ width:6, height:6 }} />
               <span className="text-[11px] font-display font-bold tracking-wide" style={{ color:'rgba(0,255,136,0.9)' }}>
-                LIVE · Osiris AI Engine
+                LIVE · Osiris AI Engine Active
               </span>
             </motion.div>
 
@@ -285,9 +283,9 @@ export default function HomePage() {
               transition={{ delay:0.07, duration:0.6, ease:[0.22,1,0.36,1] }}
               className="font-display font-extrabold tracking-tight leading-[1.0] mb-6"
               style={{ fontSize:'clamp(3rem,7vw,5.2rem)' }}>
-              <span className="block" style={{ color:'#E8EDF5' }}>AI Trading</span>
-              <span className="block hero-gradient">Signals</span>
-              <span className="block" style={{ color:'rgba(232,237,245,0.75)' }}>From Any Chart</span>
+              <span className="block" style={{ color:'#E8EDF5' }}>Find Your Next</span>
+              <span className="block hero-gradient">Trade.</span>
+              <span className="block" style={{ color:'rgba(232,237,245,0.75)' }}>Understand Why.</span>
             </motion.h1>
 
             {/* subtitle */}
@@ -296,9 +294,9 @@ export default function HomePage() {
               transition={{ delay:0.17, duration:0.5 }}
               className="text-[15px] leading-relaxed mb-8 max-w-lg"
               style={{ color:'rgba(232,237,245,0.42)' }}>
-              Upload a chart screenshot. ChartAI reads it with Gemini 2.0 Flash Vision,
-              then applies the 7-filter Osiris methodology via Claude Sonnet — delivering
-              entry, stop-loss and 3 take-profits in under 10 seconds.
+              ChartAI scans 100+ crypto pairs with the Osiris 7-filter methodology,
+              identifies the highest-probability setups, and explains every decision —
+              so you trade with conviction, not guesswork.
             </motion.p>
 
             {/* CTAs */}
@@ -309,7 +307,7 @@ export default function HomePage() {
               <Link href="/auth/login"
                 className="flex items-center gap-2.5 font-display font-bold text-[15px] text-black px-7 py-3.5 rounded-xl transition-all duration-200 hover:-translate-y-0.5"
                 style={{ background:G, boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 6px 24px ${GLOW}` }}>
-                Analyze First Chart Free
+                Scan the Market Now
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link href="/pricing"
@@ -317,8 +315,8 @@ export default function HomePage() {
                 style={{ color:'rgba(232,237,245,0.48)', border:'1px solid rgba(255,255,255,0.08)' }}
                 onMouseEnter={e => { e.currentTarget.style.borderColor='rgba(0,255,136,0.18)'; e.currentTarget.style.color='rgba(232,237,245,0.75)' }}
                 onMouseLeave={e => { e.currentTarget.style.borderColor='rgba(255,255,255,0.08)'; e.currentTarget.style.color='rgba(232,237,245,0.48)' }}>
-                View pricing
-                <ChevronRight className="w-4 h-4" />
+                See How It Works →
+
               </Link>
             </motion.div>
 
@@ -328,10 +326,10 @@ export default function HomePage() {
               transition={{ delay:0.36, duration:0.45 }}
               className="flex flex-wrap gap-x-6 gap-y-2 mb-6">
               {[
-                '2,400+ Signals Generated',
-                '87% Avg Confidence',
-                'Real-Time Analysis',
-                '7-Filter System',
+                '100+ Pairs Scanned',
+                '7 Osiris Filters',
+                'Signal in <20s',
+                'Entry · SL · TP Included',
               ].map((s, i) => (
                 <div key={i} className="flex items-center gap-2">
                   {i > 0 && <span className="hidden sm:block w-px h-3" style={{ background:'rgba(255,255,255,0.10)' }} />}
@@ -389,10 +387,10 @@ export default function HomePage() {
       {/* ── HOW IT WORKS ──────────────────────────────────── */}
       <section style={{ maxWidth:'64rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
         <p style={{ fontSize:'11px', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:'0.75rem' }}>
-          How it works
+          HOW IT WORKS
         </p>
         <h2 style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:'3.5rem' }}>
-          From chart to signal in 3 steps
+          From market scan to signal in 3 steps
         </h2>
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr', gap:'2rem' }}>
@@ -428,10 +426,10 @@ export default function HomePage() {
       <section style={{ borderTop:'1px solid rgba(255,255,255,0.04)' }}>
         <div style={{ maxWidth:'64rem', margin:'0 auto', padding:'6rem 1.5rem' }}>
           <p style={{ fontSize:'11px', fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:'0.75rem' }}>
-            Features
+            FEATURES
           </p>
           <h2 style={{ fontSize:'2.25rem', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:'3.5rem' }}>
-            Everything you need to trade smarter
+            Built for traders who want to understand, not just follow
           </h2>
 
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill, minmax(280px, 1fr))', gap:'1.5rem' }}>
@@ -477,13 +475,13 @@ export default function HomePage() {
               className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
               <div>
                 <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
-                  style={{ color:'rgba(0,255,136,0.65)' }}>The System</p>
+                  style={{ color:'rgba(0,255,136,0.65)' }}>THE METHODOLOGY</p>
                 <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
-                  Osiris 7-Filter Method
+                  7 filters. Every signal. No exceptions.
                 </h2>
               </div>
               <p className="text-[13px] max-w-xs md:text-right" style={{ color:'rgba(232,237,245,0.30)' }}>
-                Every signal passes all 7 filters simultaneously. No exceptions. No shortcuts.
+                The Osiris methodology was built for high-probability crypto scalping. A trade only reaches you when all relevant filters align.
               </p>
             </motion.div>
 
@@ -549,7 +547,7 @@ export default function HomePage() {
               <span className="text-[13px] font-display" style={{ color:'rgba(232,237,245,0.60)' }}>
                 When all 7 filters pass →{' '}
                 <span className="font-bold" style={{ color:G }}>High-confidence signal</span>
-                {' '}with full entry, SL and 3 TP targets generated automatically
+                {' '}with entry zone, stop-loss, TP1, TP2, leverage suggestion, and full filter reasoning
               </span>
             </motion.div>
           </div>
@@ -597,26 +595,26 @@ export default function HomePage() {
             <p className="text-[11px] font-display font-bold tracking-[0.18em] uppercase mb-3"
               style={{ color:'rgba(0,255,136,0.65)' }}>Pricing</p>
             <h2 className="font-display font-extrabold tracking-tight text-[2.25rem]" style={{ color:'#E8EDF5' }}>
-              Start free. Scale when ready.
+              Start free. Scale when you&apos;re ready.
             </h2>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {[
               {
-                name:'Free', price:'€0', period:'forever',
-                features:['3 analyses/day','Entry, SL & TP levels','Osiris confidence score'],
-                cta:'Start free', href:'/auth/login', accent:false, purple:false,
+                name:'Basic', price:'$19.99', period:'/month',
+                features:['3 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (30 days)'],
+                cta:'Get Started', href:'/auth/login', accent:false, purple:false,
               },
               {
-                name:'Pro', price:'€12', period:'/month',
-                features:['Unlimited analyses','Full analysis history','Multi-timeframe','Priority speed'],
-                cta:'Upgrade to Pro', href:null, accent:true, purple:false, badge:'Most popular',
+                name:'Pro', price:'$44.90', period:'/month',
+                features:['10 full analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed'],
+                cta:'Get Started', href:null, accent:true, purple:false, badge:'Most Popular',
               },
               {
-                name:'Trader', price:'€29', period:'/month',
-                features:['Everything in Pro','API access','Telegram webhooks','Portfolio tracker'],
-                cta:'Go Trader', href:null, accent:false, purple:true,
+                name:'Unlimited', price:'$125', period:'/month',
+                features:['50 analyses per day','Market scanner included','Complete 7-filter breakdown','Entry · SL · TP · Leverage','Signal history (unlimited)','Priority analysis speed','Swing analysis (4H / Daily)'],
+                cta:'Get Started', href:null, accent:false, purple:true,
               },
             ].map((p, i) => (
               <motion.div key={p.name}
@@ -723,23 +721,26 @@ export default function HomePage() {
               style={{ background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)' }}>
               <span className="live-dot" style={{ width:6, height:6 }} />
               <span className="text-[11px] font-display font-bold tracking-wide" style={{ color:'rgba(0,255,136,0.9)' }}>
-                Free to start — no card needed
+                3 free analyses — no credit card required
               </span>
             </div>
 
             <h2 className="font-display font-extrabold tracking-tight text-[2.5rem] mb-4" style={{ color:'#E8EDF5' }}>
-              Ready to trade with <span className="hero-gradient">AI precision</span>?
+              Ready to trade with <span className="hero-gradient">a system</span>?
             </h2>
-            <p className="text-[15px] mb-8 max-w-md mx-auto" style={{ color:'rgba(232,237,245,0.40)' }}>
-              Upload your first chart and get a full Osiris signal in under 10 seconds. 3 free analyses daily.
+            <p className="text-[15px] mb-4 max-w-md mx-auto" style={{ color:'rgba(232,237,245,0.40)' }}>
+              Scan the market. Identify the setup. Understand the signal. Enter with confidence.
             </p>
 
             <Link href="/auth/login"
               className="inline-flex items-center gap-2.5 font-display font-bold text-[15px] text-black px-8 py-4 rounded-xl transition-all duration-200 hover:-translate-y-0.5"
               style={{ background:G, boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}` }}>
-              Analyze Your First Chart
+              Start Your Free Analysis
               <ArrowRight className="w-4 h-4" />
             </Link>
+            <p className="mt-4 text-[12px] font-display" style={{ color:'rgba(232,237,245,0.25)' }}>
+              3 free analyses included. No credit card required.
+            </p>
           </div>
         </motion.div>
       </section>
@@ -762,7 +763,7 @@ export default function HomePage() {
               style={{ color:'rgba(232,237,245,0.28)' }}>Dashboard</Link>
           </div>
           <p className="text-[11px] font-display" style={{ color:'rgba(232,237,245,0.18)' }}>
-            © 2025 ChartAI. Not financial advice.
+            © 2026 ChartAI. Not financial advice. Trade responsibly.
           </p>
         </div>
       </footer>

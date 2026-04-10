@@ -9,36 +9,36 @@ const LIME = '#84cc16'
 
 const PLANS = [
   {
-    id: 'free', name: 'Free', price: 0, period: 'forever', icon: Zap,
+    id: 'free', name: 'Basic', price: 19.99, period: '/month', icon: Zap,
     badge: null,
-    features: ['3 analyses per day', 'Entry / SL / TP levels', 'Pattern recognition', 'Confidence score', 'Osiris rationale'],
-    missing: ['Analysis history', 'Multi-timeframe', 'Priority speed', 'API access'],
-    cta: 'Start for free', ctaHref: '/auth/login',
+    features: ['3 full analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (30 days)'],
+    missing: ['Signal history (unlimited)', 'Priority analysis speed', 'Swing analysis (4H / Daily)'],
+    cta: 'Get Started', ctaHref: '/auth/login',
     accentColor: 'rgba(255,255,255,0.3)',
   },
   {
-    id: 'pro', name: 'Pro', price: 12, period: '/month', icon: Crown,
-    badge: 'Most popular',
-    features: ['Unlimited analyses', 'Full analysis history', 'Multi-timeframe', 'Priority processing', 'Confidence scoring', 'All Osiris filters', 'Pattern breakdown'],
-    missing: ['API access', 'Webhook alerts'],
-    cta: 'Upgrade to Pro', ctaHref: null,
+    id: 'pro', name: 'Pro', price: 44.90, period: '/month', icon: Crown,
+    badge: 'Most Popular',
+    features: ['10 full analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (unlimited)', 'Priority analysis speed'],
+    missing: ['Swing analysis (4H / Daily)'],
+    cta: 'Get Started', ctaHref: null,
     accentColor: LIME,
   },
   {
-    id: 'trader', name: 'Trader', price: 29, period: '/month', icon: Rocket,
+    id: 'trader', name: 'Unlimited', price: 125, period: '/month', icon: Rocket,
     badge: null,
-    features: ['Everything in Pro', 'REST API access', 'Telegram & Discord webhooks', 'Portfolio tracker', 'Backtesting stats', 'Priority support', 'Early access'],
+    features: ['50 analyses per day', 'Market scanner included', 'Complete 7-filter breakdown', 'Entry · SL · TP · Leverage', 'Signal history (unlimited)', 'Priority analysis speed', 'Swing analysis (4H / Daily)'],
     missing: [],
-    cta: 'Go Trader', ctaHref: null,
+    cta: 'Get Started', ctaHref: null,
     accentColor: '#8b5cf6',
   },
 ]
 
 const FAQS = [
-  { q: 'Can I cancel anytime?',          a: 'Yes — cancel at any time. You keep Pro access until the end of the billing period. No questions asked.' },
-  { q: 'What charts are supported?',     a: 'Any screenshot from any platform — TradingView, Binance, Bybit, OKX, or custom charts. PNG, JPG, WebP.' },
-  { q: 'How accurate are the signals?',  a: 'ChartAI uses the Osiris 7-filter system. Always combine with your own analysis. Not financial advice.' },
-  { q: 'What is the Osiris methodology?', a: '7 filters: Fuel, Tension, Trend Sync, BTC Shield, Structure, Entry Zone, Trigger — all applied simultaneously.' },
+  { q: 'Can I cancel anytime?',           a: 'Yes — cancel at any time. You keep access until the end of the billing period. No questions asked.' },
+  { q: 'What charts are supported?',      a: 'Any screenshot from any platform — TradingView, Binance, Bybit, OKX, or custom charts. PNG, JPG, WebP.' },
+  { q: 'Is a credit card required?',      a: 'No. All plans include a 3-analysis free trial. No credit card required to start.' },
+  { q: 'What is the Osiris methodology?', a: '7 filters: Fuel, Tension, Trend Sync, BTC Shield, Market Structure, Entry Zone, and Trigger — all applied before a signal reaches you. Every signal includes the full filter-by-filter reasoning.' },
 ]
 
 export default function PricingPage() {
@@ -97,9 +97,9 @@ export default function PricingPage() {
           <p className="text-[11px] font-display font-bold tracking-[0.2em] uppercase mb-4"
             style={{ color:`${LIME}99` }}>Pricing</p>
           <h1 className="font-display font-extrabold text-[3rem] tracking-tight mb-3">
-            Simple, transparent pricing
+            Start free. Scale when you&apos;re ready.
           </h1>
-          <p className="text-white/35 text-base">Start free. Upgrade when you need more power.</p>
+          <p className="text-white/35 text-base">No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.</p>
         </motion.div>
       </div>
 
@@ -149,9 +149,9 @@ export default function PricingPage() {
                 <div className="font-display font-bold text-sm text-white/60 mb-2 uppercase tracking-widest text-[11px]">{plan.name}</div>
                 <div className="flex items-baseline gap-1">
                   <span className="font-display font-extrabold text-[2.5rem]">
-                    {plan.price === 0 ? 'Free' : `€${plan.price}`}
+                    ${plan.price}
                   </span>
-                  {plan.price > 0 && <span className="text-white/25 text-sm font-display">{plan.period}</span>}
+                  <span className="text-white/25 text-sm font-display">{plan.period}</span>
                 </div>
               </div>
 
@@ -203,7 +203,7 @@ export default function PricingPage() {
           style={{ background:'rgba(132,204,22,0.04)', border:'1px solid rgba(132,204,22,0.1)' }}>
           <Shield className="w-4 h-4 shrink-0" style={{ color:`${LIME}88` }} />
           <span className="text-sm text-white/40 font-display">
-            All plans include the Osiris 7-filter methodology · Cancel anytime · Educational purposes only
+            All plans include a 3-analysis free trial · No credit card required to start · Cancel anytime
           </span>
         </motion.div>
 
