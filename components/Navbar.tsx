@@ -167,12 +167,56 @@ export function Navbar({ plan, remaining }: NavbarProps) {
         </nav>
       </header>
 
+      {/* ── MOBILE BOTTOM TAB BAR ── */}
+      <nav style={{
+        display:'none',
+        position:'fixed', bottom:0, left:0, right:0, zIndex:50,
+        height:60,
+        background:'rgba(8,11,16,0.97)', backdropFilter:'blur(20px)',
+        borderTop:'1px solid rgba(255,255,255,0.07)',
+      }} className="mobile-bottom-nav">
+        <div style={{ display:'flex', height:'100%' }}>
+          <Link href="/dashboard" style={{
+            flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            gap:4, textDecoration:'none',
+            color: isAnalyze ? G : 'rgba(232,237,245,0.32)',
+            borderTop: isAnalyze ? `2px solid ${G}` : '2px solid transparent',
+          }}>
+            <Zap style={{ width:18, height:18 }} />
+            <span style={{ fontSize:10, fontWeight:600 }}>Analyze</span>
+          </Link>
+          <Link href="/dashboard/discover" style={{
+            flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            gap:4, textDecoration:'none',
+            color: isDiscover ? G : 'rgba(232,237,245,0.32)',
+            borderTop: isDiscover ? `2px solid ${G}` : '2px solid transparent',
+          }}>
+            <ScanLine style={{ width:18, height:18 }} />
+            <span style={{ fontSize:10, fontWeight:600 }}>Discover</span>
+          </Link>
+          <Link href="/pricing" style={{
+            flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+            gap:4, textDecoration:'none',
+            color: 'rgba(232,237,245,0.32)',
+            borderTop: '2px solid transparent',
+          }}>
+            <Crown style={{ width:18, height:18 }} />
+            <span style={{ fontSize:10, fontWeight:600 }}>Upgrade</span>
+          </Link>
+        </div>
+      </nav>
+
+      {/* spacer so content is not hidden behind bottom nav on mobile */}
+      <div className="mobile-bottom-spacer" style={{ display:'none', height:60 }} />
+
       <style jsx global>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
         @media (max-width: 600px) {
           .nav-links { display: none !important; }
           .nav-remaining { display: none !important; }
-          .nav-upgrade { font-size: 10px !important; padding: 5px 8px !important; }
+          .nav-upgrade { display: none !important; }
+          .mobile-bottom-nav { display: block !important; }
+          .mobile-bottom-spacer { display: block !important; }
         }
       `}</style>
     </>
