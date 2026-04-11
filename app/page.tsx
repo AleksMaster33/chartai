@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 import Link from 'next/link'
 import { motion, useInView } from 'framer-motion'
 import {
@@ -163,6 +165,17 @@ function AnalysisCard() {
 }
 
 /* ─── page ──────────────────────────────────────────────── */
+/* ── auth code redirect handler ─────────────────────────── */
+function AuthCodeRedirect() {
+  const router = useRouter()
+  const params = useSearchParams()
+  useEffect(() => {
+    const code = params.get('code')
+    if (code) router.replace(`/auth/callback?code=${code}`)
+  }, [params, router])
+  return null
+}
+
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [mouse, setMouse] = useState({ x:-1000, y:-1000 })
@@ -177,6 +190,9 @@ export default function HomePage() {
 
   return (
     <div style={{ minHeight:'100vh', overflowX:'hidden', background:'#080B10' }}>
+
+      {/* auth code redirect — handles ?code= landing on root */}
+      <Suspense fallback={null}><AuthCodeRedirect /></Suspense>
 
       {/* ── NAV — fixed, z-50 ───────────────────────────── */}
       <nav style={{
