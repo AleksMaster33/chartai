@@ -235,38 +235,33 @@ export default function HomePage() {
         </div>
       </nav>
 
-      {/* ── STATS BAR — fixed below nav, z-40 ──────────── */}
+      {/* ── SOCIAL PROOF BAR — fixed below nav, z-40 ──────── */}
       <div style={{
-        position:'fixed', top:64, left:0, right:0, height:36,
-        zIndex:40, background:'#0a0f0a',
-        borderBottom:'1px solid rgba(0,255,136,0.10)',
-        display:'flex', alignItems:'center', gap:24, padding:'0 24px',
-        overflow:'hidden',
+        position:'fixed', top:64, left:0, right:0, height:40,
+        zIndex:40, background:'rgba(0,255,136,0.07)',
+        borderBottom:'1px solid rgba(0,255,136,0.18)',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        gap:32, padding:'0 24px', overflow:'hidden',
       }}>
-        {/* LIVE badge */}
-        <div style={{
-          display:'flex', alignItems:'center', gap:6, flexShrink:0,
-          padding:'2px 10px', borderRadius:999,
-          background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
-        }}>
-          <span className="live-dot" style={{ width:6, height:6 }} />
-          <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.12em', color:G }}>LIVE</span>
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          <CheckCircle2 style={{ width:13, height:13, color:G }} />
+          <span style={{ fontSize:12, color:'rgba(232,237,245,0.70)' }}>
+            <span style={{ fontWeight:800, color:'#E8EDF5' }}>1,250+</span> traders trust our system daily
+          </span>
         </div>
-        <div style={{ width:1, height:16, background:'rgba(255,255,255,0.08)', flexShrink:0 }} />
-        {LIVE_STATS.map((s, i) => (
-          <div key={i} style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-            <s.icon style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
-            <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>{s.val}</span>
-            <span style={{ fontSize:11, color:'rgba(232,237,245,0.30)' }}>{s.label}</span>
-            {i < LIVE_STATS.length - 1 && (
-              <div style={{ width:1, height:12, background:'rgba(255,255,255,0.06)', marginLeft:8, flexShrink:0 }} />
-            )}
-          </div>
-        ))}
+        <div style={{ width:1, height:16, background:'rgba(255,255,255,0.15)', flexShrink:0 }} />
+        <div style={{ display:'flex', alignItems:'center', gap:8, flexShrink:0 }}>
+          <Zap style={{ width:13, height:13, color:G }} />
+          <span style={{ fontSize:12, color:'rgba(232,237,245,0.70)' }}>
+            <span style={{ fontWeight:800, color:'#E8EDF5' }}>
+              {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
+            </span> signals generated this week
+          </span>
+        </div>
       </div>
 
       {/* ── MAIN — padded below both fixed bars ─────────── */}
-      <main style={{ paddingTop:100 }}>
+      <main style={{ paddingTop:104 }}>
 
         {/* ── HERO ──────────────────────────────────────── */}
         <section style={{
@@ -275,29 +270,6 @@ export default function HomePage() {
           maxWidth:'72rem', margin:'0 auto', padding:'6rem 1.5rem',
           gap:0,
         }}>
-          {/* social proof pill — above everything */}
-          <div style={{
-            display:'inline-flex', alignItems:'center', flexWrap:'wrap', gap:'8px 24px',
-            padding:'10px 18px', borderRadius:12, marginBottom:24, alignSelf:'flex-start',
-            background:'rgba(0,255,136,0.06)', border:'1px solid rgba(0,255,136,0.20)',
-          }}>
-            <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-              <CheckCircle2 style={{ width:13, height:13, color:G, flexShrink:0 }} />
-              <span style={{ fontSize:12, color:'rgba(232,237,245,0.70)' }}>
-                <span style={{ fontWeight:800, color:'#E8EDF5' }}>1,250+</span> traders trust our system daily
-              </span>
-            </div>
-            <div style={{ width:1, height:14, background:'rgba(255,255,255,0.10)', flexShrink:0 }} className="lp-stat-divider" />
-            <div style={{ display:'flex', alignItems:'center', gap:7 }}>
-              <Zap style={{ width:13, height:13, color:G, flexShrink:0 }} />
-              <span style={{ fontSize:12, color:'rgba(232,237,245,0.70)' }}>
-                <span style={{ fontWeight:800, color:'#E8EDF5' }}>
-                  {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
-                </span> signals generated this week
-              </span>
-            </div>
-          </div>
-
           {/* live badge */}
           <div style={{
             display:'inline-flex', alignItems:'center', gap:8, marginBottom:28,
