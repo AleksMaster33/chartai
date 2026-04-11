@@ -329,71 +329,50 @@ export default function HomePage() {
             </Link>
           </div>
 
-          {/* stats row */}
-          <div style={{ display:'flex', gap:32, flexWrap:'wrap' }}>
-            {[
-              { icon:Globe,   label:'100+ Pairs Scanned'    },
-              { icon:Shield,  label:'7 Osiris Filters'      },
-              { icon:Zap,     label:'Signal in <20s'        },
-              { icon:Target,  label:'Entry · SL · TP Included' },
-            ].map(({ icon:Icon, label }) => (
-              <div key={label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <Icon style={{ width:14, height:14, color:'rgba(0,255,136,0.5)' }} />
-                <span style={{ fontSize:13, color:'rgba(232,237,245,0.38)' }}>{label}</span>
+          {/* social proof + stats */}
+          <div style={{
+            display:'flex', flexDirection:'column', gap:16,
+          }}>
+            {/* social proof row */}
+            <div style={{
+              display:'inline-flex', flexWrap:'wrap', gap:'12px 32px',
+              padding:'14px 20px', borderRadius:12,
+              background:'rgba(0,255,136,0.04)', border:'1px solid rgba(0,255,136,0.12)',
+              alignSelf:'flex-start',
+            }}>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <CheckCircle2 style={{ width:14, height:14, color:G, flexShrink:0 }} />
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.60)' }}>
+                  <span style={{ fontWeight:800, color:'#E8EDF5' }}>1,250+</span> traders trust our system daily
+                </span>
               </div>
-            ))}
+              <div style={{ width:1, height:16, background:'rgba(255,255,255,0.08)', alignSelf:'center', flexShrink:0 }} className="lp-stat-divider" />
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <Zap style={{ width:14, height:14, color:G, flexShrink:0 }} />
+                <span style={{ fontSize:13, color:'rgba(232,237,245,0.60)' }}>
+                  <span style={{ fontWeight:800, color:'#E8EDF5' }}>
+                    {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '—'}
+                  </span> signals generated this week
+                </span>
+              </div>
+            </div>
+
+            {/* tech specs row */}
+            <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
+              {[
+                { icon:Globe,   label:'100+ Pairs Scanned'       },
+                { icon:Shield,  label:'7 Osiris Filters'         },
+                { icon:Zap,     label:'Signal in <20s'           },
+                { icon:Target,  label:'Entry · SL · TP Included' },
+              ].map(({ icon:Icon, label }) => (
+                <div key={label} style={{ display:'flex', alignItems:'center', gap:8 }}>
+                  <Icon style={{ width:13, height:13, color:'rgba(0,255,136,0.4)' }} />
+                  <span style={{ fontSize:12, color:'rgba(232,237,245,0.30)' }}>{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
-
-        {/* ── SOCIAL PROOF BANNER ──────────────────────────── */}
-        <div style={{
-          borderTop:'1px solid rgba(0,255,136,0.08)',
-          background:'rgba(0,255,136,0.025)',
-          padding:'18px 24px',
-        }}>
-          <div style={{
-            maxWidth:'72rem', margin:'0 auto',
-            display:'flex', alignItems:'center', justifyContent:'center',
-            flexWrap:'wrap', gap:'28px 48px',
-          }}>
-            {/* stat 1 */}
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <div style={{
-                width:32, height:32, borderRadius:8, flexShrink:0,
-                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-              }}>
-                <CheckCircle2 style={{ width:15, height:15, color:G }} />
-              </div>
-              <span style={{ fontSize:13, color:'rgba(232,237,245,0.55)', lineHeight:1.45 }}>
-                <span style={{ fontWeight:800, color:'#E8EDF5', fontSize:15 }}>1,250+</span>{' '}
-                traders trust our system daily for successful trading
-              </span>
-            </div>
-
-            {/* divider */}
-            <div style={{ width:1, height:28, background:'rgba(255,255,255,0.07)', flexShrink:0 }} className="lp-stat-divider" />
-
-            {/* stat 2 */}
-            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-              <div style={{
-                width:32, height:32, borderRadius:8, flexShrink:0,
-                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
-                display:'flex', alignItems:'center', justifyContent:'center',
-              }}>
-                <Zap style={{ width:15, height:15, color:G }} />
-              </div>
-              <span style={{ fontSize:13, color:'rgba(232,237,245,0.55)' }}>
-                <span style={{ fontWeight:800, color:'#E8EDF5', fontSize:15 }}>
-                  {signalsThisWeek > 0
-                    ? signalsThisWeek.toLocaleString()
-                    : '—'}
-                </span>{' '}
-                signals generated this week
-              </span>
-            </div>
-          </div>
-        </div>
 
         {/* ── TICKER TAPE — below hero, not fixed ─────────── */}
         <div style={{
