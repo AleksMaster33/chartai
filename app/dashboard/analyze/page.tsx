@@ -46,7 +46,6 @@ function AnalyzeInner() {
         .then(({ data }) => {
           if (data) {
             setPlan(data.plan)
-            if (data.plan === 'free') { router.push('/pricing'); return }
             const limit = data.plan === 'basic' ? 3 : data.plan === 'pro' ? 10 : null
             setRemaining(limit ? Math.max(0, limit - (data.daily_analyses_used || 0)) : null)
           }
@@ -347,7 +346,6 @@ export default function AnalyzePage() {
         .then(({ data }) => {
           if (data) {
             setPlan(data.plan)
-            if (data.plan === 'free') { router.push('/pricing'); return }
             const limit = data.plan === 'basic' ? 3 : data.plan === 'pro' ? 10 : null
             setRemaining(limit ? Math.max(0, limit - (data.daily_analyses_used || 0)) : null)
           }
