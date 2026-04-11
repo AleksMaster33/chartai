@@ -8,17 +8,23 @@ export const PLANS = {
     price: 0,
     dailyLimit: 3,
   },
+  basic: {
+    name: 'Basic',
+    price: 19.99,
+    get priceId() { return process.env.STRIPE_BASIC_PRICE_ID! },
+    dailyLimit: 3,
+  },
   pro: {
     name: 'Pro',
-    price: 12,
+    price: 44.90,
     get priceId() { return process.env.STRIPE_PRO_PRICE_ID! },
-    dailyLimit: 999999,
+    dailyLimit: 10,
   },
   trader: {
-    name: 'Trader',
-    price: 29,
+    name: 'Unlimited',
+    price: 125,
     get priceId() { return process.env.STRIPE_TRADER_PRICE_ID! },
-    dailyLimit: 999999,
+    dailyLimit: 50,
   },
 }
 

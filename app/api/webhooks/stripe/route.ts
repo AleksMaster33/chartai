@@ -27,7 +27,9 @@ export async function POST(req: NextRequest) {
       const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
       const priceId = subscription.items.data[0].price.id
 
-      const plan = priceId === process.env.STRIPE_PRO_PRICE_ID ? 'pro' : 'trader'
+      const plan =
+        priceId === process.env.STRIPE_BASIC_PRICE_ID  ? 'basic'  :
+        priceId === process.env.STRIPE_PRO_PRICE_ID    ? 'pro'    : 'trader'
 
       await supabase
         .from('profiles')
@@ -88,7 +90,9 @@ export async function POST(req: NextRequest) {
       const customerId = subscription.customer as string
       const priceId = subscription.items.data[0].price.id
 
-      const plan = priceId === process.env.STRIPE_PRO_PRICE_ID ? 'pro' : 'trader'
+      const plan =
+        priceId === process.env.STRIPE_BASIC_PRICE_ID  ? 'basic'  :
+        priceId === process.env.STRIPE_PRO_PRICE_ID    ? 'pro'    : 'trader'
 
       await supabase
         .from('profiles')
