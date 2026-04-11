@@ -557,7 +557,7 @@ export default function HomePage() {
               PRICING
             </p>
             <h2 style={{ fontSize:'clamp(1.75rem,3vw,2.25rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:12 }}>
-              Start free. Scale when you&apos;re ready.
+              Simple, transparent pricing.
             </h2>
             <p style={{ fontSize:14, color:'rgba(232,237,245,0.35)', margin:0 }}>
               No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.
@@ -704,7 +704,7 @@ export default function HomePage() {
             }}>
               <span className="live-dot" style={{ width:6, height:6 }} />
               <span style={{ fontSize:11, fontWeight:700, color:'rgba(0,255,136,0.9)' }}>
-                3 free analyses — no credit card required
+                Osiris AI Engine · Live Market Scanner
               </span>
             </div>
 
@@ -726,11 +726,11 @@ export default function HomePage() {
               textDecoration:'none',
               boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}`,
             }}>
-              Start Your Free Analysis
+              Get Started — From $19.99
               <ArrowRight style={{ width:16, height:16 }} />
             </Link>
             <p style={{ marginTop:16, fontSize:12, color:'rgba(232,237,245,0.25)' }}>
-              3 free analyses included. No credit card required.
+              Cancel anytime · No hidden fees · Full Osiris signal breakdown
             </p>
           </div>
         </div>

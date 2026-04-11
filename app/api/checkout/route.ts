@@ -19,12 +19,17 @@ export async function POST(req: NextRequest) {
 
   const customerId = await createOrRetrieveCustomer(user.email!, user.id)
 
-  const session = await createCheckoutSession(
-    customerId,
-    planConfig.priceId,
-    user.id,
-    process.env.NEXT_PUBLIC_APP_URL!
-  )
-
-  return NextResponse.json({ url: session.url })
+  try {
+    const session = await createCheckoutSession(
+      customerId,
+      planConfig.priceId,
+      user.id,
+      process.env.NEXT_PUBLIC_APP_URL!
+    )
+    return NextResponse.json({ url: session.url })
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error('Stripe checkout error:', msg)
+    return NextResponse.json({ error: msg }, { status: 500 })
+  }
 }

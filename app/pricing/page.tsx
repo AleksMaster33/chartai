@@ -43,9 +43,10 @@ const FAQS = [
 
 export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null)
+  const [checkoutError, setCheckoutError] = useState<string | null>(null)
 
   const checkout = async (planId: string) => {
-    setLoading(planId)
+    setLoading(planId); setCheckoutError(null)
     try {
       const res = await fetch('/api/checkout', {
         method: 'POST',
@@ -55,7 +56,8 @@ export default function PricingPage() {
       const d = await res.json()
       if (d.url) window.location.href = d.url
       else if (res.status === 401) window.location.href = '/auth/login'
-    } catch { alert('Something went wrong.') }
+      else setCheckoutError(d.error || 'Something went wrong.')
+    } catch { setCheckoutError('Network error. Please try again.') }
     finally { setLoading(null) }
   }
 
@@ -107,6 +109,16 @@ export default function PricingPage() {
       {/* ── MAIN ────────────────────────────────────────── */}
       <main style={{ paddingTop:64, position:'relative', zIndex:1 }}>
 
+        {checkoutError && (
+          <div style={{
+            maxWidth:'40rem', margin:'24px auto 0', padding:'12px 20px', borderRadius:12,
+            background:'rgba(255,59,92,0.08)', border:'1px solid rgba(255,59,92,0.25)',
+            fontSize:13, color:'#f87171', textAlign:'center',
+          }}>
+            {checkoutError}
+          </div>
+        )}
+
         {/* ── HERO ──────────────────────────────────────── */}
         <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'5rem 1.5rem 3rem', textAlign:'center' }}>
           <p style={{ fontSize:11, fontWeight:700, letterSpacing:'0.18em', textTransform:'uppercase', color:'rgba(0,255,136,0.65)', marginBottom:12 }}>
@@ -116,7 +128,7 @@ export default function PricingPage() {
             fontSize:'clamp(2rem,5vw,3.25rem)', fontWeight:800,
             letterSpacing:'-0.03em', color:'#E8EDF5', marginBottom:12,
           }}>
-            Start free. Scale when you&apos;re ready.
+            Simple, transparent pricing.
           </h1>
           <p style={{ fontSize:15, color:'rgba(232,237,245,0.38)', maxWidth:480, margin:'0 auto' }}>
             No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.
