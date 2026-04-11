@@ -8,8 +8,9 @@ import { Navbar } from '@/components/Navbar'
 import {
   ScanLine, TrendingUp, TrendingDown, Minus, ExternalLink,
   CheckCircle2, XCircle, Clock, Zap, RefreshCw,
-  BarChart2, Activity, Shield, Target, AlertCircle, Crown,
+  BarChart2, Activity, Shield, Target, AlertCircle, Crown, Loader2,
 } from 'lucide-react'
+import Link from 'next/link'
 import type { DiscoveredCoin } from '@/lib/discovery/binance'
 
 const G     = '#00FF88'
@@ -189,6 +190,55 @@ function CoinCard({ coin, index, onAnalyze }: {
   )
 }
 
+function PaywallGate() {
+  return (
+    <motion.div
+      initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.5, ease:[0.22,1,0.36,1] }}
+      style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 24px', textAlign:'center' }}
+    >
+      <div style={{
+        width:72, height:72, borderRadius:20, marginBottom:24,
+        display:'flex', alignItems:'center', justifyContent:'center',
+        background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
+      }}>
+        <ScanLine style={{ width:28, height:28, color:G }} />
+      </div>
+      <h2 style={{ fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:10, color:'#E8EDF5' }}>
+        Subscription required
+      </h2>
+      <p style={{ fontSize:14, color:'rgba(232,237,245,0.40)', maxWidth:380, lineHeight:1.65, marginBottom:32 }}>
+        Market Discovery is available to paid subscribers. Choose a plan to start scanning 100+ pairs with Osiris AI filters.
+      </p>
+      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:560, marginBottom:28 }}>
+        {[
+          { label:'Basic', price:'$19.99', sub:'3 scans/day', plan:'basic', color:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.10)', text:'rgba(232,237,245,0.55)' },
+          { label:'Pro',   price:'$44.90', sub:'10 scans/day', plan:'pro',  color:'rgba(0,255,136,0.06)', border:'rgba(0,255,136,0.28)', text:G },
+          { label:'Unlimited', price:'$125', sub:'Unlimited', plan:'trader', color:'rgba(139,92,246,0.06)', border:'rgba(139,92,246,0.25)', text:'#a78bfa' },
+        ].map(p => (
+          <Link key={p.plan} href="/pricing" style={{
+            display:'flex', flexDirection:'column', alignItems:'center', gap:4,
+            padding:'16px 10px', borderRadius:12, textDecoration:'none',
+            background:p.color, border:`1px solid ${p.border}`,
+          }}>
+            <span style={{ fontSize:12, fontWeight:700, color:p.text }}>{p.label}</span>
+            <span style={{ fontSize:16, fontWeight:800, color:'#E8EDF5' }}>{p.price}</span>
+            <span style={{ fontSize:10, color:'rgba(232,237,245,0.30)' }}>{p.sub}</span>
+          </Link>
+        ))}
+      </div>
+      <Link href="/pricing" style={{
+        display:'inline-flex', alignItems:'center', gap:8,
+        padding:'13px 28px', borderRadius:12,
+        background:G, color:'#000', fontWeight:700, fontSize:14,
+        textDecoration:'none',
+      }}>
+        View Plans & Subscribe →
+      </Link>
+    </motion.div>
+  )
+}
+
 export default function DiscoverPage() {
   const [coins, setCoins]         = useState<DiscoveredCoin[] | null>(null)
   const [loading, setLoading]     = useState(false)
@@ -197,6 +247,7 @@ export default function DiscoverPage() {
   const [cached, setCached]       = useState(false)
   const [remaining, setRemaining] = useState<number | null>(null)
   const [plan, setPlan]           = useState('free')
+  const [loaded, setLoaded]       = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -210,6 +261,7 @@ export default function DiscoverPage() {
             const limit = data.plan === 'basic' ? 3 : data.plan === 'pro' ? 10 : null
             setRemaining(limit ? Math.max(0, limit - (data.daily_analyses_used || 0)) : null)
           }
+          setLoaded(true)
         })
     })
   }, [router])
@@ -261,6 +313,19 @@ export default function DiscoverPage() {
         <Navbar plan={plan} remaining={remaining} />
 
         <div className="discover-container" style={{ maxWidth:'64rem', margin:'0 auto', padding:'32px 24px' }}>
+
+          {/* loading spinner */}
+          {!loaded && (
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:'120px 0' }}>
+              <Loader2 style={{ width:28, height:28, color:'rgba(0,255,136,0.5)', animation:'spin 1s linear infinite' }} />
+            </div>
+          )}
+
+          {/* paywall for free users */}
+          {loaded && plan === 'free' && <PaywallGate />}
+
+          {/* main content for paid users */}
+          {loaded && plan !== 'free' && <>
 
           {/* page header */}
           <motion.div
@@ -491,10 +556,13 @@ export default function DiscoverPage() {
             )}
           </AnimatePresence>
 
+          </> /* end paid content */}
+
         </div>
       </div>
 
       <style jsx global>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
         @media (max-width: 900px) {
           .coins-grid { grid-template-columns: repeat(2,1fr) !important; }
         }

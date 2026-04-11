@@ -37,7 +37,7 @@ const PLANS = [
 const FAQS = [
   { q: 'Can I cancel anytime?',           a: 'Yes — cancel at any time. You keep access until the end of the billing period. No questions asked.' },
   { q: 'What charts are supported?',      a: 'Any screenshot from any platform — TradingView, Binance, Bybit, OKX, or custom charts. PNG, JPG, WebP.' },
-  { q: 'Is a credit card required?',      a: 'No. All plans include a 3-analysis free trial. No credit card required to start.' },
+  { q: 'Is a credit card required?',      a: 'Yes. A subscription is required to access all features. You can cancel anytime before your next billing cycle.' },
   { q: 'What is the Osiris methodology?', a: '7 filters: Fuel, Tension, Trend Sync, BTC Shield, Market Structure, Entry Zone, and Trigger — all applied before a signal reaches you. Every signal includes the full filter-by-filter reasoning.' },
 ]
 
@@ -178,13 +178,21 @@ export default function PricingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/auth/login" style={{
-                display:'block', textAlign:'center', padding:'13px 0',
-                borderRadius:10, fontSize:13, fontWeight:700, textDecoration:'none',
-                border:'1px solid rgba(255,255,255,0.09)', color:'rgba(232,237,245,0.48)',
-              }}>
+              <button
+                onClick={() => checkout('basic')}
+                disabled={!!loading}
+                style={{
+                  width:'100%', padding:'13px 0', borderRadius:10,
+                  fontSize:13, fontWeight:700, cursor:'pointer',
+                  background:'transparent', color:'rgba(232,237,245,0.48)',
+                  border:'1px solid rgba(255,255,255,0.09)',
+                  opacity: loading ? 0.6 : 1,
+                  display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+                }}
+              >
+                {loading === 'basic' && <Loader2 style={{ width:14, height:14 }} />}
                 Get Started
-              </Link>
+              </button>
             </div>
 
             {/* Pro — highlighted */}
@@ -307,7 +315,7 @@ export default function PricingPage() {
           }}>
             <Shield style={{ width:15, height:15, flexShrink:0, color:'rgba(0,255,136,0.55)' }} />
             <span style={{ fontSize:13, color:'rgba(232,237,245,0.40)' }}>
-              All plans include a 3-analysis free trial · No credit card required to start · Cancel anytime
+              Secure payment via Stripe · Cancel anytime before next billing cycle
             </span>
           </div>
         </div>
@@ -361,7 +369,7 @@ export default function PricingPage() {
               }}>
                 <CheckCircle2 style={{ width:12, height:12, color:G }} />
                 <span style={{ fontSize:11, fontWeight:700, color:'rgba(0,255,136,0.9)' }}>
-                  3 free analyses — no credit card required
+                  Powered by Osiris AI · 7-filter system
                 </span>
               </div>
               <h2 style={{
@@ -380,7 +388,7 @@ export default function PricingPage() {
                 textDecoration:'none',
                 boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 32px ${GLOW}`,
               }}>
-                Start Your Free Analysis →
+                Get Started — From $19.99 →
               </Link>
             </div>
           </div>
