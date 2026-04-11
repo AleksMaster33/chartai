@@ -38,8 +38,19 @@ export async function POST() {
       profile.daily_analyses_used = 0
     }
 
-    // Check shared daily limit (same pool as /api/analyze)
-    const dailyLimit = profile.plan === 'free' ? 3 : 999_999
+    // Block free users entirely — subscription required
+    if (profile.plan === 'free') {
+      return NextResponse.json(
+        { error: 'Subscription required', upgrade_url: '/pricing' },
+        { status: 403 },
+      )
+    }
+
+    // Daily limits per plan
+    const dailyLimit =
+      profile.plan === 'basic'  ? 3      :
+      profile.plan === 'pro'    ? 10     : 999_999  // trader / unlimited
+
     if (profile.daily_analyses_used >= dailyLimit) {
       return NextResponse.json(
         { error: 'Daily limit reached', upgrade_url: '/pricing' },
@@ -64,7 +75,7 @@ export async function POST() {
           coins:     cached.results,
           scannedAt: cached.scanned_at,
           cached:    true,
-          remainingToday: Math.max(0, dailyLimit - profile.daily_analyses_used),
+          remainingToday: dailyLimit >= 999_999 ? null : Math.max(0, dailyLimit - profile.daily_analyses_used),
         })
       }
     }
@@ -92,7 +103,7 @@ export async function POST() {
       coins,
       scannedAt: now,
       cached:    false,
-      remainingToday: Math.max(0, dailyLimit - profile.daily_analyses_used - 1),
+      remainingToday: dailyLimit >= 999_999 ? null : Math.max(0, dailyLimit - profile.daily_analyses_used - 1),
     })
   } catch (err) {
     console.error('Discovery error:', err)

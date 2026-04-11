@@ -38,16 +38,22 @@ export async function POST(req: NextRequest) {
       profile.daily_analyses_used = 0
     }
 
-    // Check daily limit for free users
-    const dailyLimit = profile.plan === 'free' ? 3 : 999999
+    // Block free users entirely — subscription required
+    if (profile.plan === 'free') {
+      return NextResponse.json(
+        { error: 'Subscription required', upgrade_url: '/pricing' },
+        { status: 403 }
+      )
+    }
+
+    // Daily limits per plan
+    const dailyLimit =
+      profile.plan === 'basic'  ? 3      :
+      profile.plan === 'pro'    ? 10     : 999999  // trader / unlimited
+
     if (profile.daily_analyses_used >= dailyLimit) {
       return NextResponse.json(
-        {
-          error: 'Daily limit reached',
-          plan: profile.plan,
-          limit: dailyLimit,
-          upgrade_url: '/pricing',
-        },
+        { error: 'Daily limit reached', plan: profile.plan, limit: dailyLimit, upgrade_url: '/pricing' },
         { status: 429 }
       )
     }
@@ -128,7 +134,7 @@ export async function POST(req: NextRequest) {
       success: true,
       analysis,
       analysisId: savedAnalysis?.id,
-      remainingToday: Math.max(0, dailyLimit - profile.daily_analyses_used - 1),
+      remainingToday: dailyLimit >= 999999 ? null : Math.max(0, dailyLimit - profile.daily_analyses_used - 1),
       plan: profile.plan,
     })
   } catch (error) {

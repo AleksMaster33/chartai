@@ -206,7 +206,7 @@ export default function LoginPage() {
           gridTemplateColumns:'1fr 1fr 1fr', gap:10,
         }}>
           {[
-            { icon:Zap,    label:'3 free/day',   sub:'No card needed'     },
+            { icon:Zap,    label:'From $19.99',   sub:'Cancel anytime'     },
             { icon:Shield, label:'Osiris AI',     sub:'7-filter system'    },
             { icon:Target, label:'Any chart',     sub:'Any platform'       },
           ].map(({ icon:Icon, label, sub }) => (
@@ -228,7 +228,7 @@ export default function LoginPage() {
         }}>
           <CheckCircle2 style={{ width:12, height:12, color:'rgba(0,255,136,0.40)' }} />
           <p style={{ fontSize:11, color:'rgba(232,237,245,0.22)', margin:0 }}>
-            No credit card required · Educational purposes only
+            Subscription required · Educational purposes only
           </p>
         </div>
       </div>

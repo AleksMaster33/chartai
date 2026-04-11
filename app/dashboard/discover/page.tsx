@@ -207,7 +207,9 @@ export default function DiscoverPage() {
         .then(({ data }) => {
           if (data) {
             setPlan(data.plan)
-            setRemaining(data.plan === 'free' ? Math.max(0, 3 - (data.daily_analyses_used || 0)) : null)
+            if (data.plan === 'free') { router.push('/pricing'); return }
+            const limit = data.plan === 'basic' ? 3 : data.plan === 'pro' ? 10 : null
+            setRemaining(limit ? Math.max(0, limit - (data.daily_analyses_used || 0)) : null)
           }
         })
     })
@@ -219,7 +221,8 @@ export default function DiscoverPage() {
       const res  = await fetch('/api/discover', { method:'POST' })
       const data = await res.json()
       if (!res.ok) {
-        if (res.status === 429) setError('Daily limit reached. Upgrade to Pro for unlimited scans.')
+        if (res.status === 403) setError('Subscription required. Choose a plan to start scanning.')
+        else if (res.status === 429) setError('Daily limit reached. Upgrade your plan for more scans.')
         else setError(data.error || 'Scan failed.')
         return
       }
