@@ -37,17 +37,31 @@ function AnalyzeInner() {
   const [remaining, setRemaining] = useState<number | null>(null)
   const [error, setError]         = useState<string | null>(null)
   const [plan, setPlan]           = useState('free')
+  const [resetIn, setResetIn]     = useState<string | null>(null)
 
   useEffect(() => {
     const sb = createClient()
     sb.auth.getUser().then(({ data: { user } }) => {
       if (!user) { router.push('/auth/login'); return }
-      sb.from('profiles').select('plan,daily_analyses_used').eq('id', user.id).single()
+      sb.from('profiles').select('plan,daily_analyses_used,daily_reset_at').eq('id', user.id).single()
         .then(({ data }) => {
           if (data) {
             setPlan(data.plan)
             const limit = data.plan === 'basic' ? 3 : data.plan === 'pro' ? 10 : null
             setRemaining(limit ? Math.max(0, limit - (data.daily_analyses_used || 0)) : null)
+            if (data.daily_reset_at) {
+              const nextReset = new Date(new Date(data.daily_reset_at).getTime() + 24 * 60 * 60 * 1000)
+              const update = () => {
+                const diff = nextReset.getTime() - Date.now()
+                if (diff <= 0) { setResetIn(null); return }
+                const h = Math.floor(diff / 3600000)
+                const m = Math.floor((diff % 3600000) / 60000)
+                setResetIn(`${h}h ${m}m`)
+              }
+              update()
+              const t = setInterval(update, 60000)
+              return () => clearInterval(t)
+            }
           }
         })
     })
@@ -271,16 +285,24 @@ function AnalyzeInner() {
             )}
           </AnimatePresence>
 
-          {/* remaining */}
-          {plan === 'free' && remaining !== null && !error && (
+          {/* remaining + reset timer */}
+          {remaining !== null && !error && (
             <div style={{
               display:'flex', alignItems:'center', justifyContent:'space-between',
               borderRadius:12, padding:'10px 16px',
-              background:'rgba(255,255,255,0.02)', border:'1px solid rgba(255,255,255,0.05)',
+              background: remaining === 0 ? 'rgba(255,59,92,0.05)' : 'rgba(255,255,255,0.02)',
+              border: remaining === 0 ? '1px solid rgba(255,59,92,0.15)' : '1px solid rgba(255,255,255,0.05)',
             }}>
               <span style={{ fontSize:12, color:'rgba(232,237,245,0.32)' }}>
-                <span style={{ fontWeight:600, color:'rgba(232,237,245,0.58)' }}>{remaining}</span>{' '}
-                free {remaining === 1 ? 'analysis' : 'analyses'} remaining today
+                <span style={{ fontWeight:600, color: remaining === 0 ? '#f87171' : 'rgba(232,237,245,0.58)' }}>
+                  {remaining}
+                </span>{' '}
+                {remaining === 1 ? 'analysis' : 'analyses'} remaining today
+                {remaining === 0 && resetIn && (
+                  <span style={{ marginLeft:8, color:'rgba(232,237,245,0.22)' }}>
+                    · Resets in <span style={{ color:'rgba(232,237,245,0.45)', fontWeight:600 }}>{resetIn}</span>
+                  </span>
+                )}
               </span>
               <a href="/pricing" style={{ fontSize:11, fontWeight:700, color:G, textDecoration:'none' }}>
                 Upgrade →

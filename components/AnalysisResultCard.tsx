@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   TrendingUp, TrendingDown, Minus, Target, ShieldAlert,
-  ArrowUpRight, BarChart2, ChevronDown, CheckCircle2, AlertCircle
+  ArrowUpRight, BarChart2, ChevronDown, CheckCircle2, AlertCircle,
+  Download, Loader2,
 } from 'lucide-react'
 import type { AnalysisResult } from '@/lib/ai/analyze'
 
@@ -83,6 +84,30 @@ export function AnalysisResultCard({
   remainingToday?: number
 }) {
   const [showIndicators, setShowIndicators] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  const handleExportPng = async () => {
+    if (!cardRef.current || exporting) return
+    setExporting(true)
+    try {
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#0D1117',
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      })
+      const link = document.createElement('a')
+      link.download = `${result.ticker || 'signal'}-${result.signal}-osiris.png`
+      link.href = canvas.toDataURL('image/png')
+      link.click()
+    } catch (e) {
+      console.error('Export failed:', e)
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const sig = {
     LONG:    { color:G,     bg:`rgba(0,255,136,0.08)`,   border:`rgba(0,255,136,0.20)`,   icon:TrendingUp,   label:'LONG'    },
@@ -108,6 +133,29 @@ export function AnalysisResultCard({
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.45, ease:[0.22,1,0.36,1] }}
       style={{ display:'flex', flexDirection:'column', gap:12 }}>
+
+      {/* export button */}
+      <div style={{ display:'flex', justifyContent:'flex-end' }}>
+        <button
+          onClick={handleExportPng}
+          disabled={exporting}
+          style={{
+            display:'flex', alignItems:'center', gap:6,
+            padding:'7px 14px', borderRadius:9, cursor:'pointer',
+            background:'rgba(0,255,136,0.06)', border:'1px solid rgba(0,255,136,0.18)',
+            color:'rgba(0,255,136,0.75)', fontSize:12, fontWeight:600,
+            opacity: exporting ? 0.5 : 1, transition:'opacity 0.15s',
+          }}
+        >
+          {exporting
+            ? <Loader2 style={{ width:13, height:13, animation:'spin 1s linear infinite' }} />
+            : <Download style={{ width:13, height:13 }} />}
+          {exporting ? 'Exporting…' : 'Save as PNG'}
+        </button>
+      </div>
+
+      {/* card content captured for PNG export */}
+      <div ref={cardRef} style={{ display:'flex', flexDirection:'column', gap:12, padding:4, borderRadius:16, background:'#0D1117' }}>
 
       {/* ── header card ── */}
       <div style={{
@@ -312,6 +360,7 @@ export function AnalysisResultCard({
       <p style={{ fontSize:10, color:'rgba(255,255,255,0.15)', textAlign:'center' }}>
         Educational purposes only · Not financial advice · Trade at your own risk
       </p>
+      </div> {/* end cardRef */}
     </motion.div>
   )
 }

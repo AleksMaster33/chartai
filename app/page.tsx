@@ -179,12 +179,16 @@ function AuthCodeRedirect() {
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [mouse, setMouse] = useState({ x:-1000, y:-1000 })
+  const [signalsThisWeek, setSignalsThisWeek] = useState<number>(0)
   const tickers = [...TICKERS, ...TICKERS, ...TICKERS]
 
   useEffect(() => {
     setMounted(true)
     const h = (e: MouseEvent) => setMouse({ x:e.clientX, y:e.clientY })
     window.addEventListener('mousemove', h, { passive:true })
+    fetch('/api/stats').then(r => r.json()).then(d => {
+      if (d.signalsThisWeek) setSignalsThisWeek(d.signalsThisWeek)
+    }).catch(() => {})
     return () => window.removeEventListener('mousemove', h)
   }, [])
 
@@ -340,6 +344,56 @@ export default function HomePage() {
             ))}
           </div>
         </section>
+
+        {/* ── SOCIAL PROOF BANNER ──────────────────────────── */}
+        <div style={{
+          borderTop:'1px solid rgba(0,255,136,0.08)',
+          background:'rgba(0,255,136,0.025)',
+          padding:'18px 24px',
+        }}>
+          <div style={{
+            maxWidth:'72rem', margin:'0 auto',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            flexWrap:'wrap', gap:'28px 48px',
+          }}>
+            {/* stat 1 */}
+            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{
+                width:32, height:32, borderRadius:8, flexShrink:0,
+                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <CheckCircle2 style={{ width:15, height:15, color:G }} />
+              </div>
+              <span style={{ fontSize:13, color:'rgba(232,237,245,0.55)', lineHeight:1.45 }}>
+                <span style={{ fontWeight:800, color:'#E8EDF5', fontSize:15 }}>1,250+</span>{' '}
+                traders trust our system daily for successful trading
+              </span>
+            </div>
+
+            {/* divider */}
+            <div style={{ width:1, height:28, background:'rgba(255,255,255,0.07)', flexShrink:0 }} className="lp-stat-divider" />
+
+            {/* stat 2 */}
+            <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{
+                width:32, height:32, borderRadius:8, flexShrink:0,
+                background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.18)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <Zap style={{ width:15, height:15, color:G }} />
+              </div>
+              <span style={{ fontSize:13, color:'rgba(232,237,245,0.55)' }}>
+                <span style={{ fontWeight:800, color:'#E8EDF5', fontSize:15 }}>
+                  {signalsThisWeek > 0
+                    ? signalsThisWeek.toLocaleString()
+                    : '—'}
+                </span>{' '}
+                signals generated this week
+              </span>
+            </div>
+          </div>
+        </div>
 
         {/* ── TICKER TAPE — below hero, not fixed ─────────── */}
         <div style={{
@@ -772,6 +826,7 @@ export default function HomePage() {
           .osiris-row { grid-template-columns: 40px 36px 1fr !important; gap: 12px !important; }
           .osiris-row > *:last-child { display: none !important; }
           .lp-nav-text { display: none !important; }
+          .lp-stat-divider { display: none !important; }
         }
       `}</style>
     </div>
