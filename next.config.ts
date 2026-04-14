@@ -7,6 +7,14 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
     ],
   },
+  async headers() {
+    return [
+      {
+        source: '/',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+    ]
+  },
 }
 
 export default nextConfig
