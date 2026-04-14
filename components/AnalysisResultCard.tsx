@@ -91,16 +91,11 @@ export function AnalysisResultCard({
     if (!cardRef.current || exporting) return
     setExporting(true)
     try {
-      const html2canvas = (await import('html2canvas')).default
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#0D1117',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      })
+      const domtoimage = (await import('dom-to-image-more')).default
+      const dataUrl = await domtoimage.toPng(cardRef.current, { bgcolor: '#0D1117', scale: 2 })
       const link = document.createElement('a')
       link.download = `${result.ticker || 'signal'}-${result.signal}-osiris.png`
-      link.href = canvas.toDataURL('image/png')
+      link.href = dataUrl
       link.click()
     } catch (e) {
       console.error('Export failed:', e)
