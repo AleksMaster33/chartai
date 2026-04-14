@@ -8,7 +8,7 @@ import { AnalysisResultCard } from '@/components/AnalysisResultCard'
 import { HistoryPanel } from '@/components/HistoryPanel'
 import { Navbar } from '@/components/Navbar'
 import type { AnalysisResult } from '@/lib/ai/analyze'
-import { Zap, History, Loader2, Crown, Cpu, ScanLine, AlertCircle, Check, Rocket } from 'lucide-react'
+import { Zap, History, Loader2, Crown, Cpu, ScanLine, AlertCircle, Check, Rocket, Lock } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
@@ -24,125 +24,152 @@ function PaywallGate() {
       initial={{ opacity:0, y:16 }}
       animate={{ opacity:1, y:0 }}
       transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
-      style={{
-        maxWidth:680, margin:'60px auto', padding:'0 24px',
-        display:'flex', flexDirection:'column', alignItems:'center', textAlign:'center',
-      }}
+      style={{ maxWidth:860, margin:'40px auto', padding:'0 24px' }}
     >
-      {/* icon */}
-      <div style={{
-        width:64, height:64, borderRadius:18, marginBottom:24,
-        display:'flex', alignItems:'center', justifyContent:'center',
-        background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
-      }}>
-        <ScanLine style={{ width:28, height:28, color:G }} />
-      </div>
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
 
-      <h2 style={{ fontSize:'clamp(1.4rem,3vw,1.9rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:12 }}>
-        Subscription required
-      </h2>
-      <p style={{ fontSize:14, color:'rgba(232,237,245,0.40)', lineHeight:1.7, maxWidth:440, marginBottom:40 }}>
-        Choose a plan to unlock the Osiris AI engine, real-time market scanner,
-        and full signal breakdowns with entry, stop-loss and take-profit levels.
-      </p>
-
-      {/* plan cards */}
-      <div className="paywall-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, width:'100%', marginBottom:32 }}>
-
-        {/* Basic */}
-        <Link href="/pricing" style={{ textDecoration:'none' }}>
-          <div style={{
-            padding:'20px 16px', borderRadius:14, cursor:'pointer',
-            background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.08)',
-            transition:'border-color 0.15s',
-            display:'flex', flexDirection:'column', gap:8,
-          }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.16)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
-          >
-            <Zap style={{ width:18, height:18, color:'rgba(232,237,245,0.40)', marginBottom:4 }} />
-            <p style={{ fontSize:11, fontWeight:700, color:'rgba(232,237,245,0.35)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Basic</p>
-            <p style={{ fontSize:'1.5rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$19.99</p>
-            <p style={{ fontSize:11, color:'rgba(232,237,245,0.30)', margin:0 }}>/month</p>
-            <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:6 }}>
-              {['3 analyses/day', 'Market scanner', 'Full signal breakdown'].map(f => (
-                <div key={f} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <Check style={{ width:11, height:11, color:'rgba(255,255,255,0.30)', flexShrink:0 }} />
-                  <span style={{ fontSize:11, color:'rgba(232,237,245,0.45)' }}>{f}</span>
-                </div>
-              ))}
+        {/* ── blurred mock signal preview ── */}
+        <div style={{
+          filter:'blur(6px)', opacity:0.30, pointerEvents:'none', userSelect:'none',
+          padding:'32px', background:'rgba(13,17,23,0.90)',
+        }}>
+          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
+            <div>
+              <div style={{ fontSize:'1.7rem', fontWeight:800, color:'#E8EDF5', letterSpacing:'-0.02em' }}>BTC / USDT</div>
+              <div style={{ fontSize:12, color:'rgba(232,237,245,0.35)', marginTop:4 }}>1H · Futures</div>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:8 }}>
+              <div style={{ padding:'7px 20px', borderRadius:9, background:'rgba(0,255,136,0.12)', border:'1px solid rgba(0,255,136,0.30)' }}>
+                <span style={{ fontSize:20, fontWeight:800, color:G }}>LONG</span>
+              </div>
+              <div style={{ fontSize:12, color:'rgba(232,237,245,0.40)' }}>Confidence · 78%</div>
             </div>
           </div>
-        </Link>
+          <div style={{ marginBottom:20 }}>
+            <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'rgba(232,237,245,0.30)', marginBottom:6 }}>
+              <span>Confidence</span><span>78%</span>
+            </div>
+            <div style={{ height:5, background:'rgba(255,255,255,0.06)', borderRadius:4, overflow:'hidden' }}>
+              <div style={{ width:'78%', height:'100%', background:G, borderRadius:4 }} />
+            </div>
+          </div>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+            {[
+              { label:'Entry',     value:'67,420', color:G },
+              { label:'Stop Loss', value:'65,800', color:'#FF3B5C' },
+              { label:'TP 1',      value:'69,500', color:G },
+              { label:'TP 2',      value:'72,100', color:G },
+            ].map(({ label, value, color }) => (
+              <div key={label} style={{ padding:'13px 14px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontSize:10, color:'rgba(232,237,245,0.28)', marginBottom:5, textTransform:'uppercase', letterSpacing:'0.1em' }}>{label}</div>
+                <div style={{ fontSize:19, fontWeight:700, color, fontFamily:'JetBrains Mono,monospace' }}>$ {value}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
+            {['Fuel ✓','Tension ✓','Trend Sync ✓','BTC Shield ✓','Structure ✓','Entry Zone ✓','Trigger ✗'].map((f, i) => (
+              <div key={f} style={{
+                fontSize:10, fontWeight:600, padding:'4px 10px', borderRadius:6,
+                background: i < 6 ? 'rgba(0,255,136,0.08)' : 'rgba(255,59,92,0.08)',
+                border: i < 6 ? '1px solid rgba(0,255,136,0.20)' : '1px solid rgba(255,59,92,0.20)',
+                color: i < 6 ? 'rgba(0,255,136,0.70)' : 'rgba(255,59,92,0.60)',
+              }}>{f}</div>
+            ))}
+          </div>
+        </div>
 
-        {/* Pro — highlighted */}
-        <Link href="/pricing" style={{ textDecoration:'none' }}>
+        {/* ── frosted overlay ── */}
+        <div style={{
+          position:'absolute', inset:0,
+          background:'radial-gradient(ellipse at 50% 45%, rgba(8,11,16,0.50) 0%, rgba(8,11,16,0.93) 68%)',
+        }} />
+
+        {/* ── foreground CTA ── */}
+        <div style={{
+          position:'absolute', inset:0,
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          padding:'40px 24px', textAlign:'center',
+        }}>
           <div style={{
-            padding:'20px 16px', borderRadius:14, cursor:'pointer', position:'relative',
-            background:'rgba(0,255,136,0.05)', border:`1px solid rgba(0,255,136,0.25)`,
-            boxShadow:`0 0 24px rgba(0,255,136,0.08)`,
-            display:'flex', flexDirection:'column', gap:8,
+            width:56, height:56, borderRadius:16, marginBottom:18,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
+            boxShadow:'0 0 32px rgba(0,255,136,0.12)',
           }}>
-            <div style={{
-              position:'absolute', top:-10, left:'50%', transform:'translateX(-50%)',
-              fontSize:10, fontWeight:700, padding:'3px 10px', borderRadius:999,
-              background:G, color:'#000', whiteSpace:'nowrap',
-            }}>Most Popular</div>
-            <Crown style={{ width:18, height:18, color:G, marginBottom:4 }} />
-            <p style={{ fontSize:11, fontWeight:700, color:'rgba(0,255,136,0.70)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Pro</p>
-            <p style={{ fontSize:'1.5rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$44.90</p>
-            <p style={{ fontSize:11, color:'rgba(232,237,245,0.30)', margin:0 }}>/month</p>
-            <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:6 }}>
-              {['10 analyses/day', 'Market scanner', 'Unlimited history'].map(f => (
-                <div key={f} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <Check style={{ width:11, height:11, color:`rgba(0,255,136,0.60)`, flexShrink:0 }} />
-                  <span style={{ fontSize:11, color:'rgba(232,237,245,0.55)' }}>{f}</span>
-                </div>
-              ))}
-            </div>
+            <Lock style={{ width:24, height:24, color:G }} />
           </div>
-        </Link>
 
-        {/* Unlimited */}
-        <Link href="/pricing" style={{ textDecoration:'none' }}>
-          <div style={{
-            padding:'20px 16px', borderRadius:14, cursor:'pointer',
-            background:'rgba(139,92,246,0.05)', border:'1px solid rgba(139,92,246,0.18)',
-            transition:'border-color 0.15s',
-            display:'flex', flexDirection:'column', gap:8,
-          }}
-            onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(139,92,246,0.35)')}
-            onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(139,92,246,0.18)')}
-          >
-            <Rocket style={{ width:18, height:18, color:'#a78bfa', marginBottom:4 }} />
-            <p style={{ fontSize:11, fontWeight:700, color:'rgba(167,139,250,0.70)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Unlimited</p>
-            <p style={{ fontSize:'1.5rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$125</p>
-            <p style={{ fontSize:11, color:'rgba(232,237,245,0.30)', margin:0 }}>/month</p>
-            <div style={{ marginTop:8, display:'flex', flexDirection:'column', gap:6 }}>
-              {['50 analyses/day', 'Priority speed', 'Swing analysis'].map(f => (
-                <div key={f} style={{ display:'flex', alignItems:'center', gap:6 }}>
-                  <Check style={{ width:11, height:11, color:'rgba(167,139,250,0.50)', flexShrink:0 }} />
-                  <span style={{ fontSize:11, color:'rgba(232,237,245,0.45)' }}>{f}</span>
-                </div>
-              ))}
-            </div>
+          <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
+            Your signal is waiting
+          </h2>
+          <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, maxWidth:380, marginBottom:28 }}>
+            Subscribe to unlock the full Osiris signal — entry, stop-loss, take-profits,
+            and the complete 7-filter breakdown for every chart you upload.
+          </p>
+
+          {/* plan cards */}
+          <div className="paywall-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:560, marginBottom:22 }}>
+            <Link href="/pricing" style={{ textDecoration:'none' }}>
+              <div style={{
+                padding:'14px 12px', borderRadius:12, cursor:'pointer',
+                background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.09)',
+                transition:'border-color 0.15s', display:'flex', flexDirection:'column', gap:5,
+              }}
+                onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.20)')}
+                onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.09)')}
+              >
+                <p style={{ fontSize:10, fontWeight:700, color:'rgba(232,237,245,0.32)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Basic</p>
+                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$19.99</p>
+                <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>3 analyses/day</p>
+              </div>
+            </Link>
+            <Link href="/pricing" style={{ textDecoration:'none' }}>
+              <div style={{
+                padding:'14px 12px', borderRadius:12, cursor:'pointer', position:'relative',
+                background:'rgba(0,255,136,0.06)', border:'1.5px solid rgba(0,255,136,0.32)',
+                boxShadow:'0 0 20px rgba(0,255,136,0.10)', display:'flex', flexDirection:'column', gap:5,
+              }}>
+                <div style={{
+                  position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
+                  fontSize:9, fontWeight:800, padding:'2px 9px', borderRadius:999,
+                  background:G, color:'#000', whiteSpace:'nowrap',
+                }}>POPULAR</div>
+                <p style={{ fontSize:10, fontWeight:700, color:'rgba(0,255,136,0.70)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Pro</p>
+                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$44.90</p>
+                <p style={{ fontSize:10, color:'rgba(232,237,245,0.40)', margin:0 }}>10 analyses/day</p>
+              </div>
+            </Link>
+            <Link href="/pricing" style={{ textDecoration:'none' }}>
+              <div style={{
+                padding:'14px 12px', borderRadius:12, cursor:'pointer',
+                background:'rgba(139,92,246,0.05)', border:'1px solid rgba(139,92,246,0.18)',
+                transition:'border-color 0.15s', display:'flex', flexDirection:'column', gap:5,
+              }}
+                onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(139,92,246,0.38)')}
+                onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(139,92,246,0.18)')}
+              >
+                <p style={{ fontSize:10, fontWeight:700, color:'rgba(167,139,250,0.65)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Unlimited</p>
+                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$125</p>
+                <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>50 analyses/day</p>
+              </div>
+            </Link>
           </div>
-        </Link>
+
+          <Link href="/pricing" style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            padding:'13px 32px', borderRadius:12,
+            background:G, color:'#000', fontWeight:700, fontSize:14,
+            textDecoration:'none',
+            boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
+          }}>
+            <Crown style={{ width:15, height:15 }} />
+            Unlock Osiris AI →
+          </Link>
+          <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
+            Cancel anytime · No hidden fees
+          </p>
+        </div>
       </div>
-
-      <Link href="/pricing" style={{
-        display:'inline-flex', alignItems:'center', gap:8,
-        padding:'14px 36px', borderRadius:12,
-        background:G, color:'#000', fontWeight:700, fontSize:15,
-        textDecoration:'none',
-        boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 8px 28px ${GLOW}`,
-      }}>
-        <Crown style={{ width:16, height:16 }} />
-        View Plans & Subscribe
-      </Link>
-      <p style={{ marginTop:12, fontSize:11, color:'rgba(232,237,245,0.22)' }}>
-        Cancel anytime · No hidden fees
-      </p>
     </motion.div>
   )
 }
@@ -193,7 +220,7 @@ export default function DashboardPage() {
         setError(res.status === 403
           ? 'Subscription required. Choose a plan to start analyzing.'
           : res.status === 429
-          ? 'Daily limit reached. Upgrade your plan for more analyses.'
+          ? `You've hit your daily limit — you're clearly putting this to work. Upgrade to Pro for 10 analyses/day.`
           : data.error || 'Analysis failed.')
         return
       }
@@ -417,6 +444,32 @@ export default function DashboardPage() {
                             initial={{ opacity:0, x:16 }} animate={{ opacity:1, x:0 }} exit={{ opacity:0, x:16 }}
                             transition={{ duration:0.35, ease:[0.22,1,0.36,1] }}>
                             <AnalysisResultCard result={result} remainingToday={remaining ?? undefined} />
+                            {remaining !== null && remaining <= 2 && (
+                              <motion.div
+                                initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }}
+                                transition={{ delay:0.6, duration:0.35 }}
+                                style={{
+                                  marginTop:12, borderRadius:12, padding:'12px 16px',
+                                  display:'flex', alignItems:'center', justifyContent:'space-between', gap:12,
+                                  background:'rgba(0,255,136,0.05)', border:'1px solid rgba(0,255,136,0.18)',
+                                }}>
+                                <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                                  <Zap style={{ width:14, height:14, color:G, flexShrink:0 }} />
+                                  <span style={{ fontSize:12, color:'rgba(232,237,245,0.55)', lineHeight:1.4 }}>
+                                    {remaining === 0
+                                      ? <><span style={{ color:'rgba(232,237,245,0.80)', fontWeight:600 }}>Limit reached.</span> You&apos;re using this well — upgrade for more.</>
+                                      : <><span style={{ color:'rgba(232,237,245,0.80)', fontWeight:600 }}>{remaining} {remaining === 1 ? 'analysis' : 'analyses'} left today.</span> Power traders run Pro.</>
+                                    }
+                                  </span>
+                                </div>
+                                <a href="/pricing" style={{
+                                  fontSize:11, fontWeight:700, color:G, textDecoration:'none',
+                                  whiteSpace:'nowrap', display:'flex', alignItems:'center', gap:4,
+                                }}>
+                                  <Crown style={{ width:11, height:11 }} /> Upgrade →
+                                </a>
+                              </motion.div>
+                            )}
                           </motion.div>
                         ) : (
                           <motion.div key="empty"

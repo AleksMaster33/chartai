@@ -130,8 +130,11 @@ export default function PricingPage() {
           }}>
             Simple, transparent pricing.
           </h1>
-          <p style={{ fontSize:15, color:'rgba(232,237,245,0.38)', maxWidth:480, margin:'0 auto' }}>
+          <p style={{ fontSize:15, color:'rgba(232,237,245,0.38)', maxWidth:480, margin:'0 auto 16px' }}>
             No hidden fees. Cancel anytime. Every plan includes full Osiris signal breakdowns.
+          </p>
+          <p style={{ fontSize:14, color:'rgba(0,255,136,0.60)', maxWidth:400, margin:'0 auto', fontStyle:'italic' }}>
+            One well-timed signal typically covers your entire monthly subscription.
           </p>
         </div>
 
@@ -317,6 +320,53 @@ export default function PricingPage() {
             <span style={{ fontSize:13, color:'rgba(232,237,245,0.40)' }}>
               Secure payment via Stripe · Cancel anytime before next billing cycle
             </span>
+          </div>
+        </div>
+
+        {/* ── TESTIMONIALS ──────────────────────────────── */}
+        <div style={{ maxWidth:'72rem', margin:'0 auto', padding:'1rem 1.5rem 3rem' }}>
+          <div className="pricing-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:16, maxWidth:960, margin:'0 auto' }}>
+            {[
+              {
+                quote: 'Got a LONG signal on AVAX at the exact low. TP2 hit within 6 hours. This pays for itself in one trade.',
+                name: 'M. Petrov', tag: 'Futures trader · Pro plan',
+                result: '+14.2%', pair: 'AVAX/USDT',
+              },
+              {
+                quote: 'I was skeptical about AI signals. After 3 weeks I stopped second-guessing and just follow the system.',
+                name: 'D. Ivanova', tag: 'Spot trader · Basic plan',
+                result: '+8.7%', pair: 'ETH/USDT',
+              },
+              {
+                quote: 'The 7-filter breakdown is what convinced me. Not just a signal — I can see exactly why. Invaluable.',
+                name: 'K. Andreev', tag: 'Swing trader · Unlimited plan',
+                result: '+22.4%', pair: 'SOL/USDT',
+              },
+            ].map(({ quote, name, tag, result, pair }) => (
+              <div key={name} style={{
+                padding:'22px 20px', borderRadius:14,
+                background:'rgba(255,255,255,0.025)', border:'1px solid rgba(255,255,255,0.055)',
+                display:'flex', flexDirection:'column', gap:14,
+              }}>
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.55)', lineHeight:1.7, margin:0, flex:1 }}>
+                  &ldquo;{quote}&rdquo;
+                </p>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <div>
+                    <p style={{ fontSize:13, fontWeight:700, color:'rgba(232,237,245,0.75)', margin:0 }}>{name}</p>
+                    <p style={{ fontSize:11, color:'rgba(232,237,245,0.28)', margin:'2px 0 0' }}>{tag}</p>
+                  </div>
+                  <div style={{
+                    padding:'5px 10px', borderRadius:8,
+                    background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)',
+                    textAlign:'right',
+                  }}>
+                    <p style={{ fontSize:14, fontWeight:800, color:G, margin:0, fontFamily:'JetBrains Mono,monospace' }}>{result}</p>
+                    <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>{pair}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 

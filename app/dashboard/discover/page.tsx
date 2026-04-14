@@ -8,7 +8,7 @@ import { Navbar } from '@/components/Navbar'
 import {
   ScanLine, TrendingUp, TrendingDown, Minus, ExternalLink,
   CheckCircle2, XCircle, Clock, Zap, RefreshCw,
-  BarChart2, Activity, Shield, Target, AlertCircle, Crown, Loader2,
+  BarChart2, Activity, Shield, Target, AlertCircle, Crown, Loader2, Lock,
 } from 'lucide-react'
 import Link from 'next/link'
 import type { DiscoveredCoin } from '@/lib/discovery/binance'
@@ -191,50 +191,125 @@ function CoinCard({ coin, index, onAnalyze }: {
 }
 
 function PaywallGate() {
+  const GLOW = 'rgba(0,255,136,0.20)'
   return (
     <motion.div
-      initial={{ opacity:0, y:24 }} animate={{ opacity:1, y:0 }}
-      transition={{ duration:0.5, ease:[0.22,1,0.36,1] }}
-      style={{ display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'80px 24px', textAlign:'center' }}
+      initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
+      style={{ maxWidth:860, margin:'32px auto', padding:'0 24px' }}
     >
-      <div style={{
-        width:72, height:72, borderRadius:20, marginBottom:24,
-        display:'flex', alignItems:'center', justifyContent:'center',
-        background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.20)',
-      }}>
-        <ScanLine style={{ width:28, height:28, color:G }} />
-      </div>
-      <h2 style={{ fontSize:'1.5rem', fontWeight:800, letterSpacing:'-0.02em', marginBottom:10, color:'#E8EDF5' }}>
-        Subscription required
-      </h2>
-      <p style={{ fontSize:14, color:'rgba(232,237,245,0.40)', maxWidth:380, lineHeight:1.65, marginBottom:32 }}>
-        Market Discovery is available to paid subscribers. Choose a plan to start scanning 100+ pairs with Osiris AI filters.
-      </p>
-      <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:560, marginBottom:28 }}>
-        {[
-          { label:'Basic', price:'$19.99', sub:'3 scans/day', plan:'basic', color:'rgba(255,255,255,0.08)', border:'rgba(255,255,255,0.10)', text:'rgba(232,237,245,0.55)' },
-          { label:'Pro',   price:'$44.90', sub:'10 scans/day', plan:'pro',  color:'rgba(0,255,136,0.06)', border:'rgba(0,255,136,0.28)', text:G },
-          { label:'Unlimited', price:'$125', sub:'Unlimited', plan:'trader', color:'rgba(139,92,246,0.06)', border:'rgba(139,92,246,0.25)', text:'#a78bfa' },
-        ].map(p => (
-          <Link key={p.plan} href="/pricing" style={{
-            display:'flex', flexDirection:'column', alignItems:'center', gap:4,
-            padding:'16px 10px', borderRadius:12, textDecoration:'none',
-            background:p.color, border:`1px solid ${p.border}`,
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
+
+        {/* ── blurred mock scanner preview ── */}
+        <div style={{
+          filter:'blur(5px)', opacity:0.28, pointerEvents:'none', userSelect:'none',
+          padding:'24px', background:'rgba(13,17,23,0.90)',
+          display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12,
+        }}>
+          {[
+            { pair:'ETH/USDT',  dir:'LONG',    change:'+3.21%', score:'6/7', filters:6 },
+            { pair:'SOL/USDT',  dir:'LONG',    change:'+5.84%', score:'7/7', filters:7 },
+            { pair:'BNB/USDT',  dir:'SHORT',   change:'-2.10%', score:'5/7', filters:5 },
+            { pair:'AVAX/USDT', dir:'LONG',    change:'+4.65%', score:'6/7', filters:6 },
+            { pair:'DOGE/USDT', dir:'NEUTRAL', change:'+0.38%', score:'3/7', filters:3 },
+            { pair:'ADA/USDT',  dir:'LONG',    change:'+2.97%', score:'5/7', filters:5 },
+          ].map(({ pair, dir, change, score, filters }) => (
+            <div key={pair} style={{
+              padding:'14px', borderRadius:10,
+              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)',
+            }}>
+              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
+                <span style={{ fontSize:14, fontWeight:700, color:'#E8EDF5' }}>{pair}</span>
+                <span style={{
+                  fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:6,
+                  background: dir==='LONG' ? 'rgba(0,255,136,0.12)' : dir==='SHORT' ? 'rgba(255,59,92,0.12)' : 'rgba(255,184,0,0.10)',
+                  color: dir==='LONG' ? G : dir==='SHORT' ? RED : AMBER,
+                }}>{dir}</span>
+              </div>
+              <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'rgba(232,237,245,0.35)' }}>
+                <span>{change}</span><span>Osiris {score}</span>
+              </div>
+              <div style={{ marginTop:8, display:'flex', gap:3 }}>
+                {Array.from({ length: 7 }).map((_, i) => (
+                  <div key={i} style={{
+                    flex:1, height:3, borderRadius:2,
+                    background: i < filters ? G : 'rgba(255,255,255,0.08)',
+                  }} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* ── frosted overlay ── */}
+        <div style={{
+          position:'absolute', inset:0,
+          background:'radial-gradient(ellipse at 50% 45%, rgba(8,11,16,0.50) 0%, rgba(8,11,16,0.93) 68%)',
+        }} />
+
+        {/* ── foreground CTA ── */}
+        <div style={{
+          position:'absolute', inset:0,
+          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+          padding:'40px 24px', textAlign:'center',
+        }}>
+          <div style={{
+            width:56, height:56, borderRadius:16, marginBottom:18,
+            display:'flex', alignItems:'center', justifyContent:'center',
+            background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
+            boxShadow:'0 0 32px rgba(0,255,136,0.12)',
           }}>
-            <span style={{ fontSize:12, fontWeight:700, color:p.text }}>{p.label}</span>
-            <span style={{ fontSize:16, fontWeight:800, color:'#E8EDF5' }}>{p.price}</span>
-            <span style={{ fontSize:10, color:'rgba(232,237,245,0.30)' }}>{p.sub}</span>
+            <Lock style={{ width:24, height:24, color:G }} />
+          </div>
+          <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
+            100+ pairs, live right now
+          </h2>
+          <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, maxWidth:360, marginBottom:28 }}>
+            Market Discovery scans 100+ pairs with all 7 Osiris filters in real time.
+            Subscribe to see which setups are forming right now.
+          </p>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:520, marginBottom:22 }}>
+            {[
+              { label:'Basic', price:'$19.99', sub:'3 scans/day', border:'rgba(255,255,255,0.10)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.35)', pop:false },
+              { label:'Pro',   price:'$44.90', sub:'10 scans/day', border:'rgba(0,255,136,0.32)', bg:'rgba(0,255,136,0.06)', textColor:'rgba(0,255,136,0.70)', pop:true },
+              { label:'Unlimited', price:'$125', sub:'50/day', border:'rgba(139,92,246,0.22)', bg:'rgba(139,92,246,0.05)', textColor:'rgba(167,139,250,0.65)', pop:false },
+            ].map(p => (
+              <Link key={p.label} href="/pricing" style={{ textDecoration:'none' }}>
+                <div style={{
+                  padding:'14px 12px', borderRadius:12, cursor:'pointer', position:'relative',
+                  background:p.bg, border:`${p.pop ? '1.5px' : '1px'} solid ${p.border}`,
+                  boxShadow: p.pop ? '0 0 20px rgba(0,255,136,0.10)' : 'none',
+                  display:'flex', flexDirection:'column', gap:5,
+                }}>
+                  {p.pop && (
+                    <div style={{
+                      position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
+                      fontSize:9, fontWeight:800, padding:'2px 9px', borderRadius:999,
+                      background:G, color:'#000', whiteSpace:'nowrap',
+                    }}>POPULAR</div>
+                  )}
+                  <p style={{ fontSize:10, fontWeight:700, color:p.textColor, textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>{p.label}</p>
+                  <p style={{ fontSize:'1.3rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>{p.price}</p>
+                  <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>{p.sub}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <Link href="/pricing" style={{
+            display:'inline-flex', alignItems:'center', gap:8,
+            padding:'13px 32px', borderRadius:12,
+            background:G, color:'#000', fontWeight:700, fontSize:14,
+            textDecoration:'none',
+            boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
+          }}>
+            <Crown style={{ width:15, height:15 }} />
+            Unlock Market Discovery →
           </Link>
-        ))}
+          <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
+            Cancel anytime · No hidden fees
+          </p>
+        </div>
       </div>
-      <Link href="/pricing" style={{
-        display:'inline-flex', alignItems:'center', gap:8,
-        padding:'13px 28px', borderRadius:12,
-        background:G, color:'#000', fontWeight:700, fontSize:14,
-        textDecoration:'none',
-      }}>
-        View Plans & Subscribe →
-      </Link>
     </motion.div>
   )
 }
