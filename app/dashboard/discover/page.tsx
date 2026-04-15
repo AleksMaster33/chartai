@@ -206,112 +206,105 @@ function PaywallGate() {
       transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
       style={{ maxWidth:900, margin:'32px auto', padding:'0 24px' }}
     >
-      {/* outer wrapper: explicit height so absolute CTA always fits */}
-      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', minHeight:520 }}>
+      {/* content drives the height — blurred bg is absolutely positioned behind */}
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
 
-        {/* blurred mock grid — fills the background */}
-        <div style={{
-          position:'absolute', inset:0,
-          filter:'blur(4px)', opacity:0.22, pointerEvents:'none', userSelect:'none',
-          padding:'24px', background:'rgba(13,17,23,0.90)',
-          display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, alignContent:'start',
-        }}>
-          {MOCK_COINS.map(({ pair, dir, change, filters }) => (
-            <div key={pair} style={{
-              padding:'14px', borderRadius:10,
-              background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)',
-            }}>
-              <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                <span style={{ fontSize:13, fontWeight:700, color:'#E8EDF5' }}>{pair}</span>
-                <span style={{
-                  fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:6,
-                  background: dir==='LONG' ? 'rgba(0,255,136,0.15)' : dir==='SHORT' ? 'rgba(255,59,92,0.15)' : 'rgba(255,184,0,0.12)',
-                  color: dir==='LONG' ? G : dir==='SHORT' ? RED : AMBER,
-                }}>{dir}</span>
-              </div>
-              <div style={{ fontSize:11, color:'rgba(232,237,245,0.35)', marginBottom:8 }}>{change} · Osiris {filters}/7</div>
-              <div style={{ display:'flex', gap:3 }}>
-                {Array.from({ length:7 }).map((_, i) => (
-                  <div key={i} style={{ flex:1, height:3, borderRadius:2, background: i < filters ? G : 'rgba(255,255,255,0.07)' }} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* gradient overlay */}
-        <div style={{
-          position:'absolute', inset:0,
-          background:'radial-gradient(ellipse at 50% 50%, rgba(8,11,16,0.55) 0%, rgba(8,11,16,0.96) 70%)',
-        }} />
-
-        {/* CTA — centered, no absolute height dependency */}
+        {/* CTA — in normal flow, sets the height */}
         <div style={{
           position:'relative', zIndex:2,
-          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          minHeight:520, padding:'48px 24px', textAlign:'center',
+          display:'flex', flexDirection:'column', alignItems:'center',
+          padding:'48px 20px 40px', textAlign:'center',
+          background:'rgba(13,17,23,0.90)',
         }}>
+          {/* blurred mock grid — decorative strip at top */}
           <div style={{
-            width:56, height:56, borderRadius:16, marginBottom:18,
-            display:'flex', alignItems:'center', justifyContent:'center',
-            background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
-            boxShadow:'0 0 32px rgba(0,255,136,0.12)',
+            position:'absolute', top:0, left:0, right:0, height:120,
+            filter:'blur(3px)', opacity:0.18, pointerEvents:'none', userSelect:'none',
+            display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:8, padding:'12px',
+            overflow:'hidden',
           }}>
-            <Lock style={{ width:24, height:24, color:G }} />
-          </div>
-
-          <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
-            100+ pairs, live right now
-          </h2>
-          <div style={{ marginBottom:16 }}>
-            <LiveActivityTicker />
-          </div>
-          <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, maxWidth:360, marginBottom:28 }}>
-            Market Discovery scans 100+ pairs with all 7 Osiris filters in real time.
-            Subscribe to see which setups are forming right now.
-          </p>
-
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:520, marginBottom:22 }}>
-            {[
-              { label:'Basic',     price:'$19.99', sub:'3 scans/day',  border:'rgba(255,255,255,0.10)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.35)', pop:false },
-              { label:'Pro',       price:'$44.90', sub:'10 scans/day', border:'rgba(0,255,136,0.32)',   bg:'rgba(0,255,136,0.06)',   textColor:'rgba(0,255,136,0.70)',    pop:true  },
-              { label:'Unlimited', price:'$125',   sub:'50/day',       border:'rgba(139,92,246,0.22)', bg:'rgba(139,92,246,0.05)',  textColor:'rgba(167,139,250,0.65)',  pop:false },
-            ].map(p => (
-              <Link key={p.label} href="/pricing" style={{ textDecoration:'none' }}>
-                <div style={{
-                  padding:'14px 12px', borderRadius:12, cursor:'pointer', position:'relative',
-                  background:p.bg, border:`${p.pop ? '1.5px' : '1px'} solid ${p.border}`,
-                  boxShadow: p.pop ? '0 0 20px rgba(0,255,136,0.10)' : 'none',
-                  display:'flex', flexDirection:'column', gap:5,
-                }}>
-                  {p.pop && (
-                    <div style={{
-                      position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
-                      fontSize:9, fontWeight:800, padding:'2px 9px', borderRadius:999,
-                      background:G, color:'#000', whiteSpace:'nowrap',
-                    }}>POPULAR</div>
-                  )}
-                  <p style={{ fontSize:10, fontWeight:700, color:p.textColor, textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>{p.label}</p>
-                  <p style={{ fontSize:'1.3rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>{p.price}</p>
-                  <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>{p.sub}</p>
+            {MOCK_COINS.slice(0,3).map(({ pair, dir, filters }) => (
+              <div key={pair} style={{ padding:'10px', borderRadius:8, background:'rgba(255,255,255,0.05)', border:'1px solid rgba(255,255,255,0.07)' }}>
+                <div style={{ display:'flex', justifyContent:'space-between', marginBottom:6 }}>
+                  <span style={{ fontSize:11, fontWeight:700, color:'#E8EDF5' }}>{pair}</span>
+                  <span style={{ fontSize:9, fontWeight:700, color: dir==='LONG' ? G : dir==='SHORT' ? RED : AMBER }}>{dir}</span>
                 </div>
-              </Link>
+                <div style={{ display:'flex', gap:2 }}>
+                  {Array.from({ length:7 }).map((_, i) => (
+                    <div key={i} style={{ flex:1, height:2, borderRadius:1, background: i < filters ? G : 'rgba(255,255,255,0.07)' }} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
+          {/* fade out the top strip */}
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:140, background:'linear-gradient(to bottom, transparent 0%, rgba(13,17,23,0.90) 100%)', zIndex:1, pointerEvents:'none' }} />
 
-          <Link href="/pricing" style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            padding:'13px 32px', borderRadius:12,
-            background:G, color:'#000', fontWeight:700, fontSize:14,
-            textDecoration:'none',
-            boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
-          }}>
-            <Crown style={{ width:15, height:15 }} />
-            Unlock Market Discovery →
-          </Link>
-          <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
-            Cancel anytime · No hidden fees
-          </p>
+          {/* actual CTA content */}
+          <div style={{ position:'relative', zIndex:2, display:'flex', flexDirection:'column', alignItems:'center', width:'100%', marginTop:40 }}>
+            <div style={{
+              width:52, height:52, borderRadius:14, marginBottom:16,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
+              boxShadow:'0 0 28px rgba(0,255,136,0.12)',
+            }}>
+              <Lock style={{ width:22, height:22, color:G }} />
+            </div>
+
+            <h2 style={{ fontSize:'clamp(1.25rem,5vw,1.7rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
+              100+ pairs, live right now
+            </h2>
+            <div style={{ marginBottom:14 }}>
+              <LiveActivityTicker />
+            </div>
+            <p style={{ fontSize:13, color:'rgba(232,237,245,0.38)', lineHeight:1.6, maxWidth:340, marginBottom:24 }}>
+              Market Discovery scans 100+ pairs with all 7 Osiris filters in real time.
+              Subscribe to see which setups are forming right now.
+            </p>
+
+            {/* plan cards — 3 col desktop, 1 col mobile via class */}
+            <div className="paywall-plan-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, width:'100%', maxWidth:500, marginBottom:20 }}>
+              {[
+                { label:'Basic',     price:'$19.99', sub:'3 scans/day',  border:'rgba(255,255,255,0.10)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.35)', pop:false },
+                { label:'Pro',       price:'$44.90', sub:'10 scans/day', border:'rgba(0,255,136,0.32)',   bg:'rgba(0,255,136,0.06)',   textColor:'rgba(0,255,136,0.70)',    pop:true  },
+                { label:'Unlimited', price:'$125',   sub:'50/day',       border:'rgba(139,92,246,0.22)', bg:'rgba(139,92,246,0.05)',  textColor:'rgba(167,139,250,0.65)',  pop:false },
+              ].map(p => (
+                <Link key={p.label} href="/pricing" style={{ textDecoration:'none' }}>
+                  <div style={{
+                    padding:'14px 10px', borderRadius:11, cursor:'pointer', position:'relative',
+                    background:p.bg, border:`${p.pop ? '1.5px' : '1px'} solid ${p.border}`,
+                    boxShadow: p.pop ? '0 0 18px rgba(0,255,136,0.10)' : 'none',
+                    display:'flex', flexDirection:'column', gap:4, textAlign:'center',
+                  }}>
+                    {p.pop && (
+                      <div style={{
+                        position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
+                        fontSize:9, fontWeight:800, padding:'2px 8px', borderRadius:999,
+                        background:G, color:'#000', whiteSpace:'nowrap',
+                      }}>POPULAR</div>
+                    )}
+                    <p style={{ fontSize:9, fontWeight:700, color:p.textColor, textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>{p.label}</p>
+                    <p style={{ fontSize:'1.2rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>{p.price}</p>
+                    <p style={{ fontSize:9, color:'rgba(232,237,245,0.28)', margin:0 }}>{p.sub}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <Link href="/pricing" style={{
+              display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              padding:'14px 0', borderRadius:12, width:'100%', maxWidth:320,
+              background:G, color:'#000', fontWeight:700, fontSize:14,
+              textDecoration:'none',
+              boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
+            }}>
+              <Crown style={{ width:15, height:15 }} />
+              Unlock Market Discovery →
+            </Link>
+            <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
+              Cancel anytime · No hidden fees
+            </p>
+          </div>
         </div>
       </div>
     </motion.div>
@@ -696,12 +689,14 @@ export default function DiscoverPage() {
 
       <style jsx global>{`
         @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
         @media (max-width: 900px) {
           .coins-grid { grid-template-columns: repeat(2,1fr) !important; }
         }
         @media (max-width: 600px) {
           .coins-grid { grid-template-columns: 1fr !important; }
           .discover-container { padding: 20px 16px !important; }
+          .paywall-plan-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

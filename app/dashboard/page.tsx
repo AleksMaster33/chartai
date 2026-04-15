@@ -26,149 +26,98 @@ function PaywallGate() {
       transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
       style={{ maxWidth:860, margin:'40px auto', padding:'0 24px' }}
     >
-      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', minHeight:540 }}>
+      {/* content drives height — blurred preview is decorative strip at top */}
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
 
-        {/* ── blurred mock signal preview ── */}
+        {/* main content — in normal flow */}
         <div style={{
-          position:'absolute', inset:0,
-          filter:'blur(6px)', opacity:0.28, pointerEvents:'none', userSelect:'none',
-          padding:'32px', background:'rgba(13,17,23,0.90)',
+          position:'relative', zIndex:2,
+          display:'flex', flexDirection:'column', alignItems:'center',
+          padding:'48px 20px 40px', textAlign:'center',
+          background:'rgba(13,17,23,0.90)',
         }}>
-          <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
-            <div>
-              <div style={{ fontSize:'1.7rem', fontWeight:800, color:'#E8EDF5', letterSpacing:'-0.02em' }}>BTC / USDT</div>
-              <div style={{ fontSize:12, color:'rgba(232,237,245,0.35)', marginTop:4 }}>1H · Futures</div>
-            </div>
-            <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:8 }}>
-              <div style={{ padding:'7px 20px', borderRadius:9, background:'rgba(0,255,136,0.12)', border:'1px solid rgba(0,255,136,0.30)' }}>
-                <span style={{ fontSize:20, fontWeight:800, color:G }}>LONG</span>
-              </div>
-              <div style={{ fontSize:12, color:'rgba(232,237,245,0.40)' }}>Confidence · 78%</div>
-            </div>
-          </div>
-          <div style={{ marginBottom:20 }}>
-            <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'rgba(232,237,245,0.30)', marginBottom:6 }}>
-              <span>Confidence</span><span>78%</span>
-            </div>
-            <div style={{ height:5, background:'rgba(255,255,255,0.06)', borderRadius:4, overflow:'hidden' }}>
-              <div style={{ width:'78%', height:'100%', background:G, borderRadius:4 }} />
-            </div>
-          </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10, marginBottom:16 }}>
+          {/* blurred mock data strip (top decoration) */}
+          <div style={{
+            position:'absolute', top:0, left:0, right:0, height:100,
+            filter:'blur(4px)', opacity:0.20, pointerEvents:'none', userSelect:'none',
+            display:'grid', gridTemplateColumns:'1fr 1fr', gap:8, padding:'10px',
+            overflow:'hidden',
+          }}>
             {[
               { label:'Entry',     value:'67,420', color:G },
               { label:'Stop Loss', value:'65,800', color:'#FF3B5C' },
-              { label:'TP 1',      value:'69,500', color:G },
-              { label:'TP 2',      value:'72,100', color:G },
             ].map(({ label, value, color }) => (
-              <div key={label} style={{ padding:'13px 14px', borderRadius:10, background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)' }}>
-                <div style={{ fontSize:10, color:'rgba(232,237,245,0.28)', marginBottom:5, textTransform:'uppercase', letterSpacing:'0.1em' }}>{label}</div>
-                <div style={{ fontSize:19, fontWeight:700, color, fontFamily:'JetBrains Mono,monospace' }}>$ {value}</div>
+              <div key={label} style={{ padding:'10px', borderRadius:8, background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ fontSize:9, color:'rgba(232,237,245,0.28)', textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:4 }}>{label}</div>
+                <div style={{ fontSize:16, fontWeight:700, color, fontFamily:'JetBrains Mono,monospace' }}>$ {value}</div>
               </div>
             ))}
           </div>
-          <div style={{ display:'flex', gap:6, flexWrap:'wrap' }}>
-            {['Fuel ✓','Tension ✓','Trend Sync ✓','BTC Shield ✓','Structure ✓','Entry Zone ✓','Trigger ✗'].map((f, i) => (
-              <div key={f} style={{
-                fontSize:10, fontWeight:600, padding:'4px 10px', borderRadius:6,
-                background: i < 6 ? 'rgba(0,255,136,0.08)' : 'rgba(255,59,92,0.08)',
-                border: i < 6 ? '1px solid rgba(0,255,136,0.20)' : '1px solid rgba(255,59,92,0.20)',
-                color: i < 6 ? 'rgba(0,255,136,0.70)' : 'rgba(255,59,92,0.60)',
-              }}>{f}</div>
-            ))}
-          </div>
-        </div>
+          {/* fade from blur strip */}
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:120, background:'linear-gradient(to bottom, transparent 0%, rgba(13,17,23,0.90) 100%)', zIndex:1, pointerEvents:'none' }} />
 
-        {/* ── frosted overlay ── */}
-        <div style={{
-          position:'absolute', inset:0,
-          background:'radial-gradient(ellipse at 50% 45%, rgba(8,11,16,0.50) 0%, rgba(8,11,16,0.93) 68%)',
-        }} />
+          {/* actual CTA */}
+          <div style={{ position:'relative', zIndex:2, display:'flex', flexDirection:'column', alignItems:'center', width:'100%', marginTop:30 }}>
+            <div style={{
+              width:52, height:52, borderRadius:14, marginBottom:16,
+              display:'flex', alignItems:'center', justifyContent:'center',
+              background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
+              boxShadow:'0 0 28px rgba(0,255,136,0.12)',
+            }}>
+              <Lock style={{ width:22, height:22, color:G }} />
+            </div>
 
-        {/* ── foreground CTA ── */}
-        <div style={{
-          position:'relative', zIndex:2,
-          display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          minHeight:540, padding:'48px 24px', textAlign:'center',
-        }}>
-          <div style={{
-            width:56, height:56, borderRadius:16, marginBottom:18,
-            display:'flex', alignItems:'center', justifyContent:'center',
-            background:'rgba(0,255,136,0.08)', border:'1px solid rgba(0,255,136,0.22)',
-            boxShadow:'0 0 32px rgba(0,255,136,0.12)',
-          }}>
-            <Lock style={{ width:24, height:24, color:G }} />
-          </div>
+            <h2 style={{ fontSize:'clamp(1.25rem,5vw,1.7rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
+              Your signal is waiting
+            </h2>
+            <p style={{ fontSize:13, color:'rgba(232,237,245,0.38)', lineHeight:1.6, maxWidth:340, marginBottom:24 }}>
+              Subscribe to unlock the full Osiris signal — entry, stop-loss, take-profits,
+              and the complete 7-filter breakdown for every chart you upload.
+            </p>
 
-          <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
-            Your signal is waiting
-          </h2>
-          <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, maxWidth:380, marginBottom:28 }}>
-            Subscribe to unlock the full Osiris signal — entry, stop-loss, take-profits,
-            and the complete 7-filter breakdown for every chart you upload.
-          </p>
+            {/* plan cards */}
+            <div className="paywall-plan-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, width:'100%', maxWidth:500, marginBottom:20 }}>
+              {[
+                { label:'Basic',     price:'$19.99', sub:'3 analyses/day',  border:'rgba(255,255,255,0.09)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.32)', pop:false },
+                { label:'Pro',       price:'$44.90', sub:'10 analyses/day', border:'rgba(0,255,136,0.32)',   bg:'rgba(0,255,136,0.06)',   textColor:'rgba(0,255,136,0.70)',    pop:true  },
+                { label:'Unlimited', price:'$125',   sub:'50 analyses/day', border:'rgba(139,92,246,0.18)', bg:'rgba(139,92,246,0.05)',  textColor:'rgba(167,139,250,0.65)',  pop:false },
+              ].map(p => (
+                <Link key={p.label} href="/pricing" style={{ textDecoration:'none' }}>
+                  <div style={{
+                    padding:'14px 10px', borderRadius:11, cursor:'pointer', position:'relative',
+                    background:p.bg, border:`${p.pop ? '1.5px' : '1px'} solid ${p.border}`,
+                    boxShadow: p.pop ? '0 0 18px rgba(0,255,136,0.10)' : 'none',
+                    display:'flex', flexDirection:'column', gap:4, textAlign:'center',
+                  }}>
+                    {p.pop && (
+                      <div style={{
+                        position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
+                        fontSize:9, fontWeight:800, padding:'2px 8px', borderRadius:999,
+                        background:G, color:'#000', whiteSpace:'nowrap',
+                      }}>POPULAR</div>
+                    )}
+                    <p style={{ fontSize:9, fontWeight:700, color:p.textColor, textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>{p.label}</p>
+                    <p style={{ fontSize:'1.2rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>{p.price}</p>
+                    <p style={{ fontSize:9, color:'rgba(232,237,245,0.28)', margin:0 }}>{p.sub}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
 
-          {/* plan cards */}
-          <div className="paywall-grid" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:560, marginBottom:22 }}>
-            <Link href="/pricing" style={{ textDecoration:'none' }}>
-              <div style={{
-                padding:'14px 12px', borderRadius:12, cursor:'pointer',
-                background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.09)',
-                transition:'border-color 0.15s', display:'flex', flexDirection:'column', gap:5,
-              }}
-                onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.20)')}
-                onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(255,255,255,0.09)')}
-              >
-                <p style={{ fontSize:10, fontWeight:700, color:'rgba(232,237,245,0.32)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Basic</p>
-                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$19.99</p>
-                <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>3 analyses/day</p>
-              </div>
+            <Link href="/pricing" style={{
+              display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+              padding:'14px 0', borderRadius:12, width:'100%', maxWidth:320,
+              background:G, color:'#000', fontWeight:700, fontSize:14,
+              textDecoration:'none',
+              boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
+            }}>
+              <Crown style={{ width:15, height:15 }} />
+              Unlock Osiris AI →
             </Link>
-            <Link href="/pricing" style={{ textDecoration:'none' }}>
-              <div style={{
-                padding:'14px 12px', borderRadius:12, cursor:'pointer', position:'relative',
-                background:'rgba(0,255,136,0.06)', border:'1.5px solid rgba(0,255,136,0.32)',
-                boxShadow:'0 0 20px rgba(0,255,136,0.10)', display:'flex', flexDirection:'column', gap:5,
-              }}>
-                <div style={{
-                  position:'absolute', top:-9, left:'50%', transform:'translateX(-50%)',
-                  fontSize:9, fontWeight:800, padding:'2px 9px', borderRadius:999,
-                  background:G, color:'#000', whiteSpace:'nowrap',
-                }}>POPULAR</div>
-                <p style={{ fontSize:10, fontWeight:700, color:'rgba(0,255,136,0.70)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Pro</p>
-                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$44.90</p>
-                <p style={{ fontSize:10, color:'rgba(232,237,245,0.40)', margin:0 }}>10 analyses/day</p>
-              </div>
-            </Link>
-            <Link href="/pricing" style={{ textDecoration:'none' }}>
-              <div style={{
-                padding:'14px 12px', borderRadius:12, cursor:'pointer',
-                background:'rgba(139,92,246,0.05)', border:'1px solid rgba(139,92,246,0.18)',
-                transition:'border-color 0.15s', display:'flex', flexDirection:'column', gap:5,
-              }}
-                onMouseEnter={e=>(e.currentTarget.style.borderColor='rgba(139,92,246,0.38)')}
-                onMouseLeave={e=>(e.currentTarget.style.borderColor='rgba(139,92,246,0.18)')}
-              >
-                <p style={{ fontSize:10, fontWeight:700, color:'rgba(167,139,250,0.65)', textTransform:'uppercase', letterSpacing:'0.1em', margin:0 }}>Unlimited</p>
-                <p style={{ fontSize:'1.35rem', fontWeight:800, color:'#E8EDF5', margin:0 }}>$125</p>
-                <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>50 analyses/day</p>
-              </div>
-            </Link>
+            <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
+              Cancel anytime · No hidden fees
+            </p>
           </div>
-
-          <Link href="/pricing" style={{
-            display:'inline-flex', alignItems:'center', gap:8,
-            padding:'13px 32px', borderRadius:12,
-            background:G, color:'#000', fontWeight:700, fontSize:14,
-            textDecoration:'none',
-            boxShadow:`0 0 0 1px rgba(0,255,136,0.30), 0 8px 28px ${GLOW}`,
-          }}>
-            <Crown style={{ width:15, height:15 }} />
-            Unlock Osiris AI →
-          </Link>
-          <p style={{ marginTop:10, fontSize:11, color:'rgba(232,237,245,0.20)' }}>
-            Cancel anytime · No hidden fees
-          </p>
         </div>
       </div>
     </motion.div>
@@ -511,6 +460,7 @@ export default function DashboardPage() {
         @media (max-width: 768px) {
           .dash-grid { grid-template-columns: 1fr !important; }
           .paywall-grid { grid-template-columns: 1fr !important; }
+          .paywall-plan-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>

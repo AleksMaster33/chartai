@@ -420,14 +420,14 @@ export default function HomePage() {
       <main style={{ paddingTop:100 }}>
 
         {/* ── HERO ──────────────────────────────────────── */}
-        <section style={{
+        <section className="hero-section" style={{
           minHeight:'calc(100vh - 100px)',
           display:'flex', alignItems:'center',
           maxWidth:'72rem', margin:'0 auto', padding:'5rem 1.5rem',
           position:'relative', gap:0,
         }}>
           {/* left content */}
-          <div style={{ flex:'0 0 auto', maxWidth:580, zIndex:1 }}>
+          <div className="hero-left" style={{ flex:'0 0 auto', maxWidth:580, zIndex:1, width:'100%' }}>
             {/* live badge */}
             <div style={{
               display:'inline-flex', alignItems:'center', gap:8, marginBottom:28,
@@ -461,9 +461,9 @@ export default function HomePage() {
             </p>
 
             {/* CTAs */}
-            <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:20 }}>
-              <Link href="/auth/login" style={{
-                display:'inline-flex', alignItems:'center', gap:8,
+            <div className="hero-ctas" style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:20 }}>
+              <Link href="/auth/login" className="hero-cta-primary" style={{
+                display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8,
                 padding:'15px 30px', borderRadius:12,
                 background:G, color:'#000', fontWeight:700, fontSize:15,
                 textDecoration:'none',
@@ -472,8 +472,8 @@ export default function HomePage() {
                 Start Scanning — From $19.99
                 <ArrowRight style={{ width:16, height:16 }} />
               </Link>
-              <Link href="/pricing" style={{
-                display:'inline-flex', alignItems:'center', gap:8,
+              <Link href="/pricing" className="hero-cta-secondary" style={{
+                display:'inline-flex', alignItems:'center', justifyContent:'center', gap:8,
                 padding:'15px 24px', borderRadius:12,
                 border:'1px solid rgba(0,255,136,0.22)', color:'rgba(232,237,245,0.60)',
                 fontWeight:600, fontSize:14, textDecoration:'none',
@@ -1011,6 +1011,28 @@ export default function HomePage() {
           .statsbar-mobile { display: flex !important; }
           /* hero cards hidden on mobile */
           .hero-cards { display: none !important; }
+          /* hero section: top-aligned, compact padding */
+          .hero-section {
+            min-height: unset !important;
+            align-items: flex-start !important;
+            padding: 2.5rem 1.25rem 3rem !important;
+          }
+          .hero-left {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+          /* CTAs: stack vertically, full width */
+          .hero-ctas {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .hero-cta-primary, .hero-cta-secondary {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          /* paywall plan grid: single column on mobile */
+          .paywall-plan-grid { grid-template-columns: 1fr !important; }
+          .paywall-grid { grid-template-columns: 1fr !important; }
         }
       `}</style>
     </div>
