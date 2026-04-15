@@ -192,66 +192,64 @@ function CoinCard({ coin, index, onAnalyze }: {
 
 function PaywallGate() {
   const GLOW = 'rgba(0,255,136,0.20)'
+  const MOCK_COINS = [
+    { pair:'ETH/USDT',  dir:'LONG',    change:'+3.21%', filters:6 },
+    { pair:'SOL/USDT',  dir:'LONG',    change:'+5.84%', filters:7 },
+    { pair:'BNB/USDT',  dir:'SHORT',   change:'-2.10%', filters:5 },
+    { pair:'AVAX/USDT', dir:'LONG',    change:'+4.65%', filters:6 },
+    { pair:'DOGE/USDT', dir:'NEUTRAL', change:'+0.38%', filters:3 },
+    { pair:'ADA/USDT',  dir:'LONG',    change:'+2.97%', filters:5 },
+  ]
   return (
     <motion.div
       initial={{ opacity:0, y:16 }} animate={{ opacity:1, y:0 }}
       transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
-      style={{ maxWidth:860, margin:'32px auto', padding:'0 24px' }}
+      style={{ maxWidth:900, margin:'32px auto', padding:'0 24px' }}
     >
-      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
+      {/* outer wrapper: explicit height so absolute CTA always fits */}
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', minHeight:520 }}>
 
-        {/* ── blurred mock scanner preview ── */}
+        {/* blurred mock grid — fills the background */}
         <div style={{
-          filter:'blur(5px)', opacity:0.28, pointerEvents:'none', userSelect:'none',
+          position:'absolute', inset:0,
+          filter:'blur(4px)', opacity:0.22, pointerEvents:'none', userSelect:'none',
           padding:'24px', background:'rgba(13,17,23,0.90)',
-          display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12,
+          display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, alignContent:'start',
         }}>
-          {[
-            { pair:'ETH/USDT',  dir:'LONG',    change:'+3.21%', score:'6/7', filters:6 },
-            { pair:'SOL/USDT',  dir:'LONG',    change:'+5.84%', score:'7/7', filters:7 },
-            { pair:'BNB/USDT',  dir:'SHORT',   change:'-2.10%', score:'5/7', filters:5 },
-            { pair:'AVAX/USDT', dir:'LONG',    change:'+4.65%', score:'6/7', filters:6 },
-            { pair:'DOGE/USDT', dir:'NEUTRAL', change:'+0.38%', score:'3/7', filters:3 },
-            { pair:'ADA/USDT',  dir:'LONG',    change:'+2.97%', score:'5/7', filters:5 },
-          ].map(({ pair, dir, change, score, filters }) => (
+          {MOCK_COINS.map(({ pair, dir, change, filters }) => (
             <div key={pair} style={{
               padding:'14px', borderRadius:10,
-              background:'rgba(255,255,255,0.03)', border:'1px solid rgba(255,255,255,0.06)',
+              background:'rgba(255,255,255,0.04)', border:'1px solid rgba(255,255,255,0.07)',
             }}>
               <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                <span style={{ fontSize:14, fontWeight:700, color:'#E8EDF5' }}>{pair}</span>
+                <span style={{ fontSize:13, fontWeight:700, color:'#E8EDF5' }}>{pair}</span>
                 <span style={{
-                  fontSize:11, fontWeight:700, padding:'3px 8px', borderRadius:6,
-                  background: dir==='LONG' ? 'rgba(0,255,136,0.12)' : dir==='SHORT' ? 'rgba(255,59,92,0.12)' : 'rgba(255,184,0,0.10)',
+                  fontSize:10, fontWeight:700, padding:'3px 8px', borderRadius:6,
+                  background: dir==='LONG' ? 'rgba(0,255,136,0.15)' : dir==='SHORT' ? 'rgba(255,59,92,0.15)' : 'rgba(255,184,0,0.12)',
                   color: dir==='LONG' ? G : dir==='SHORT' ? RED : AMBER,
                 }}>{dir}</span>
               </div>
-              <div style={{ display:'flex', justifyContent:'space-between', fontSize:11, color:'rgba(232,237,245,0.35)' }}>
-                <span>{change}</span><span>Osiris {score}</span>
-              </div>
-              <div style={{ marginTop:8, display:'flex', gap:3 }}>
-                {Array.from({ length: 7 }).map((_, i) => (
-                  <div key={i} style={{
-                    flex:1, height:3, borderRadius:2,
-                    background: i < filters ? G : 'rgba(255,255,255,0.08)',
-                  }} />
+              <div style={{ fontSize:11, color:'rgba(232,237,245,0.35)', marginBottom:8 }}>{change} · Osiris {filters}/7</div>
+              <div style={{ display:'flex', gap:3 }}>
+                {Array.from({ length:7 }).map((_, i) => (
+                  <div key={i} style={{ flex:1, height:3, borderRadius:2, background: i < filters ? G : 'rgba(255,255,255,0.07)' }} />
                 ))}
               </div>
             </div>
           ))}
         </div>
 
-        {/* ── frosted overlay ── */}
+        {/* gradient overlay */}
         <div style={{
           position:'absolute', inset:0,
-          background:'radial-gradient(ellipse at 50% 45%, rgba(8,11,16,0.50) 0%, rgba(8,11,16,0.93) 68%)',
+          background:'radial-gradient(ellipse at 50% 50%, rgba(8,11,16,0.55) 0%, rgba(8,11,16,0.96) 70%)',
         }} />
 
-        {/* ── foreground CTA ── */}
+        {/* CTA — centered, no absolute height dependency */}
         <div style={{
-          position:'absolute', inset:0,
+          position:'relative', zIndex:2,
           display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          padding:'40px 24px', textAlign:'center',
+          minHeight:520, padding:'48px 24px', textAlign:'center',
         }}>
           <div style={{
             width:56, height:56, borderRadius:16, marginBottom:18,
@@ -261,18 +259,23 @@ function PaywallGate() {
           }}>
             <Lock style={{ width:24, height:24, color:G }} />
           </div>
+
           <h2 style={{ fontSize:'clamp(1.3rem,3vw,1.75rem)', fontWeight:800, letterSpacing:'-0.02em', color:'#E8EDF5', marginBottom:10 }}>
             100+ pairs, live right now
           </h2>
+          <div style={{ marginBottom:16 }}>
+            <LiveActivityTicker />
+          </div>
           <p style={{ fontSize:14, color:'rgba(232,237,245,0.38)', lineHeight:1.65, maxWidth:360, marginBottom:28 }}>
             Market Discovery scans 100+ pairs with all 7 Osiris filters in real time.
             Subscribe to see which setups are forming right now.
           </p>
+
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, width:'100%', maxWidth:520, marginBottom:22 }}>
             {[
-              { label:'Basic', price:'$19.99', sub:'3 scans/day', border:'rgba(255,255,255,0.10)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.35)', pop:false },
-              { label:'Pro',   price:'$44.90', sub:'10 scans/day', border:'rgba(0,255,136,0.32)', bg:'rgba(0,255,136,0.06)', textColor:'rgba(0,255,136,0.70)', pop:true },
-              { label:'Unlimited', price:'$125', sub:'50/day', border:'rgba(139,92,246,0.22)', bg:'rgba(139,92,246,0.05)', textColor:'rgba(167,139,250,0.65)', pop:false },
+              { label:'Basic',     price:'$19.99', sub:'3 scans/day',  border:'rgba(255,255,255,0.10)', bg:'rgba(255,255,255,0.04)', textColor:'rgba(232,237,245,0.35)', pop:false },
+              { label:'Pro',       price:'$44.90', sub:'10 scans/day', border:'rgba(0,255,136,0.32)',   bg:'rgba(0,255,136,0.06)',   textColor:'rgba(0,255,136,0.70)',    pop:true  },
+              { label:'Unlimited', price:'$125',   sub:'50/day',       border:'rgba(139,92,246,0.22)', bg:'rgba(139,92,246,0.05)',  textColor:'rgba(167,139,250,0.65)',  pop:false },
             ].map(p => (
               <Link key={p.label} href="/pricing" style={{ textDecoration:'none' }}>
                 <div style={{
@@ -295,6 +298,7 @@ function PaywallGate() {
               </Link>
             ))}
           </div>
+
           <Link href="/pricing" style={{
             display:'inline-flex', alignItems:'center', gap:8,
             padding:'13px 32px', borderRadius:12,
@@ -311,6 +315,59 @@ function PaywallGate() {
         </div>
       </div>
     </motion.div>
+  )
+}
+
+/* ── Live activity ticker ──────────────────────────────────── */
+const ACTIVITY_FEED = [
+  { name:'Alex M.',   pair:'ETH/USDT',  dir:'LONG',  ago:'just now' },
+  { name:'Nina K.',   pair:'SOL/USDT',  dir:'LONG',  ago:'1m ago' },
+  { name:'Darko V.',  pair:'BTC/USDT',  dir:'LONG',  ago:'2m ago' },
+  { name:'Ivan P.',   pair:'AVAX/USDT', dir:'SHORT', ago:'4m ago' },
+  { name:'Maria S.',  pair:'BNB/USDT',  dir:'LONG',  ago:'5m ago' },
+  { name:'Todor L.',  pair:'DOGE/USDT', dir:'SHORT', ago:'7m ago' },
+  { name:'Elena R.',  pair:'ADA/USDT',  dir:'LONG',  ago:'9m ago' },
+  { name:'Georgi N.', pair:'MATIC/USDT',dir:'LONG',  ago:'11m ago' },
+]
+
+function LiveActivityTicker() {
+  const [idx, setIdx] = useState(0)
+  const [visible, setVisible] = useState(true)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => {
+        setIdx(i => (i + 1) % ACTIVITY_FEED.length)
+        setVisible(true)
+      }, 400)
+    }, 4000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const item = ACTIVITY_FEED[idx]
+  return (
+    <div style={{
+      display:'inline-flex', alignItems:'center', gap:10,
+      padding:'7px 14px', borderRadius:999,
+      background:'rgba(0,255,136,0.05)', border:'1px solid rgba(0,255,136,0.14)',
+      transition:'opacity 0.35s ease', opacity: visible ? 1 : 0,
+    }}>
+      <span style={{
+        width:7, height:7, borderRadius:'50%', background:G, flexShrink:0,
+        boxShadow:'0 0 6px rgba(0,255,136,0.6)',
+        animation:'blink 1.4s ease-in-out infinite',
+      }} />
+      <span style={{ fontSize:12, color:'rgba(232,237,245,0.50)' }}>
+        <span style={{ color:'rgba(232,237,245,0.75)', fontWeight:600 }}>{item.name}</span>
+        {' '}got a{' '}
+        <span style={{ color: item.dir === 'LONG' ? G : RED, fontWeight:700 }}>{item.dir}</span>
+        {' '}signal on{' '}
+        <span style={{ color:'rgba(232,237,245,0.65)', fontWeight:600 }}>{item.pair}</span>
+        {' '}
+        <span style={{ color:'rgba(232,237,245,0.28)', fontSize:11 }}>· {item.ago}</span>
+      </span>
+    </div>
   )
 }
 
@@ -420,9 +477,10 @@ export default function DiscoverPage() {
                     Market Discovery
                   </h1>
                 </div>
-                <p style={{ fontSize:13, color:'rgba(232,237,245,0.35)', maxWidth:480 }}>
+                <p style={{ fontSize:13, color:'rgba(232,237,245,0.35)', maxWidth:480, marginBottom:10 }}>
                   Scans Binance top 100 pairs and applies Osiris F1–F4 filters to surface the highest-potential setups. Results cached 15 min.
                 </p>
+                <LiveActivityTicker />
               </div>
 
               {scannedAt && (

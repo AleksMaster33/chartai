@@ -176,6 +176,73 @@ function AuthCodeRedirect() {
   return null
 }
 
+/* ── Live stats bar with rotating activity ─────────────────── */
+const LIVE_FEED = [
+  { name:'Alex M.',   pair:'ETH/USDT',   dir:'LONG'  },
+  { name:'Nina K.',   pair:'SOL/USDT',   dir:'LONG'  },
+  { name:'Darko V.',  pair:'BTC/USDT',   dir:'LONG'  },
+  { name:'Ivan P.',   pair:'AVAX/USDT',  dir:'SHORT' },
+  { name:'Maria S.',  pair:'BNB/USDT',   dir:'LONG'  },
+  { name:'Todor L.',  pair:'DOGE/USDT',  dir:'SHORT' },
+  { name:'Elena R.',  pair:'ADA/USDT',   dir:'LONG'  },
+]
+function LiveStatsBar({ signalsThisWeek }: { signalsThisWeek: number }) {
+  const [idx, setIdx]       = useState(0)
+  const [show, setShow]     = useState(true)
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setShow(false)
+      setTimeout(() => { setIdx(i => (i + 1) % LIVE_FEED.length); setShow(true) }, 350)
+    }, 4000)
+    return () => clearInterval(t)
+  }, [])
+
+  const item = LIVE_FEED[idx]
+  return (
+    <div style={{
+      position:'fixed', top:64, left:0, right:0, height:36, zIndex:40,
+      background:'#0a0f0a', borderBottom:'1px solid rgba(0,255,136,0.10)',
+      display:'flex', alignItems:'center', justifyContent:'center', gap:20, padding:'0 24px',
+      overflow:'hidden',
+    }}>
+      {/* static: traders count */}
+      <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+        <CheckCircle2 style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+        <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>1,250+</span>
+        <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Traders Daily</span>
+      </div>
+      <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
+      {/* static: signals count */}
+      <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+        <Zap style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+        <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>
+          {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
+        </span>
+        <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Signals This Week</span>
+      </div>
+      <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
+      {/* rotating live activity */}
+      <div style={{
+        display:'flex', alignItems:'center', gap:7, flexShrink:0,
+        transition:'opacity 0.3s ease', opacity: show ? 1 : 0,
+      }}>
+        <span style={{
+          width:6, height:6, borderRadius:'50%', background:G, flexShrink:0,
+          boxShadow:`0 0 5px ${G}`,
+        }} />
+        <span style={{ fontSize:11, color:'rgba(232,237,245,0.42)' }}>
+          <span style={{ color:'rgba(232,237,245,0.68)', fontWeight:600 }}>{item.name}</span>
+          {' '}got a{' '}
+          <span style={{ color: item.dir === 'LONG' ? G : RED, fontWeight:700 }}>{item.dir}</span>
+          {' '}on{' '}
+          <span style={{ color:'rgba(232,237,245,0.60)', fontWeight:600 }}>{item.pair}</span>
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
   const [mouse, setMouse] = useState({ x:-1000, y:-1000 })
@@ -236,27 +303,7 @@ export default function HomePage() {
       </nav>
 
       {/* ── STATS BAR — fixed below nav, z-40 ──────────── */}
-      <div style={{
-        position:'fixed', top:64, left:0, right:0, height:36,
-        zIndex:40, background:'#0a0f0a',
-        borderBottom:'1px solid rgba(0,255,136,0.10)',
-        display:'flex', alignItems:'center', justifyContent:'center', gap:24, padding:'0 24px',
-        overflow:'hidden',
-      }}>
-        <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-          <CheckCircle2 style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
-          <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>1,250+</span>
-          <span style={{ fontSize:11, color:'rgba(232,237,245,0.30)' }}>Traders Daily</span>
-        </div>
-        <div style={{ width:1, height:16, background:'rgba(255,255,255,0.08)', flexShrink:0 }} />
-        <div style={{ display:'flex', alignItems:'center', gap:6, flexShrink:0 }}>
-          <Zap style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
-          <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>
-            {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
-          </span>
-          <span style={{ fontSize:11, color:'rgba(232,237,245,0.30)' }}>Signals This Week</span>
-        </div>
-      </div>
+      <LiveStatsBar signalsThisWeek={signalsThisWeek} />
 
       {/* ── MAIN — padded below both fixed bars ─────────── */}
       <main style={{ paddingTop:100 }}>

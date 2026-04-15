@@ -26,11 +26,12 @@ function PaywallGate() {
       transition={{ duration:0.4, ease:[0.22,1,0.36,1] }}
       style={{ maxWidth:860, margin:'40px auto', padding:'0 24px' }}
     >
-      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
+      <div style={{ position:'relative', borderRadius:20, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)', minHeight:540 }}>
 
         {/* ── blurred mock signal preview ── */}
         <div style={{
-          filter:'blur(6px)', opacity:0.30, pointerEvents:'none', userSelect:'none',
+          position:'absolute', inset:0,
+          filter:'blur(6px)', opacity:0.28, pointerEvents:'none', userSelect:'none',
           padding:'32px', background:'rgba(13,17,23,0.90)',
         }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:20 }}>
@@ -86,9 +87,9 @@ function PaywallGate() {
 
         {/* ── foreground CTA ── */}
         <div style={{
-          position:'absolute', inset:0,
+          position:'relative', zIndex:2,
           display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-          padding:'40px 24px', textAlign:'center',
+          minHeight:540, padding:'48px 24px', textAlign:'center',
         }}>
           <div style={{
             width:56, height:56, borderRadius:16, marginBottom:18,
