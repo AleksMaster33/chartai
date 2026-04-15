@@ -176,7 +176,73 @@ function AuthCodeRedirect() {
   return null
 }
 
-/* ── Live stats bar with rotating activity ─────────────────── */
+/* ── Mini sparkline SVG ────────────────────────────────────── */
+function Sparkline({ points, color = G, width = 80, height = 32 }: {
+  points: number[], color?: string, width?: number, height?: number
+}) {
+  const min = Math.min(...points), max = Math.max(...points)
+  const range = max - min || 1
+  const pad = 2
+  const xs = points.map((_, i) => pad + (i / (points.length - 1)) * (width - pad * 2))
+  const ys = points.map(v => pad + (1 - (v - min) / range) * (height - pad * 2))
+  const line = xs.map((x, i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${ys[i].toFixed(1)}`).join(' ')
+  const area = `${line} L${xs[xs.length-1].toFixed(1)},${height} L${xs[0].toFixed(1)},${height} Z`
+  return (
+    <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} style={{ overflow:'visible' }}>
+      <defs>
+        <linearGradient id={`sg-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.20" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={area} fill={`url(#sg-${color.replace('#','')})`} />
+      <path d={line} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      {/* last dot */}
+      <circle cx={xs[xs.length-1]} cy={ys[ys.length-1]} r="2.5" fill={color} />
+    </svg>
+  )
+}
+
+/* Floating signal card used in hero ──────────────────────── */
+function FloatingSignalCard({ pair, dir, conf, change, pts, delay = 0 }: {
+  pair: string, dir: string, conf: number, change: string, pts: number[], delay?: number
+}) {
+  const col = dir === 'LONG' ? G : dir === 'SHORT' ? RED : AMB
+  return (
+    <motion.div
+      initial={{ opacity:0, y:20 }} animate={{ opacity:1, y:0 }}
+      transition={{ duration:0.6, delay, ease:[0.22,1,0.36,1] }}
+      style={{
+        padding:'14px 16px', borderRadius:14,
+        background:'rgba(13,17,23,0.88)', backdropFilter:'blur(16px)',
+        border:'1px solid rgba(255,255,255,0.08)',
+        boxShadow:'0 8px 32px rgba(0,0,0,0.40)',
+        minWidth:180,
+      }}
+    >
+      <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:10 }}>
+        <div>
+          <p style={{ fontSize:12, fontWeight:700, color:'rgba(232,237,245,0.80)', margin:0 }}>{pair}</p>
+          <p style={{ fontSize:10, color:'rgba(232,237,245,0.30)', margin:'2px 0 0' }}>Confidence · {conf}%</p>
+        </div>
+        <span style={{
+          fontSize:10, fontWeight:800, padding:'3px 8px', borderRadius:6,
+          background: dir==='LONG' ? 'rgba(0,255,136,0.12)' : dir==='SHORT' ? 'rgba(255,59,92,0.12)' : 'rgba(255,184,0,0.10)',
+          color: col,
+        }}>{dir}</span>
+      </div>
+      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between' }}>
+        <div>
+          <p style={{ fontSize:11, color:'rgba(232,237,245,0.28)', margin:0 }}>24h change</p>
+          <p style={{ fontSize:14, fontWeight:700, color: change.startsWith('+') ? G : RED, margin:0, fontFamily:'JetBrains Mono,monospace' }}>{change}</p>
+        </div>
+        <Sparkline points={pts} color={col} width={72} height={28} />
+      </div>
+    </motion.div>
+  )
+}
+
+/* ── Live stats bar — slideshow on mobile ───────────────────── */
 const LIVE_FEED = [
   { name:'Alex M.',   pair:'ETH/USDT',   dir:'LONG'  },
   { name:'Nina K.',   pair:'SOL/USDT',   dir:'LONG'  },
@@ -186,58 +252,103 @@ const LIVE_FEED = [
   { name:'Todor L.',  pair:'DOGE/USDT',  dir:'SHORT' },
   { name:'Elena R.',  pair:'ADA/USDT',   dir:'LONG'  },
 ]
+
 function LiveStatsBar({ signalsThisWeek }: { signalsThisWeek: number }) {
-  const [idx, setIdx]       = useState(0)
-  const [show, setShow]     = useState(true)
+  const [slideIdx, setSlideIdx] = useState(0)
+  const [visible, setVisible]   = useState(true)
 
-  useEffect(() => {
-    const t = setInterval(() => {
-      setShow(false)
-      setTimeout(() => { setIdx(i => (i + 1) % LIVE_FEED.length); setShow(true) }, 350)
-    }, 4000)
-    return () => clearInterval(t)
-  }, [])
-
-  const item = LIVE_FEED[idx]
-  return (
-    <div style={{
-      position:'fixed', top:64, left:0, right:0, height:36, zIndex:40,
-      background:'#0a0f0a', borderBottom:'1px solid rgba(0,255,136,0.10)',
-      display:'flex', alignItems:'center', justifyContent:'center', gap:20, padding:'0 24px',
-      overflow:'hidden',
-    }}>
-      {/* static: traders count */}
-      <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+  // All slides (mobile shows one at a time; desktop shows all)
+  const SLIDES = [
+    { content: (
+      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
         <CheckCircle2 style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
         <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>1,250+</span>
         <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Traders Daily</span>
       </div>
-      <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
-      {/* static: signals count */}
-      <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+    )},
+    { content: (
+      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
         <Zap style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
         <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>
           {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
         </span>
         <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Signals This Week</span>
       </div>
-      <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
-      {/* rotating live activity */}
-      <div style={{
-        display:'flex', alignItems:'center', gap:7, flexShrink:0,
-        transition:'opacity 0.3s ease', opacity: show ? 1 : 0,
+    )},
+    { content: (
+      <div style={{ display:'flex', alignItems:'center', gap:5 }}>
+        <Gauge style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+        <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>{'<20s'}</span>
+        <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Avg Signal Speed</span>
+      </div>
+    )},
+    ...LIVE_FEED.map(item => ({
+      content: (
+        <div style={{ display:'flex', alignItems:'center', gap:6 }}>
+          <span style={{ width:6, height:6, borderRadius:'50%', background:G, flexShrink:0, boxShadow:`0 0 5px ${G}` }} />
+          <span style={{ fontSize:11, color:'rgba(232,237,245,0.42)' }}>
+            <span style={{ color:'rgba(232,237,245,0.68)', fontWeight:600 }}>{item.name}</span>
+            {' '}got a{' '}
+            <span style={{ color: item.dir === 'LONG' ? G : RED, fontWeight:700 }}>{item.dir}</span>
+            {' '}on <span style={{ color:'rgba(232,237,245,0.58)', fontWeight:600 }}>{item.pair}</span>
+          </span>
+        </div>
+      )
+    }))
+  ]
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      setVisible(false)
+      setTimeout(() => { setSlideIdx(i => (i + 1) % SLIDES.length); setVisible(true) }, 320)
+    }, 3500)
+    return () => clearInterval(t)
+  }, [SLIDES.length])
+
+  return (
+    <div style={{
+      position:'fixed', top:64, left:0, right:0, height:36, zIndex:40,
+      background:'#0a0f0a', borderBottom:'1px solid rgba(0,255,136,0.10)',
+      overflow:'hidden',
+    }}>
+      {/* Desktop: show all 3 static + live feed rotating */}
+      <div className="statsbar-desktop" style={{
+        height:'100%', display:'flex', alignItems:'center',
+        justifyContent:'center', gap:20, padding:'0 24px',
       }}>
-        <span style={{
-          width:6, height:6, borderRadius:'50%', background:G, flexShrink:0,
-          boxShadow:`0 0 5px ${G}`,
-        }} />
-        <span style={{ fontSize:11, color:'rgba(232,237,245,0.42)' }}>
-          <span style={{ color:'rgba(232,237,245,0.68)', fontWeight:600 }}>{item.name}</span>
-          {' '}got a{' '}
-          <span style={{ color: item.dir === 'LONG' ? G : RED, fontWeight:700 }}>{item.dir}</span>
-          {' '}on{' '}
-          <span style={{ color:'rgba(232,237,245,0.60)', fontWeight:600 }}>{item.pair}</span>
-        </span>
+        <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+          <CheckCircle2 style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+          <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>1,250+</span>
+          <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Traders Daily</span>
+        </div>
+        <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
+        <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+          <Zap style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+          <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>
+            {signalsThisWeek > 0 ? signalsThisWeek.toLocaleString() : '1,800+'}
+          </span>
+          <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Signals This Week</span>
+        </div>
+        <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
+        <div style={{ display:'flex', alignItems:'center', gap:5, flexShrink:0 }}>
+          <Gauge style={{ width:11, height:11, color:'rgba(0,255,136,0.55)' }} />
+          <span style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:700, fontSize:12, color:G }}>{'<20s'}</span>
+          <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>Avg Speed</span>
+        </div>
+        <div style={{ width:1, height:14, background:'rgba(255,255,255,0.07)', flexShrink:0 }} />
+        {/* rotating live feed */}
+        <div style={{ transition:'opacity 0.3s ease', opacity: visible ? 1 : 0 }}>
+          {SLIDES[slideIdx >= 3 ? slideIdx : (3 + (slideIdx % LIVE_FEED.length))].content}
+        </div>
+      </div>
+
+      {/* Mobile: single rotating slide */}
+      <div className="statsbar-mobile" style={{
+        height:'100%', display:'none', alignItems:'center',
+        justifyContent:'center', padding:'0 16px',
+        transition:'opacity 0.3s ease', opacity: visible ? 1 : 0,
+      }}>
+        {SLIDES[slideIdx].content}
       </div>
     </div>
   )
@@ -311,77 +422,109 @@ export default function HomePage() {
         {/* ── HERO ──────────────────────────────────────── */}
         <section style={{
           minHeight:'calc(100vh - 100px)',
-          display:'flex', flexDirection:'column', justifyContent:'center',
-          maxWidth:'72rem', margin:'0 auto', padding:'6rem 1.5rem',
-          gap:0,
+          display:'flex', alignItems:'center',
+          maxWidth:'72rem', margin:'0 auto', padding:'5rem 1.5rem',
+          position:'relative', gap:0,
         }}>
-          {/* live badge */}
-          <div style={{
-            display:'inline-flex', alignItems:'center', gap:8, marginBottom:28,
-            padding:'6px 14px', borderRadius:999, alignSelf:'flex-start',
-            background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)',
-          }}>
-            <span className="live-dot" style={{ width:6, height:6 }} />
-            <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.06em', color:'rgba(0,255,136,0.9)' }}>
-              LIVE · Osiris AI Engine Active
-            </span>
+          {/* left content */}
+          <div style={{ flex:'0 0 auto', maxWidth:580, zIndex:1 }}>
+            {/* live badge */}
+            <div style={{
+              display:'inline-flex', alignItems:'center', gap:8, marginBottom:28,
+              padding:'6px 14px', borderRadius:999, alignSelf:'flex-start',
+              background:'rgba(0,255,136,0.07)', border:'1px solid rgba(0,255,136,0.18)',
+            }}>
+              <span className="live-dot" style={{ width:6, height:6 }} />
+              <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.06em', color:'rgba(0,255,136,0.9)' }}>
+                LIVE · Osiris AI Engine Active
+              </span>
+            </div>
+
+            {/* headline */}
+            <h1 style={{
+              fontSize:'clamp(3rem,7vw,5.2rem)', fontWeight:800,
+              lineHeight:1.0, letterSpacing:'-0.03em', marginBottom:24,
+            }}>
+              <span style={{ display:'block', color:'#E8EDF5' }}>Find Your Next</span>
+              <span className="hero-gradient" style={{ display:'block' }}>Trade.</span>
+              <span style={{ display:'block', color:'rgba(232,237,245,0.65)' }}>Understand Why.</span>
+            </h1>
+
+            {/* subheadline */}
+            <p style={{
+              maxWidth:520, fontSize:16, lineHeight:1.65,
+              color:'rgba(232,237,245,0.45)', marginBottom:32,
+            }}>
+              ChartAI scans 100+ crypto pairs with the Osiris 7-filter methodology,
+              identifies the highest-probability setups, and explains every decision —
+              so you trade with conviction, not guesswork.
+            </p>
+
+            {/* CTAs */}
+            <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:20 }}>
+              <Link href="/auth/login" style={{
+                display:'inline-flex', alignItems:'center', gap:8,
+                padding:'15px 30px', borderRadius:12,
+                background:G, color:'#000', fontWeight:700, fontSize:15,
+                textDecoration:'none',
+                boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 6px 24px ${GLOW}`,
+              }}>
+                Start Scanning — From $19.99
+                <ArrowRight style={{ width:16, height:16 }} />
+              </Link>
+              <Link href="/pricing" style={{
+                display:'inline-flex', alignItems:'center', gap:8,
+                padding:'15px 24px', borderRadius:12,
+                border:'1px solid rgba(0,255,136,0.22)', color:'rgba(232,237,245,0.60)',
+                fontWeight:600, fontSize:14, textDecoration:'none',
+              }}>
+                See Pricing →
+              </Link>
+            </div>
+
+            {/* social proof micro-line */}
+            <p style={{ fontSize:12, color:'rgba(232,237,245,0.25)', marginBottom:28 }}>
+              Cancel anytime · No setup fees · Trusted by 1,250+ traders
+            </p>
+
+            {/* tech specs row */}
+            <div style={{ display:'flex', gap:20, flexWrap:'wrap' }}>
+              {[
+                { icon:Globe,   label:'100+ Pairs'        },
+                { icon:Shield,  label:'7 Osiris Filters'  },
+                { icon:Zap,     label:'Signal in <20s'    },
+                { icon:Target,  label:'Entry · SL · TP'  },
+                { icon:Brain,   label:'AI-powered'       },
+              ].map(({ icon:Icon, label }) => (
+                <div key={label} style={{ display:'flex', alignItems:'center', gap:6 }}>
+                  <Icon style={{ width:12, height:12, color:'rgba(0,255,136,0.40)' }} />
+                  <span style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>{label}</span>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* headline */}
-          <h1 style={{
-            fontSize:'clamp(3rem,7vw,5.2rem)', fontWeight:800,
-            lineHeight:1.0, letterSpacing:'-0.03em', marginBottom:24,
+          {/* right: floating signal cards — desktop only */}
+          <div className="hero-cards" style={{
+            position:'absolute', right:0, top:'50%', transform:'translateY(-50%)',
+            display:'flex', flexDirection:'column', gap:12, alignItems:'flex-end',
+            pointerEvents:'none',
           }}>
-            <span style={{ display:'block', color:'#E8EDF5' }}>Find Your Next</span>
-            <span className="hero-gradient" style={{ display:'block' }}>Trade.</span>
-            <span style={{ display:'block', color:'rgba(232,237,245,0.65)' }}>Understand Why.</span>
-          </h1>
-
-          {/* subheadline */}
-          <p style={{
-            maxWidth:560, fontSize:16, lineHeight:1.65,
-            color:'rgba(232,237,245,0.45)', marginBottom:32,
-          }}>
-            ChartAI scans 100+ crypto pairs with the Osiris 7-filter methodology,
-            identifies the highest-probability setups, and explains every decision —
-            so you trade with conviction, not guesswork.
-          </p>
-
-          {/* CTAs */}
-          <div style={{ display:'flex', gap:12, flexWrap:'wrap', marginBottom:40 }}>
-            <Link href="/auth/login" style={{
-              display:'inline-flex', alignItems:'center', gap:8,
-              padding:'14px 28px', borderRadius:12,
-              background:G, color:'#000', fontWeight:700, fontSize:15,
-              textDecoration:'none',
-              boxShadow:`0 0 0 1px rgba(0,255,136,0.28), 0 6px 24px ${GLOW}`,
-            }}>
-              Scan the Market Now
-              <ArrowRight style={{ width:16, height:16 }} />
-            </Link>
-            <Link href="/pricing" style={{
-              display:'inline-flex', alignItems:'center', gap:8,
-              padding:'14px 28px', borderRadius:12,
-              border:'1px solid rgba(0,255,136,0.25)', color:'rgba(232,237,245,0.65)',
-              fontWeight:600, fontSize:15, textDecoration:'none',
-            }}>
-              See How It Works →
-            </Link>
-          </div>
-
-          {/* tech specs row */}
-          <div style={{ display:'flex', gap:24, flexWrap:'wrap' }}>
-            {[
-              { icon:Globe,   label:'100+ Pairs Scanned'       },
-              { icon:Shield,  label:'7 Osiris Filters'         },
-              { icon:Zap,     label:'Signal in <20s'           },
-              { icon:Target,  label:'Entry · SL · TP Included' },
-            ].map(({ icon:Icon, label }) => (
-              <div key={label} style={{ display:'flex', alignItems:'center', gap:8 }}>
-                <Icon style={{ width:13, height:13, color:'rgba(0,255,136,0.4)' }} />
-                <span style={{ fontSize:12, color:'rgba(232,237,245,0.30)' }}>{label}</span>
-              </div>
-            ))}
+            <FloatingSignalCard
+              pair="ETH/USDT" dir="LONG" conf={84} change="+4.2%"
+              pts={[61,58,60,57,59,62,65,63,67,71,69,74,78]}
+              delay={0.2}
+            />
+            <FloatingSignalCard
+              pair="SOL/USDT" dir="LONG" conf={78} change="+6.1%"
+              pts={[40,42,39,44,43,47,45,50,49,53,55,58,61]}
+              delay={0.4}
+            />
+            <FloatingSignalCard
+              pair="BNB/USDT" dir="SHORT" conf={71} change="-2.8%"
+              pts={[72,70,73,68,66,64,67,62,60,58,61,55,52]}
+              delay={0.6}
+            />
           </div>
         </section>
 
@@ -542,16 +685,26 @@ export default function HomePage() {
 
         {/* confluence banner */}
         <div style={{
-          marginTop:24, display:'flex', alignItems:'center', gap:14,
+          marginTop:24, display:'flex', alignItems:'center', justifyContent:'space-between', gap:16,
           padding:'16px 22px', borderRadius:14,
           background:'rgba(0,255,136,0.05)', border:'1px solid rgba(0,255,136,0.15)',
+          flexWrap:'wrap',
         }}>
-          <CheckCircle2 style={{ width:18, height:18, flexShrink:0, color:G }} />
-          <span style={{ fontSize:13, color:'rgba(232,237,245,0.60)', lineHeight:1.5 }}>
-            When all 7 filters pass →{' '}
-            <span style={{ fontWeight:700, color:G }}>High-confidence signal</span>
-            {' '}generated with entry zone, stop-loss, TP1, TP2, leverage suggestion, and full filter reasoning
-          </span>
+          <div style={{ display:'flex', alignItems:'center', gap:14 }}>
+            <CheckCircle2 style={{ width:18, height:18, flexShrink:0, color:G }} />
+            <span style={{ fontSize:13, color:'rgba(232,237,245,0.60)', lineHeight:1.5 }}>
+              When all 7 filters pass →{' '}
+              <span style={{ fontWeight:700, color:G }}>High-confidence signal</span>
+              {' '}generated with entry zone, stop-loss, TP1, TP2, leverage suggestion, and full filter reasoning
+            </span>
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:12, flexShrink:0 }}>
+            <Sparkline points={[30,32,29,35,33,38,36,41,44,42,47,45,50,53]} color={G} width={80} height={28} />
+            <div>
+              <p style={{ fontSize:12, fontWeight:700, color:G, margin:0 }}>+12.4%</p>
+              <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:0 }}>avg signal gain</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -564,27 +717,35 @@ export default function HomePage() {
             gap:0,
           }}>
             {[
-              { val:20,  suffix:'s',  label:'Avg signal speed',   sub:'Gemini + Claude in parallel' },
-              { val:7,   suffix:'',   label:'Osiris filters',     sub:'Applied to every signal'     },
-              { val:100, suffix:'+',  label:'Pairs scanned',      sub:'Real-time Binance data'       },
-              { val:100, suffix:'%',  label:'Chart compatibility', sub:'Any platform, any asset'     },
+              { val:20,  suffix:'s',  label:'Avg signal speed',   sub:'Gemini + Claude in parallel',
+                pts:[40,42,38,44,41,46,43,48,45,50,47,52,49,54,51], color:G },
+              { val:7,   suffix:'',   label:'Osiris filters',     sub:'Applied to every signal',
+                pts:[20,22,25,23,28,26,30,28,33,31,35,34,37,36,38], color:G },
+              { val:100, suffix:'+',  label:'Pairs scanned',      sub:'Real-time Binance data',
+                pts:[30,35,32,38,36,41,39,44,42,47,45,49,47,52,50], color:G },
+              { val:100, suffix:'%',  label:'Chart compatibility', sub:'Any platform, any asset',
+                pts:[50,52,51,54,53,56,55,57,56,58,57,59,58,60,60], color:G },
             ].map((s, i) => (
               <div key={s.label} style={{
-                padding:'32px 28px',
+                padding:'28px 24px',
                 borderRight: i < 3 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-                textAlign:'center',
+                textAlign:'center', position:'relative', overflow:'hidden',
               }}>
+                {/* background sparkline */}
+                <div style={{ position:'absolute', bottom:12, left:'50%', transform:'translateX(-50%)', opacity:0.18, pointerEvents:'none' }}>
+                  <Sparkline points={s.pts} color={s.color} width={100} height={32} />
+                </div>
                 <div style={{
                   fontFamily:'JetBrains Mono,monospace', fontWeight:800,
                   fontSize:'3rem', lineHeight:1, letterSpacing:'-0.03em',
-                  color:G, marginBottom:12,
+                  color:G, marginBottom:10,
                 }}>
                   <Counter to={s.val} suffix={s.suffix} />
                 </div>
-                <div style={{ fontSize:14, fontWeight:600, color:'rgba(232,237,245,0.75)', marginBottom:4 }}>
+                <div style={{ fontSize:13, fontWeight:600, color:'rgba(232,237,245,0.70)', marginBottom:3 }}>
                   {s.label}
                 </div>
-                <div style={{ fontSize:12, color:'rgba(232,237,245,0.30)' }}>
+                <div style={{ fontSize:11, color:'rgba(232,237,245,0.28)' }}>
                   {s.sub}
                 </div>
               </div>
@@ -739,6 +900,13 @@ export default function HomePage() {
             position:'absolute', top:0, left:'25%', right:'25%', height:1,
             background:`linear-gradient(90deg,transparent,${G}44,transparent)`,
           }} />
+          {/* decorative sparklines */}
+          <div style={{ position:'absolute', left:32, bottom:24, opacity:0.12, pointerEvents:'none' }}>
+            <Sparkline points={[30,33,31,36,35,39,37,42,40,45,48,44,50,53,51,57]} color={G} width={120} height={48} />
+          </div>
+          <div style={{ position:'absolute', right:32, bottom:24, opacity:0.12, pointerEvents:'none' }}>
+            <Sparkline points={[55,52,54,49,47,45,48,43,41,39,42,36,33,37,31,28]} color={RED} width={120} height={48} />
+          </div>
 
           <div style={{ position:'relative', zIndex:1 }}>
             <div style={{
@@ -759,9 +927,27 @@ export default function HomePage() {
               Ready to trade with{' '}
               <span className="hero-gradient">a system</span>?
             </h2>
-            <p style={{ fontSize:15, color:'rgba(232,237,245,0.40)', maxWidth:420, margin:'0 auto 32px' }}>
+            <p style={{ fontSize:15, color:'rgba(232,237,245,0.40)', maxWidth:420, margin:'0 auto 24px' }}>
               Scan the market. Identify the setup. Understand the signal. Enter with confidence.
             </p>
+
+            {/* mini stats row */}
+            <div style={{
+              display:'flex', alignItems:'center', justifyContent:'center', gap:24,
+              flexWrap:'wrap', marginBottom:28,
+            }}>
+              {[
+                { val:'1,250+', label:'Active traders' },
+                { val:'1,800+', label:'Signals/week'   },
+                { val:'7',      label:'Osiris filters' },
+                { val:'<20s',   label:'Avg speed'      },
+              ].map(({ val, label }) => (
+                <div key={label} style={{ textAlign:'center' }}>
+                  <p style={{ fontFamily:'JetBrains Mono,monospace', fontWeight:800, fontSize:18, color:G, margin:0, lineHeight:1 }}>{val}</p>
+                  <p style={{ fontSize:10, color:'rgba(232,237,245,0.28)', margin:'4px 0 0', textTransform:'uppercase', letterSpacing:'0.08em' }}>{label}</p>
+                </div>
+              ))}
+            </div>
 
             <Link href="/auth/login" style={{
               display:'inline-flex', alignItems:'center', gap:10,
@@ -810,6 +996,9 @@ export default function HomePage() {
         .scrollbar-hide::-webkit-scrollbar { display:none; }
         .scrollbar-hide { -ms-overflow-style:none; scrollbar-width:none; }
 
+        .statsbar-mobile { display: none !important; }
+        .statsbar-desktop { display: flex !important; }
+
         @media (max-width: 768px) {
           .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
           .lp-pricing-grid { grid-template-columns: 1fr !important; }
@@ -817,6 +1006,11 @@ export default function HomePage() {
           .osiris-row > *:last-child { display: none !important; }
           .lp-nav-text { display: none !important; }
           .lp-stat-divider { display: none !important; }
+          /* mobile stats bar: slideshow */
+          .statsbar-desktop { display: none !important; }
+          .statsbar-mobile { display: flex !important; }
+          /* hero cards hidden on mobile */
+          .hero-cards { display: none !important; }
         }
       `}</style>
     </div>
